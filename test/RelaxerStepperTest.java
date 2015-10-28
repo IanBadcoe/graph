@@ -71,8 +71,6 @@ public class RelaxerStepperTest
       assertEquals(40, e15.Length(), 1);
    }
 
-   // comment
-
    @Test
    public void testEdgeContradictionRelaxation() throws Exception
    {
