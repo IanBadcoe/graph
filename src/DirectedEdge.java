@@ -1,0 +1,66 @@
+class DirectedEdge {
+   public final INode Start;
+   public final INode End;
+   public final double MinLength;
+   public final double MaxLength;
+   public final double Width;
+
+   public DirectedEdge(INode start, INode end,
+                       double min_length, double max_length,
+                       double width) {
+      assert start != null;
+      assert end != null;
+
+      Start = start;
+      End = end;
+      MinLength = min_length;
+      MaxLength = max_length;
+      Width = width;
+   }
+
+   @Override
+   public int hashCode()
+   {
+      int x = Start.hashCode();
+      int y = End.hashCode();
+      int z = x * 31 + y;
+      // we don't intend to ever have two edges between the same
+      // pair of nodes, so no need to look at lengths
+      return z;
+   }
+
+   @Override
+   public boolean equals(Object o)
+   {
+      if (!(o instanceof DirectedEdge))
+         return false;
+
+      DirectedEdge e = (DirectedEdge)o;
+
+      return (Start == e.Start && End == e.End);
+   }
+
+   INode OtherNode(INode n)
+   {
+      if (n == Start)
+      {
+         return End;
+      }
+      else if (n == End)
+      {
+         return Start;
+      }
+
+      return null;
+   }
+
+   double Length()
+   {
+      return End.GetPos().Minus(Start.GetPos()).Length();
+   }
+
+   boolean Connects(INode n)
+   {
+      return n == Start || n == End;
+   }
+} 
