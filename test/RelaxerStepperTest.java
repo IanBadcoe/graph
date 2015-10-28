@@ -25,9 +25,10 @@ public class RelaxerStepperTest
       g.Connect(n1, n2, 100, 100, 0);
       g.Connect(n2, n3, 80, 80, 0);
       g.Connect(n3, n1, 60, 60, 0);
-      g.Connect(n3, n4, 1000, 1000, 0);
-      g.Connect(n1, n5, 10, 10, 0);
+      g.Connect(n3, n4, 120, 120, 0);
+      g.Connect(n1, n5, 40, 40, 0);
 
+      // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
       Expander.ExpandRet ret;
@@ -35,11 +36,13 @@ public class RelaxerStepperTest
       do
       {
          count++;
-         // run it to a tighter convergence than usual
          // RelaxerStepper doesn't use previous status
          ret = rs.Step(Expander.ExpandStatus.Iterate);
       }
       while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
 
       // with a possible triangle and no other constraints
       // should get all lengths within a small tolerance of the target
@@ -50,7 +53,7 @@ public class RelaxerStepperTest
       // again just what I saw initially, these are broadly parabolic forces so maybe a better optimisation algorithm
       // would do this _much_ faster, OTOH these forces have edges and the complexity of things moving around each
       // other may mean this is really a much more complex force landscape than you'd think
-      assertTrue(count < 400000);
+      assertTrue(count < 30000);
 
       DirectedEdge e12 = n1.GetConnectionTo(n2);
       assertEquals(100, e12.Length(), 1);
@@ -62,12 +65,12 @@ public class RelaxerStepperTest
       assertEquals(60, e31.Length(), 1);
 
       DirectedEdge e34 = n3.GetConnectionTo(n4);
-      assertEquals(1000, e34.Length(), 20);
+      assertEquals(120, e34.Length(), 1);
 
       DirectedEdge e15 = n1.GetConnectionTo(n5);
-      assertEquals(10, e15.Length(), 0.1);
+      assertEquals(40, e15.Length(), 1);
    }
-/*
+
    @Test
    public void testEdgeContradictionRelaxation() throws Exception
    {
@@ -87,17 +90,21 @@ public class RelaxerStepperTest
       g.Connect(n2, n3, 40, 40, 0);
       g.Connect(n3, n1, 40, 40, 0);
 
-      RelaxerStepper rs = new RelaxerStepper(g, 0, null);
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
       Expander.ExpandRet ret;
       int count = 0;
       do
       {
          count++;
-         // run it to a tighter convergence than usual
-         ret = rs.RelaxStep(null, 1.0, null, 1e-3, 1e-4);
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
       }
       while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
 
       // should arrive at a compromise, close to linear with
       // n1 -> n2 a bit compressed and the other two edges stretched
@@ -126,17 +133,21 @@ public class RelaxerStepperTest
       n1.SetPos(new XY(   0,    0));
       n2.SetPos(new XY(-100, 0));
 
-      RelaxerStepper rs = new RelaxerStepper(g, 0, null);
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
       Expander.ExpandRet ret;
       int count = 0;
       do
       {
          count++;
-         // run it to a tighter convergence than usual
-         ret = rs.RelaxStep(null, 1.0, null, 1e-3, 1e-4);
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
       }
       while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
 
       // should take a single cycle to see that nothing needs to move
       assertEquals(1, count);
@@ -156,17 +167,21 @@ public class RelaxerStepperTest
       n1.SetPos(new XY(   0,    0));
       n2.SetPos(new XY(  -1,    0));
 
-      RelaxerStepper rs = new RelaxerStepper(g, 0, null);
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
       Expander.ExpandRet ret;
       int count = 0;
       do
       {
          count++;
-         // run it to a tighter convergence than usual
-         ret = rs.RelaxStep(null, 1.0, null, 1e-3, 1e-4);
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
       }
       while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
 
       // shouldn't take many cycle to bring them close to the target separation
       assertTrue(count < 100);
@@ -194,17 +209,21 @@ public class RelaxerStepperTest
       g.Connect(n1, n2, 20, 20, 10);
       g.Connect(n3, n4, 20, 20, 10);
 
-      RelaxerStepper rs = new RelaxerStepper(g, 0, null);
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
       Expander.ExpandRet ret;
       int count = 0;
       do
       {
          count++;
-         // run it to a tighter convergence than usual
-         ret = rs.RelaxStep(null, 1.0, null, 1e-3, 1e-4);
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
       }
       while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
 
       // should take a single cycle to see that nothing needs to move
       assertEquals(1, count);
@@ -236,17 +255,21 @@ public class RelaxerStepperTest
       g.Connect(n1, n2, 20, 20, 10);
       g.Connect(n3, n4, 20, 20, 10);
 
-      RelaxerStepper rs = new RelaxerStepper(g, 0, null);
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
       Expander.ExpandRet ret;
       int count = 0;
       do
       {
          count++;
-         // run it to a tighter convergence than usual
-         ret = rs.RelaxStep(null, 1.0, null, 1e-3, 1e-4);
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
       }
       while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
 
       // shouldn't take long to push the edges apart
       assertTrue(count < 50);
@@ -276,17 +299,21 @@ public class RelaxerStepperTest
 
       g.Connect(n1, n2, 100, 100, 10);
 
-      RelaxerStepper rs = new RelaxerStepper(g, 0, null);
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
       Expander.ExpandRet ret;
       int count = 0;
       do
       {
          count++;
-         // run it to a tighter convergence than usual
-         ret = rs.RelaxStep(null, 1.0, null, 1e-3, 1e-4);
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
       }
       while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
 
       // takes a little time to push the edge and node apart
       assertTrue(count < 120);
@@ -297,5 +324,4 @@ public class RelaxerStepperTest
       assertEquals(100, n2.GetPos().Y, 0);
       assertEquals(50, n3.GetPos().Y, 0);
    }
-*/
 }

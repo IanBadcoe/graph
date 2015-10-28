@@ -215,7 +215,13 @@ class ExpanderTemp
          ended = maxd < move_target && maxf < force_target;
       }
 
-      int crossings = Util.FindCrossingEdges(m_edges).size();
+      HashSet<DirectedEdgePair> directedEdgePairs = Util.FindCrossingEdges(m_edges);
+      int crossings = directedEdgePairs.size();
+
+      if (crossings > 0)
+      {
+         int i = 4;
+      }
 
       return new RelRet(ended, maxf, step, maxd, crossings,
             max_edge_stretch, max_edge_squeeze, max_edge_side_squeeze, max_node_squeeze);
