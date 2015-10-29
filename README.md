@@ -21,7 +21,7 @@ Can rewrite to:
                 \
                  --> <obstacle> -> RED_KEY
 
-And subsequent rewrites will not add any connections to END or RED_KEY that byepass the RED_DOOR or the OBSTACLE
+And subsequent rewrites will not add any connections to END or RED_KEY that byepass the RED_DOOR or the <obstacle>
 respectively.
 
 ### Forcefield relaxation
