@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class TemplateStore
@@ -18,7 +19,7 @@ public class TemplateStore
       return m_templates.size();
    }
 
-   public ArrayList<Template> GetTemplatesCopy()
+   public Collection<Template> GetTemplatesCopy()
    {
       return new ArrayList<>(m_templates.values());
    }

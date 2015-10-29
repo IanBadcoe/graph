@@ -1,5 +1,3 @@
-import processing.core.PApplet;
-
 class Annotation
 {
    final public XY P1;
@@ -19,15 +17,15 @@ class Annotation
       Text = text;
    }
 
-   void Draw(PApplet app)
+   void Draw()
    {
-      app.stroke(Red, Green, Blue);
-      app.fill(Red, Green, Blue);
+      Main.Stroke(Red, Green, Blue);
+      Main.Fill(Red, Green, Blue);
 
-      Util.Line(app, P1, P2);
+      Main.Line(P1, P2);
 
       XY mid = P1.Plus(P2).Divide(2);
 
-      Util.Text(app, Text, mid);
+      Main.Text(Text, mid);
    }
 }

@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -54,7 +55,7 @@ public class TemplateStoreTest
       ts.AddTemplate(t1);
       ts.AddTemplate(t2);
 
-      ArrayList<Template> copy = ts.GetTemplatesCopy();
+      Collection<Template> copy = ts.GetTemplatesCopy();
 
       assertEquals(2, copy.size());
       assertTrue(copy.contains(t1));

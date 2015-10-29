@@ -10,19 +10,35 @@ public class Expander
       StepOutFailure    // current stepper failed, revert graph and move back to parent
    }
 
-   static class ExpandRet
+   static class ExpandRetInner
    {
       final ExpandStatus Status;
       final IExpandStepper ChildStepper;
       final String Log;
 
-      ExpandRet(ExpandStatus status,
+      ExpandRetInner(ExpandStatus status,
                 IExpandStepper childStepper,
                 String log)
       {
          Status = status;
          ChildStepper = childStepper;
          Log = log;
+      }
+   }
+
+   static class ExpandRet
+   {
+      final ExpandStatus Status;
+      final String Log;
+      final boolean Complete;
+
+      ExpandRet(ExpandRetInner eri,
+                boolean complete)
+      {
+         Status = eri.Status;
+         Log = eri.Log;
+
+         Complete = complete;
       }
    }
 
@@ -41,14 +57,14 @@ public class Expander
       if (stepper == null)
          throw new NullPointerException("Attempt to step without an initial stepper.  Either you failed to supply one, or this Expander has completed.");
 
-      ExpandRet ret = stepper.Step(m_last_step_status);
+      ExpandRetInner eri = stepper.Step(m_last_step_status);
 
-      m_last_step_status = ret.Status;
+      m_last_step_status = eri.Status;
 
       switch (m_last_step_status)
       {
          case StepIn:
-            PushStepper(ret.ChildStepper);
+            PushStepper(eri.ChildStepper);
             break;
 
          case StepOutFailure:
@@ -60,21 +76,13 @@ public class Expander
             break;
       }
 
-      // we don't need to tell the client about our stepping in and out
-      // we just need to continue iteration if there is something to iterate
-      if (CurrentStepper() != null)
-      {
-         ret = new ExpandRet(ExpandStatus.Iterate,
-               ret.ChildStepper, ret.Log);
-      }
-
-      return ret;
+      return new ExpandRet(eri, CurrentStepper() == null);
    }
 
    private void PushStepper(IExpandStepper stepper)
    {
       m_stack.push(
-            new OrderedPair<>(stepper, m_graph.CreateRestorePoint()));
+            new OrderedPair<>(stepper, m_graph != null ? m_graph.CreateRestorePoint() : null));
    }
 
    private IExpandStepper CurrentStepper()
@@ -87,13 +95,11 @@ public class Expander
 
    private void PopStepper(boolean success)
    {
-      if (!success)
+      IGraphRestore igr = m_stack.pop().Second;
+
+      if (!success && igr != null)
       {
-         m_stack.pop().Second.Restore();
-      }
-      else
-      {
-         m_stack.pop().Second.Commit();
+         igr.Restore();
       }
    }
 

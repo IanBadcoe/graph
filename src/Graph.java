@@ -206,12 +206,9 @@ class Graph
          // it needs to know that it needs to restore us first...
          if (m_chain_from_restore != null)
          {
-            if (m_chain_from_restore.m_chain_to_restore != null)
-            {
-               // we will replace this, but don't want any orphaned
-               // restores that think they are still usable
-               m_chain_from_restore.m_chain_to_restore.CleanUp();
-            }
+            // anything the chain-from used to be chained-to should be already gone,
+            // e.g. restored, before we are able to make another new chain
+            assert m_chain_from_restore.m_chain_to_restore == null;
 
             m_chain_from_restore.m_chain_to_restore = this;
          }
@@ -277,20 +274,9 @@ class Graph
       }
 
       @Override
-      public boolean Commit()
-      {
-         if (m_restored)
-            return false;
-
-         CleanUp();
-
-         return true;
-      }
-
-      @Override
       public boolean Restore()
       {
-         if (m_restored)
+         if (!m_can_be_restored)
             return false;
 
          if (m_chain_to_restore != null)
@@ -366,13 +352,13 @@ class Graph
          if (m_chain_from_restore != null)
             m_chain_from_restore.m_chain_to_restore = null;
 
-         m_restored = true;
+         m_can_be_restored = false;
       }
 
       @Override
-      public boolean IsRestored()
+      public boolean CanBeRestored()
       {
-         return m_restored;
+         return m_can_be_restored;
       }
 
       private HashMap<DirectedEdge, RestoreAction> m_connections = new HashMap<>();
@@ -386,7 +372,19 @@ class Graph
       GraphRestore m_chain_to_restore;
 
       // because we can only be used for a restored once...
-      boolean m_restored = false;
+      boolean m_can_be_restored = true;
+   }
+
+   void ClearRestore()
+   {
+      GraphRestore root = m_restore;
+
+      while(root.m_chain_from_restore != null)
+      {
+         root = root.m_chain_from_restore;
+      }
+
+      root.CleanUp();
    }
 
    boolean Contains(INode n)

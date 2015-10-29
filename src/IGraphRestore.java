@@ -5,7 +5,5 @@ import java.util.Map;
 interface IGraphRestore
 {
    boolean Restore();
-   boolean IsRestored();
-   // erase the ability to restore this restore
-   boolean Commit();
+   boolean CanBeRestored();
 }

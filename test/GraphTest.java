@@ -564,14 +564,14 @@ public class GraphTest
 
          igr2.Restore();
 
-         assertTrue(igr2.IsRestored());
-         assertFalse(igr1.IsRestored());
+         assertFalse(igr2.CanBeRestored());
+         assertTrue(igr1.CanBeRestored());
          assertEquals(igr1, g.CurrentRestore());
 
          assertTrue(gr2.Compare(g));
 
          igr1.Restore();
-         assertTrue(igr1.IsRestored());
+         assertFalse(igr1.CanBeRestored());
 
          assertTrue(gr1.Compare(g));
       }
@@ -597,10 +597,77 @@ public class GraphTest
          g.Connect(n3, n4, 0, 0, 0);
 
          igr1.Restore();
-         assertTrue(igr2.IsRestored());
+         assertFalse(igr2.CanBeRestored());
          assertEquals(null, g.CurrentRestore());
 
          assertTrue(gr1.Compare(g));
+      }
+
+      // restore to intermediate point then start a new restore
+      {
+         Graph g = new Graph();
+
+         GraphRecord gr1 = new GraphRecord(g);
+
+         IGraphRestore igr1 = g.CreateRestorePoint();
+
+         INode n1 = g.AddNode("", "", "", 0);
+
+         GraphRecord gr2 = new GraphRecord(g);
+
+         IGraphRestore igr2 = g.CreateRestorePoint();
+
+         INode n2 = g.AddNode("", "", "", 0);
+
+         igr2.Restore();
+
+         assertEquals(igr1, g.CurrentRestore());
+         assertFalse(igr2.CanBeRestored());
+         assertTrue(igr1.CanBeRestored());
+
+         assertTrue(gr2.Compare(g));
+
+         IGraphRestore igr3 = g.CreateRestorePoint();
+
+         INode n3 = g.AddNode("", "", "", 0);
+
+         igr1.Restore();
+
+         assertTrue(gr1.Compare(g));
+
+         assertFalse(igr1.CanBeRestored());
+         assertFalse(igr3.CanBeRestored());
+         assertEquals(null, g.CurrentRestore());
+      }
+
+      // keep a restore but then abandon it, committing to all our changes
+
+      // restore to intermediate point then start a new restore
+      {
+         Graph g = new Graph();
+
+         IGraphRestore igr1 = g.CreateRestorePoint();
+
+         INode n1 = g.AddNode("", "", "", 0);
+
+         IGraphRestore igr2 = g.CreateRestorePoint();
+
+         INode n2 = g.AddNode("", "", "", 0);
+
+         IGraphRestore igr3 = g.CreateRestorePoint();
+
+         INode n3 = g.AddNode("", "", "", 0);
+
+         GraphRecord gr1 = new GraphRecord(g);
+
+         g.ClearRestore();
+
+         // should still have all our changes
+         assertTrue(gr1.Compare(g));
+         // and all the restores shoudl know they are now invalid
+         assertFalse(igr1.CanBeRestored());
+         assertFalse(igr2.CanBeRestored());
+         assertFalse(igr3.CanBeRestored());
       }
    }
 

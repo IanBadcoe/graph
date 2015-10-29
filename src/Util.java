@@ -1,14 +1,7 @@
-import processing.core.PApplet;
-
 import java.util.*;
 
 class Util
 {
-   // static class
-   private Util()
-   {
-   }
-
    public static HashSet<DirectedEdgePair> FindCrossingEdges(Collection<DirectedEdge> edges)
    {
       HashSet<DirectedEdgePair> ret = new HashSet<>();
@@ -68,9 +61,9 @@ class Util
    }
 
    private static OrderedPair<Double, Double> EdgeIntersect(double edge1StartX, double edge1StartY,
-                                                         double edge1EndX, double edge1EndY,
-                                                         double edge2StartX, double edge2StartY,
-                                                         double edge2EndX, double edge2EndY)
+                                                            double edge1EndX, double edge1EndY,
+                                                            double edge2StartX, double edge2StartY,
+                                                            double edge2EndX, double edge2EndY)
    {
 
       double den = (edge2EndX - edge2StartX) * (edge1StartY - edge1EndY) - (edge1StartX - edge1EndX) * (edge2EndY - edge2StartY);
@@ -231,8 +224,6 @@ class Util
 
    static <T> T RemoveRandom(Random random, Collection<T> col)
    {
-      assert col.size() > 0;
-
       int which = (int)(random.nextDouble() * col.size());
 
       Iterator<T> it = col.iterator();
@@ -271,73 +262,4 @@ class Util
 
       return ret;
    }
-
-   static void Line(PApplet app, XY from, XY to)
-   {
-      app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
-   }
-
-   static void Text(PApplet app, String text, XY pos)
-   {
-      app.text(text, (float)pos.X, (float)pos.Y);
-   }
-
-   static void DrawGraph(Main app, Graph g, boolean show_labels, boolean show_arrows)
-   {
-      for (INode n : g.AllGraphNodes())
-      {
-         DrawNode(app, n);
-      }
-
-      for (INode n : g.AllGraphNodes())
-      {
-         DrawConnections(app, n, show_arrows);
-      }
-
-      if (show_labels)
-      {
-         for (INode n : g.AllGraphNodes())
-         {
-            DrawLabel(app, n);
-         }
-      }
-   }
-
-   private static void DrawNode(PApplet app, INode n)
-   {
-      app.noStroke();
-      app.fill(140);
-      app.ellipse((float) n.GetPos().X, (float) n.GetPos().Y,
-            (float) n.GetRad(), (float) n.GetRad());
-   }
-
-   private static void DrawLabel(PApplet app, INode n)
-   {
-      app.fill(255, 255, 255);
-      app.text(n.GetName(),
-            (float) n.GetPos().X, (float) n.GetPos().Y);
-   }
-
-   private static void DrawConnections(PApplet app, INode n, boolean show_arrows)
-   {
-      // in connections are drawn by the other node...
-      for(DirectedEdge e : n.GetOutConnections())
-      {
-         app.stroke(180);
-         app.strokeWeight((float)(e.Width * 1.75));
-         Util.Line(app, e.Start.GetPos(), e.End.GetPos());
-
-         if (show_arrows)
-         {
-            XY d = e.End.GetPos().Minus(e.Start.GetPos());
-            d = d.Divide(10);
-
-            XY rot = new XY(-d.Y, d.X);
-
-            Util.Line(app, e.End.GetPos(), e.End.GetPos().Minus(d).Minus(rot));
-            Util.Line(app, e.End.GetPos(), e.End.GetPos().Minus(d).Plus(rot));
-         }
-      }
-   }
-
 }
