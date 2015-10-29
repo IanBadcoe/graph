@@ -13,15 +13,15 @@ not directly joined cannot become joined as a result of a rewrite.
 
 Example:
 
-    START -> <expandable> -> END
+    START -> [expandable] -> END
 
 Can rewrite to:
 
     START -> JUNCTION -> RED_DOOR -> END
                 \
-                 --> <obstacle> -> RED_KEY
+                 --> [obstacle] -> RED_KEY
 
-And subsequent rewrites will not add any connections to END or RED_KEY that byepass the RED_DOOR or the <obstacle>
+And subsequent rewrites will not add any connections to END or RED_KEY that byepass the RED_DOOR or the [obstacle]
 respectively.
 
 ### Forcefield relaxation
@@ -70,7 +70,7 @@ e.g.
    2. uses concept of in and out edges to indicate "forwards" and "backwards" through level, may need more than this to
       correctly accommodate side-turns and loops
    3. only a few simple rules tried so far, no doors or conception of different types of non-terminal
-      (such as <obstacle> and <reward>
+      (such as [obstacle] and [reward]
 2. iterative rewrite/relaxation mechanism created, prototyped and under more-finished construction
    1. I have seen it working however :-)
 3. many unit tests created, a fair few still to go
