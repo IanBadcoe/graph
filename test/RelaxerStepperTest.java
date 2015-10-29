@@ -31,7 +31,7 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
-      Expander.ExpandRet ret;
+      Expander.ExpandRetInner ret;
       int count = 0;
       do
       {
@@ -93,7 +93,7 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
-      Expander.ExpandRet ret;
+      Expander.ExpandRetInner ret;
       int count = 0;
       do
       {
@@ -136,7 +136,7 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
-      Expander.ExpandRet ret;
+      Expander.ExpandRetInner ret;
       int count = 0;
       do
       {
@@ -170,7 +170,7 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
-      Expander.ExpandRet ret;
+      Expander.ExpandRetInner ret;
       int count = 0;
       do
       {
@@ -212,7 +212,7 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
-      Expander.ExpandRet ret;
+      Expander.ExpandRetInner ret;
       int count = 0;
       do
       {
@@ -258,7 +258,7 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
-      Expander.ExpandRet ret;
+      Expander.ExpandRetInner ret;
       int count = 0;
       do
       {
@@ -302,7 +302,7 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
 
-      Expander.ExpandRet ret;
+      Expander.ExpandRetInner ret;
       int count = 0;
       do
       {
@@ -323,5 +323,128 @@ public class RelaxerStepperTest
       assertEquals(0, n1.GetPos().Y, 0);
       assertEquals(100, n2.GetPos().Y, 0);
       assertEquals(50, n3.GetPos().Y, 0);
+   }
+
+   @Test
+   public void testCrossingEdge_Error()
+   {
+      Graph g = new Graph();
+
+      INode n1 = g.AddNode("edge1start", "", "", 10.0);
+      INode n2 = g.AddNode("edge1end", "", "", 10.0);
+      INode n3 = g.AddNode("edge2start", "", "", 10.0);
+      INode n4 = g.AddNode("edge2end", "", "", 10.0);
+
+      // two clearly crossing edges
+      n1.SetPos(new XY(0, -100));
+      n2.SetPos(new XY(0, 100));
+      n3.SetPos(new XY(-100, 0));
+      n4.SetPos(new XY(100, 0));
+
+      g.Connect(n1, n2, 100, 100, 10);
+      g.Connect(n3, n4, 100, 100, 10);
+
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+
+      Expander.ExpandRetInner ret;
+      int count = 0;
+      do
+      {
+         count++;
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
+      }
+      while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+
+      // should detect immediately
+      assertTrue(count == 1);
+      assertTrue(ret.Log.contains("crossing edges"));
+   }
+
+   @Test
+   public void testDegeneracy()
+   {
+      // edge lengths of zero and edge-node distances of zero shouldn't crash anything and should
+      // even relax as long as there is some other force to pull them apart
+
+      // zero length edge
+      {
+         Graph g = new Graph();
+
+         INode n1 = g.AddNode("edgesstart", "", "", 10.0);
+         INode n2 = g.AddNode("edgesmiddle", "", "", 10.0);
+         INode n3 = g.AddNode("edgesend", "", "", 10.0);
+
+         // zero length edge and a non-zero one attached at one end that will separate
+         // the overlying nodes
+         n1.SetPos(new XY(0, 0));
+         n2.SetPos(new XY(0, 0));
+         n3.SetPos(new XY(-110, 0));
+
+         g.Connect(n1, n2, 100, 100, 10);
+         g.Connect(n2, n3, 100, 100, 10);
+
+         // run it to a tighter convergence than usual
+         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+
+         Expander.ExpandRetInner ret;
+         int count = 0;
+         do
+         {
+            count++;
+            // RelaxerStepper doesn't use previous status
+            ret = rs.Step(Expander.ExpandStatus.Iterate);
+         }
+         while(ret.Status == Expander.ExpandStatus.Iterate);
+
+         assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+
+         // rather a lot?
+         assertTrue(count < 50000);
+         assertEquals(100, n1.GetPos().Minus(n2.GetPos()).Length(), 1);
+         assertEquals(100, n2.GetPos().Minus(n3.GetPos()).Length(), 1);
+         assertTrue(n1.GetPos().Minus(n3.GetPos()).Length() > 20);
+      }
+
+      // zero node separation
+      {
+         Graph g = new Graph();
+
+         INode n1 = g.AddNode("edgestart", "", "", 10.0);
+         INode n2 = g.AddNode("edgeend", "", "", 10.0);
+         INode n3 = g.AddNode("node", "", "", 10.0);
+
+         // two zero separation nodes and an edge attached to one that will separate
+         // the overlying nodes
+         n1.SetPos(new XY(0, 0));
+         n2.SetPos(new XY(110, 0));
+         n3.SetPos(new XY(0, 0));
+
+         g.Connect(n1, n2, 100, 100, 10);
+
+         // run it to a tighter convergence than usual
+         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+
+         Expander.ExpandRetInner ret;
+         int count = 0;
+         do
+         {
+            count++;
+            // RelaxerStepper doesn't use previous status
+            ret = rs.Step(Expander.ExpandStatus.Iterate);
+         }
+         while(ret.Status == Expander.ExpandStatus.Iterate);
+
+         assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+
+         // rather a lot?
+         assertTrue(count < 50000);
+         assertEquals(100, n1.GetPos().Minus(n2.GetPos()).Length(), 1);
+         assertTrue(n1.GetPos().Minus(n3.GetPos()).Length() > 20);
+         assertTrue(n2.GetPos().Minus(n3.GetPos()).Length() > 20);
+      }
    }
 }

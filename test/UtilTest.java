@@ -2,6 +2,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
+
 import static org.junit.Assert.*;
 
 public class UtilTest
@@ -33,6 +37,12 @@ public class UtilTest
 
       assertNotNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, 0), new XY(1, 0)));
       assertNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(0, -1), new XY(0, 1)));
+
+      assertNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, 2), new XY(1, 2)));
+      assertNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, -2), new XY(1, -2)));
+
+      assertNull(Util.EdgeIntersect(new XY(2, -1), new XY(2, 1), new XY(-1, 0), new XY(1, 0)));
+      assertNull(Util.EdgeIntersect(new XY(-2, -1), new XY(-2, 1), new XY(-1, 0), new XY(1, 0)));
    }
 
    @Test
@@ -340,6 +350,94 @@ public class UtilTest
       OneNodeEdgeDist_Test(new XY(0, 2), new XY(0, 0), new XY(0, 1),
             mat, offset,
             1, new XY(0, 1), new XY(0, -1));
+   }
+
+   @Test
+   public void testRemoveRandom()
+   {
+      {
+         ArrayList<Integer> c = new ArrayList<>();
+
+         c.add(1);
+         c.add(2);
+         c.add(3);
+
+         assertTrue(c.contains(1));
+
+         ArrayList<Integer> d = new ArrayList<>();
+
+         d.add(1);
+         d.add(2);
+         d.add(3);
+
+         Random r1 = new Random(1);
+         Random r2 = new Random(1);
+
+         int i = Util.RemoveRandom(r1, c);
+
+         assertTrue(i < 4 && i > 0);
+         assertEquals(2, c.size());
+         assertFalse(c.contains(i));
+
+         int j = Util.RemoveRandom(r2, d);
+
+         assertTrue(i == j);
+
+
+         i = Util.RemoveRandom(r1, c);
+
+         assertTrue(i < 4 && i > 0);
+         assertEquals(1, c.size());
+         assertFalse(c.contains(i));
+
+         j = Util.RemoveRandom(r2, d);
+
+         assertTrue(i == j);
+
+
+         i = Util.RemoveRandom(r1, c);
+
+         assertTrue(i < 4 && i > 0);
+         assertEquals(0, c.size());
+         assertFalse(c.contains(i));
+
+         j = Util.RemoveRandom(r2, d);
+
+         assertTrue(i == j);
+
+         assertNull(Util.RemoveRandom(r1, c));
+      }
+   }
+
+   @Test
+   public void testFilterByCodes()
+   {
+      INode n1 = new Node("n1", "abc", "", 0);
+      INode n2 = new Node("n2", "bc", "", 0);
+      INode n3 = new Node("n3", "bcd", "", 0);
+
+      ArrayList<INode> col = new ArrayList<>();
+
+      col.add(n1);
+      col.add(n2);
+      col.add(n3);
+
+      Collection<INode> ret = Util.FilterByCodes(col, "b");
+
+      assertEquals(3, ret.size());
+      assertTrue(ret.contains(n1));
+      assertTrue(ret.contains(n2));
+      assertTrue(ret.contains(n3));
+
+      ret = Util.FilterByCodes(col, "a");
+
+      assertEquals(1, ret.size());
+      assertTrue(ret.contains(n1));
+
+
+      ret = Util.FilterByCodes(col, "e");
+
+      assertEquals(0, ret.size());
    }
 
    private Node makeNodeAt(double x, double y)

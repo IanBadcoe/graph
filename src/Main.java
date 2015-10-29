@@ -1,3 +1,5 @@
+import processing.core.PApplet;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,6 +18,14 @@ public class Main extends processing.core.PApplet
    {
 //      size(500, 500);
       fullScreen();
+
+      s_app = this;
+
+      // configure our crude IoC system
+      TryAllNodesExpandStepper.SetChildFactory(
+            (a, b, c, d) -> new TryAllTemplatesOnOneNodeStepper(a, b, c, d));
+      TryAllTemplatesOnOneNodeStepper.SetChildFactory(
+            (a, b, c, d) -> new TryTemplateExpandStepper(a, b, c, d));
    }
 
    @Override
@@ -102,7 +112,7 @@ public class Main extends processing.core.PApplet
 
             ret = m_expander.Step();
 
-            m_lay_out_running = ret.Status == Expander.ExpandStatus.Iterate;
+            m_lay_out_running = !ret.Complete;
 
             print(ret.Log, "\n");
          }
@@ -119,13 +129,13 @@ public class Main extends processing.core.PApplet
 
       translate((float)m_off_x, (float)m_off_y);
 
-      Util.DrawGraph(this, m_graph, m_labels, m_arrows);
+      DrawGraph(m_graph, m_labels, m_arrows);
 
       if (m_show_notes)
       {
          for(Annotation a : m_notes)
          {
-            a.Draw(this);
+            a.Draw();
          }
       }
    }
@@ -161,6 +171,87 @@ public class Main extends processing.core.PApplet
       //not expandable, which simplifies expansion as start won't need replacing
       return ret;
    }
+
+
+   static void Line(XY from, XY to)
+   {
+      s_app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
+   }
+
+   static void Text(String text, XY pos)
+   {
+      s_app.text(text, (float)pos.X, (float)pos.Y);
+   }
+
+   static void DrawGraph(Graph g, boolean show_labels, boolean show_arrows)
+   {
+      for (INode n : g.AllGraphNodes())
+      {
+         DrawNode(n);
+      }
+
+      for (INode n : g.AllGraphNodes())
+      {
+         DrawConnections(n, show_arrows);
+      }
+
+      if (show_labels)
+      {
+         for (INode n : g.AllGraphNodes())
+         {
+            DrawLabel(n);
+         }
+      }
+   }
+
+   private static void DrawNode(INode n)
+   {
+      s_app.noStroke();
+      s_app.fill(140);
+      s_app.ellipse((float) n.GetPos().X, (float) n.GetPos().Y,
+            (float) n.GetRad(), (float) n.GetRad());
+   }
+
+   private static void DrawLabel(INode n)
+   {
+      s_app.fill(255, 255, 255);
+      s_app.text(n.GetName(),
+            (float) n.GetPos().X, (float) n.GetPos().Y);
+   }
+
+   private static void DrawConnections(INode n, boolean show_arrows)
+   {
+      // in connections are drawn by the other node...
+      for(DirectedEdge e : n.GetOutConnections())
+      {
+         s_app.stroke(180);
+         s_app.strokeWeight((float)(e.Width * 1.75));
+         Line(e.Start.GetPos(), e.End.GetPos());
+
+         if (show_arrows)
+         {
+            XY d = e.End.GetPos().Minus(e.Start.GetPos());
+            d = d.Divide(10);
+
+            XY rot = new XY(-d.Y, d.X);
+
+            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Minus(rot));
+            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Plus(rot));
+         }
+      }
+   }
+
+   static void Stroke(int red, int green, int blue)
+   {
+      s_app.stroke(red, green, blue);
+   }
+
+   static void Fill(int red, int green, int blue)
+   {
+      s_app.fill(red, green, blue);
+   }
+
+   static PApplet s_app;
 
    Graph m_graph;
 

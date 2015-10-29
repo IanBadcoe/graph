@@ -1,6 +1,6 @@
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -23,21 +23,21 @@ public class TemplateStoreTest
       Template t2 = tb2.Build();
       Template t1a = tb1a.Build();
 
-      assertEquals(0, ts.GetNumTemplates());
+      assertEquals(0, ts.NumTemplates());
 
       assertTrue(ts.AddTemplate(t1));
-      assertEquals(1, ts.GetNumTemplates());
+      assertEquals(1, ts.NumTemplates());
 
       // can't add same one again
       assertFalse(ts.AddTemplate(t1));
-      assertEquals(1, ts.GetNumTemplates());
+      assertEquals(1, ts.NumTemplates());
 
       // can't add one with same name
       assertFalse(ts.AddTemplate(t1a));
-      assertEquals(1, ts.GetNumTemplates());
+      assertEquals(1, ts.NumTemplates());
 
       assertTrue(ts.AddTemplate(t2));
-      assertEquals(2, ts.GetNumTemplates());
+      assertEquals(2, ts.NumTemplates());
    }
 
    @Test
@@ -54,7 +54,7 @@ public class TemplateStoreTest
       ts.AddTemplate(t1);
       ts.AddTemplate(t2);
 
-      ArrayList<Template> copy = ts.GetTemplatesCopy();
+      Collection<Template> copy = ts.GetTemplatesCopy();
 
       assertEquals(2, copy.size());
       assertTrue(copy.contains(t1));
@@ -62,7 +62,7 @@ public class TemplateStoreTest
 
       // master list not changed by editing copy...
       copy.clear();
-      assertEquals(2, ts.GetNumTemplates());
+      assertEquals(2, ts.NumTemplates());
    }
 
    @Test

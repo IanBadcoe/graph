@@ -7,7 +7,7 @@ class EdgeAdjusterStepper implements IExpandStepper
    }
 
    @Override
-   public Expander.ExpandRet Step(Expander.ExpandStatus status)
+   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
    {
       switch (status)
       {
@@ -16,15 +16,15 @@ class EdgeAdjusterStepper implements IExpandStepper
 
             IExpandStepper child = new RelaxerStepper(m_graph, 1.0, 0.001, 0.01);
 
-            return new Expander.ExpandRet(Expander.ExpandStatus.StepIn,
+            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
                   child, "Relaxing split edge.");
 
          case StepOutSuccess:
-            return new Expander.ExpandRet(Expander.ExpandStatus.StepOutSuccess,
+            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
                   null, "Successfully relaxed split edge.");
 
          case StepOutFailure:
-            return new Expander.ExpandRet(Expander.ExpandStatus.StepOutFailure,
+            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
                   null, "Failed to relax split edge.");
       }
 

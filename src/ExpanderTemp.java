@@ -253,7 +253,7 @@ class ExpanderTemp
       {
          INode n = Util.RemoveRandom(m_random, expandable_nodes);
 
-         ArrayList<Template> temp_templates = templates.GetTemplatesCopy();
+         Collection<Template> temp_templates = templates.GetTemplatesCopy();
 
          assert temp_templates.size() > 0;
 

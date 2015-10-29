@@ -12,7 +12,7 @@ class ExpandToSizeStepper implements IExpandStepper
    }
 
    @Override
-   public Expander.ExpandRet Step(Expander.ExpandStatus status)
+   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
    {
       switch (status)
       {
@@ -20,17 +20,17 @@ class ExpandToSizeStepper implements IExpandStepper
          case StepOutSuccess:
             if (m_graph.NumNodes() >= m_required_size)
             {
-               return new Expander.ExpandRet(Expander.ExpandStatus.StepOutSuccess,
+               return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
                      null, "Target size reached");
             }
 
             IExpandStepper child = new TryAllNodesExpandStepper(m_graph, m_templates, m_random);
 
-            return new Expander.ExpandRet(Expander.ExpandStatus.StepIn,
+            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
                   child, "More expansion required.");
 
          case StepOutFailure:
-            return new Expander.ExpandRet(Expander.ExpandStatus.StepOutFailure,
+            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
                   null, "Failed.");
       }
 

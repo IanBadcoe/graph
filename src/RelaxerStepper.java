@@ -15,14 +15,14 @@ class RelaxerStepper implements IExpandStepper
    }
 
    @Override
-   public Expander.ExpandRet Step(Expander.ExpandStatus status)
+   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
    {
       return RelaxStep(m_max_move, m_force_target, m_move_target);
    }
 
    // step is scaled so that the max force we see causes a movement of max_move
    // until that means a step of > 1, then we start letting the system slow down :-)
-   private Expander.ExpandRet RelaxStep(double max_move, double force_target, double move_target)
+   private Expander.ExpandRetInner RelaxStep(double max_move, double force_target, double move_target)
    {
       double maxf = 0.0;
 
@@ -99,15 +99,15 @@ class RelaxerStepper implements IExpandStepper
 
       if (crossings > 0)
       {
-         return new Expander.ExpandRet(Expander.ExpandStatus.StepOutFailure,
-               null, "Generated crossing edgesd during relaxation.");
+         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+               null, "Generated crossing edges during relaxation.");
       } else if (ended)
       {
-         return new Expander.ExpandRet(Expander.ExpandStatus.StepOutSuccess,
+         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
                null, "Relaxed to still-point tolerances.");
       }
 
-      return new Expander.ExpandRet(Expander.ExpandStatus.Iterate,
+      return new Expander.ExpandRetInner(Expander.ExpandStatus.Iterate,
             null,
             " move:" + maxd +
             " time step:" + step +

@@ -10,5 +10,5 @@ interface IExpandStepper
    //
    // some steps will themselves fail when a child fails
    // others will go on to try other stuff
-   Expander.ExpandRet Step(Expander.ExpandStatus status);
+   Expander.ExpandRetInner Step(Expander.ExpandStatus status);
 }
