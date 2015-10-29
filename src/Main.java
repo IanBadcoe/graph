@@ -24,6 +24,8 @@ public class Main extends processing.core.PApplet
       // configure our crude IoC system
       TryAllNodesExpandStepper.SetChildFactory(
             (a, b, c, d) -> new TryAllTemplatesOnOneNodeStepper(a, b, c, d));
+      TryAllTemplatesOnOneNodeStepper.SetChildFactory(
+            (a, b, c, d) -> new TryTemplateExpandStepper(a, b, c, d));
    }
 
    @Override

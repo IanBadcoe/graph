@@ -14,7 +14,7 @@ public class TemplateStore
       return true;
    }
 
-   public int GetNumTemplates()
+   public int NumTemplates()
    {
       return m_templates.size();
    }
