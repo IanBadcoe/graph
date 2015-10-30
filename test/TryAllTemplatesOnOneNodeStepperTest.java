@@ -10,10 +10,9 @@ public class TryAllTemplatesOnOneNodeStepperTest
 {
    ArrayList<Template> m_templates = new ArrayList<>();
 
-   class FailAllStepper implements IExpandStepper
+   class FaiStepperLoggingTemplates extends FailStepper
    {
-      FailAllStepper(Graph graph, INode n, Template template,
-            Random r)
+      FaiStepperLoggingTemplates(Template template)
       {
          m_templates.add(template);
       }
@@ -30,7 +29,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
    public void testTryAllTemplates() throws Exception
    {
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new FailAllStepper(a, b, c, d));
+            (a, b, c, d) -> new FaiStepperLoggingTemplates(c));
 
       Graph g = new Graph();
 
@@ -61,26 +60,11 @@ public class TryAllTemplatesOnOneNodeStepperTest
       }
    }
 
-   class SucceedStepper implements IExpandStepper
-   {
-      SucceedStepper(Graph graph, INode n, Template template,
-            Random r)
-      {
-      }
-
-      @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
-      {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
-               null, "");
-      }
-   }
-
    @Test
    public void testSuccess() throws Exception
    {
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new SucceedStepper(a, b, c, d));
+            (a, b, c, d) -> new SuccessStepper());
 
       Graph g = new Graph();
 

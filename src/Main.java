@@ -26,6 +26,10 @@ public class Main extends processing.core.PApplet
             (a, b, c, d) -> new TryAllTemplatesOnOneNodeStepper(a, b, c, d));
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
             (a, b, c, d) -> new TryTemplateExpandStepper(a, b, c, d));
+      ExpandToSizeStepper.SetChildFactory(
+            (a, b, c) -> new TryAllNodesExpandStepper(a, b, c));
+      EdgeAdjusterStepper.SetChildFactory(
+            (a, b, c, d) -> new RelaxerStepper(a, b, c, d));
    }
 
    @Override

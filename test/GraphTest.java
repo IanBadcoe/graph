@@ -80,7 +80,7 @@ public class GraphTest
       Graph g = new Graph();
 
       // cannot connect two nodes we never neard of
-      assertFalse(g.Connect(new Node("", "", "", 0),
+      assertNull(g.Connect(new Node("", "", "", 0),
             new Node("", "", "", 0), 0, 0, 0));
       assertEquals(0, g.NumEdges());
 
@@ -89,7 +89,7 @@ public class GraphTest
       {
          // cannot connect a node we know and one we don't
          INode dummy = new Node("", "", "", 0);
-         assertFalse(g.Connect(n, dummy, 0, 0, 0));
+         assertNull(g.Connect(n, dummy, 0, 0, 0));
          assertEquals(0, g.NumEdges());
          assertFalse(n.Connects(dummy));
          assertFalse(dummy.Connects(n));
@@ -101,7 +101,7 @@ public class GraphTest
       assertFalse(n2.Connects(n));
       assertEquals(0, g.NumEdges());
 
-      assertTrue(g.Connect(n, n2, 1, 2, 3));
+      assertNotNull(g.Connect(n, n2, 1, 2, 3));
       assertEquals(1, g.NumEdges());
       assertTrue(n.Connects(n2));
       assertTrue(n2.Connects(n));

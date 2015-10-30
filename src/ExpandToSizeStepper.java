@@ -2,6 +2,11 @@ import java.util.Random;
 
 class ExpandToSizeStepper implements IExpandStepper
 {
+   public interface IChildFactory
+   {
+      IExpandStepper MakeChild(Graph g, TemplateStore ts, Random r);
+   }
+
    ExpandToSizeStepper(Graph graph, int required_size, TemplateStore templates,
          Random random)
    {
@@ -24,7 +29,7 @@ class ExpandToSizeStepper implements IExpandStepper
                      null, "Target size reached");
             }
 
-            IExpandStepper child = new TryAllNodesExpandStepper(m_graph, m_templates, m_random);
+            IExpandStepper child = m_child_factory.MakeChild(m_graph, m_templates, m_random);
 
             return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
                   child, "More expansion required.");
@@ -34,15 +39,18 @@ class ExpandToSizeStepper implements IExpandStepper
                   null, "Failed.");
       }
 
-      // don't expect to get here
-
-      assert false;
-
-      return null;
+      throw new UnsupportedOperationException();
    }
 
-   Graph m_graph;
-   int m_required_size;
-   TemplateStore m_templates;
-   Random m_random;
+   static void SetChildFactory(IChildFactory factory)
+   {
+      m_child_factory = factory;
+   }
+
+   private final Graph m_graph;
+   private final int m_required_size;
+   private final TemplateStore m_templates;
+   private final Random m_random;
+
+   private static IChildFactory m_child_factory;
 }

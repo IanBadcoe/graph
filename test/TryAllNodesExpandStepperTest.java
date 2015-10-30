@@ -11,19 +11,11 @@ public class TryAllNodesExpandStepperTest
 {
    static ArrayList<INode> m_nodes = new ArrayList<>();
 
-   class FailAllStepper implements IExpandStepper
+   class FailStepperLoggingNodes extends FailStepper
    {
-      FailAllStepper(Graph graph, INode n, Collection<Template> templates,
-                             Random r)
+      FailStepperLoggingNodes(INode n)
       {
          m_nodes.add(n);
-      }
-
-      @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
-      {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
-               null, "");
       }
    }
 
@@ -31,7 +23,7 @@ public class TryAllNodesExpandStepperTest
    public void testTryAllNodes() throws Exception
    {
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new FailAllStepper(a, b, c, d));
+            (a, b, c, d) -> new FailStepperLoggingNodes(b));
 
       Graph g = new Graph();
 
@@ -60,26 +52,11 @@ public class TryAllNodesExpandStepperTest
       assertTrue(m_nodes.contains(n3));
    }
 
-   class SucceedStepper implements IExpandStepper
-   {
-      SucceedStepper(Graph graph, INode n, Collection<Template> templates,
-            Random r)
-      {
-      }
-
-      @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
-      {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
-               null, "");
-      }
-   }
-
    @Test
    public void testSuccess()
    {
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new SucceedStepper(a, b, c, d));
+            (a, b, c, d) -> new SuccessStepper());
 
       Graph g = new Graph();
 

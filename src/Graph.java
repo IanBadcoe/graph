@@ -46,36 +46,36 @@ class Graph
       m_nodes.remove(node);
    }
 
-   boolean Connect(INode from, INode to,
+   DirectedEdge Connect(INode from, INode to,
                    double min_length, double max_length, double width)
    {
       if (!Contains(from)
             || !Contains(to)
             || from.Connects(to))
-         return false;
+         return null;
 
       Node n_from = (Node) from;
       Node n_to = (Node) to;
 
-      DirectedEdge e = new DirectedEdge(from, to, min_length, max_length, width);
+      DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, width);
 
       if (m_restore != null)
       {
-         m_restore.Connect(e);
+         m_restore.Connect(temp);
       }
 
-      Connect_Inner(e);
-
-      return true;
+      return Connect_Inner(temp);
    }
 
-   private void Connect_Inner(DirectedEdge e)
+   private DirectedEdge Connect_Inner(DirectedEdge e)
    {
       assert !m_edges.contains(e);
 
       DirectedEdge real_edge = ((Node)e.Start).Connect((Node)e.End, e.MinLength, e.MaxLength, e.Width);
 
       m_edges.add(real_edge);
+
+      return real_edge;
    }
 
    boolean Disconnect(INode from, INode to)

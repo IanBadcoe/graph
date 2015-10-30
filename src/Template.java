@@ -45,8 +45,8 @@ class Template
 
    boolean Expand(Graph graph, INode target, Random random)
    {
-      HashSet<DirectedEdge> target_in_connections = target.GetInConnections();
-      HashSet<DirectedEdge> target_out_connections = target.GetOutConnections();
+      Collection<DirectedEdge> target_in_connections = target.GetInConnections();
+      Collection<DirectedEdge> target_out_connections = target.GetOutConnections();
 
       if (m_num_in_nodes != target_in_connections.size())
       {

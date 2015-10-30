@@ -23,8 +23,8 @@ interface INode
    boolean ConnectsForwards(INode to);
    boolean ConnectsBackwards(INode from);
    Collection<DirectedEdge> GetConnections();
-   HashSet<DirectedEdge> GetInConnections();
-   HashSet<DirectedEdge> GetOutConnections();
+   Collection<DirectedEdge> GetInConnections();
+   Collection<DirectedEdge> GetOutConnections();
    DirectedEdge GetConnectionTo(INode node);
    DirectedEdge GetConnectionFrom(INode from);
 

@@ -147,7 +147,7 @@ class Node implements INode
    }
 
    @Override
-   public HashSet<DirectedEdge> GetInConnections()
+   public Collection<DirectedEdge> GetInConnections()
    {
       HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
 
@@ -161,7 +161,7 @@ class Node implements INode
    }
 
    @Override
-   public HashSet<DirectedEdge> GetOutConnections()
+   public Collection<DirectedEdge> GetOutConnections()
    {
       HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
 
