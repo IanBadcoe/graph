@@ -1,7 +1,6 @@
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -10,10 +9,11 @@ public class TryAllTemplatesOnOneNodeStepperTest
 {
    ArrayList<Template> m_templates = new ArrayList<>();
 
-   class FaiStepperLoggingTemplates extends FailStepper
+   class FaiStepperLoggingTemplates extends TestStepper
    {
       FaiStepperLoggingTemplates(Template template)
       {
+         super(false, null);
          m_templates.add(template);
       }
 
@@ -64,7 +64,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
    public void testSuccess() throws Exception
    {
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new SuccessStepper());
+            (a, b, c, d) -> new TestStepper(true, null));
 
       Graph g = new Graph();
 

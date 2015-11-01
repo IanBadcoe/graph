@@ -3,6 +3,16 @@ import java.util.Random;
 
 class TryTemplateExpandStepper implements IExpandStepper
 {
+   interface IRelaxerFactory
+   {
+      IExpandStepper MakeRelaxer(Graph g, double max_step, double target_force, double target_move);
+   }
+
+   interface IAdjusterFactory
+   {
+      IExpandStepper MakeAdjuster(Graph graph, DirectedEdge edge);
+   }
+
    TryTemplateExpandStepper(Graph graph, INode node, Template template, Random random)
    {
       m_graph = graph;
@@ -20,7 +30,7 @@ class TryTemplateExpandStepper implements IExpandStepper
       {
          if (m_template.Expand(m_graph, m_node, m_random))
          {
-            IExpandStepper child = new RelaxerStepper(m_graph, 1.0, 0.001, 0.01);
+            IExpandStepper child = m_relaxer_factory.MakeRelaxer(m_graph, 1.0, 0.001, 0.01);
 
             return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
                   child, "Relaxing successful expansion.");
@@ -64,9 +74,7 @@ class TryTemplateExpandStepper implements IExpandStepper
 
       // should never get here, just try to blow things up
 
-      assert false;
-
-      return null;
+      throw new UnsupportedOperationException();
    }
 
    private Expander.ExpandRetInner EdgeRelaxReturn(Expander.ExpandStatus status)
@@ -93,35 +101,33 @@ class TryTemplateExpandStepper implements IExpandStepper
 
       // should never get here, just try to blow things up
 
-      assert false;
-
-      return null;
+      throw new UnsupportedOperationException();
    }
 
    private Expander.ExpandRetInner TryLaunchEdgeAdjust()
    {
-      DirectedEdge e = MostStressedEdge(m_graph.AllGraphEdges(), 100.0);
+      DirectedEdge e = MostStressedEdge(m_graph.AllGraphEdges());
 
       if (e == null)
       {
          return null;
       }
 
-      IExpandStepper child = new EdgeAdjusterStepper(m_graph, e);
+      IExpandStepper child = m_adjuster_factory.MakeAdjuster(m_graph, e);
 
       return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
-            null, "Adjusting an edge.");
+            child, "Adjusting an edge.");
    }
 
    // only stresses above 10% are considered
-   DirectedEdge MostStressedEdge(ArrayList<DirectedEdge> edges, double d0)
+   private DirectedEdge MostStressedEdge(ArrayList<DirectedEdge> edges)
    {
       double max_stress = 1.1;
       DirectedEdge ret = null;
 
       for(DirectedEdge e : edges)
       {
-         double stress = e.Length() / d0;
+         double stress = e.Length() / e.MaxLength;
 
          if (stress > max_stress)
          {
@@ -139,10 +145,23 @@ class TryTemplateExpandStepper implements IExpandStepper
       EdgeCorrection
    }
 
-   private Graph m_graph;
-   private INode m_node;
-   private Template m_template;
-   private Random m_random;
+   public static void SetRelaxerFactory(IRelaxerFactory factory)
+   {
+      m_relaxer_factory = factory;
+   }
+
+   public static void SetAdjusterFactory(IAdjusterFactory factory)
+   {
+      m_adjuster_factory = factory;
+   }
+
+   private final Graph m_graph;
+   private final INode m_node;
+   private final Template m_template;
+   private final Random m_random;
 
    private Phase m_phase;
+
+   private static IRelaxerFactory m_relaxer_factory;
+   private static IAdjusterFactory m_adjuster_factory;
 }

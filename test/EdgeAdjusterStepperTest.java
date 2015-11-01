@@ -1,8 +1,5 @@
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import static org.junit.Assert.*;
 
 /**
@@ -14,7 +11,7 @@ public class EdgeAdjusterStepperTest
    public void testStep_Fail() throws Exception
    {
       EdgeAdjusterStepper.SetChildFactory(
-            (a, b, c, d) -> new FailStepper());
+            (a, b, c, d) -> new TestStepper(false, null));
 
       Graph g = new Graph();
       INode n1 = g.AddNode("", "", "", 0);
@@ -38,7 +35,7 @@ public class EdgeAdjusterStepperTest
    public void testStep_Succeed() throws Exception
    {
       EdgeAdjusterStepper.SetChildFactory(
-            (a, b, c, d) -> new SuccessStepper());
+            (a, b, c, d) -> new TestStepper(true, null));
 
       Graph g = new Graph();
       INode n1 = g.AddNode("", "", "", 0);

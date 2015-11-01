@@ -1,8 +1,6 @@
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -11,10 +9,12 @@ public class TryAllNodesExpandStepperTest
 {
    static ArrayList<INode> m_nodes = new ArrayList<>();
 
-   class FailStepperLoggingNodes extends FailStepper
+   class TestStepperLoggingNodes extends TestStepper
    {
-      FailStepperLoggingNodes(INode n)
+      TestStepperLoggingNodes(INode n)
       {
+         super(false, null);
+
          m_nodes.add(n);
       }
    }
@@ -23,7 +23,7 @@ public class TryAllNodesExpandStepperTest
    public void testTryAllNodes() throws Exception
    {
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new FailStepperLoggingNodes(b));
+            (a, b, c, d) -> new TestStepperLoggingNodes(b));
 
       Graph g = new Graph();
 
@@ -56,7 +56,7 @@ public class TryAllNodesExpandStepperTest
    public void testSuccess()
    {
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new SuccessStepper());
+            (a, b, c, d) -> new TestStepper(true, null));
 
       Graph g = new Graph();
 

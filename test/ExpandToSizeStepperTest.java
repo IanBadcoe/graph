@@ -7,14 +7,16 @@ import static org.junit.Assert.*;
 public class ExpandToSizeStepperTest
 {
    @Test
-   public void testStep() throws Exception
+   public void testAllTemplatesFail() throws Exception
    {
       ExpandToSizeStepper.SetChildFactory(
-            (a, b, c) -> new FailStepper());
+            (a, b, c) -> new TestStepper(false, null));
 
       Graph g = new Graph();
 
-      Expander e = new Expander(g, new ExpandToSizeStepper(g, 1, new TemplateStore1(), new Random(1)));
+      TemplateStore ts = new TemplateStore1();
+
+      Expander e = new Expander(g, new ExpandToSizeStepper(g, 1, ts, new Random(1)));
 
       Expander.ExpandRet ret;
 
