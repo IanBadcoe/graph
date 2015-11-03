@@ -44,7 +44,7 @@ public class Main extends processing.core.PApplet
       m_graph = MakeSeed();
       m_expander = new Expander(m_graph,
             new ExpandToSizeStepper(m_graph, m_reqSize, m_templates,
-                  new Random(88)));
+                  new Random(87)));
    }
 
    @Override
@@ -122,7 +122,7 @@ public class Main extends processing.core.PApplet
 
             m_lay_out_running = !ret.Complete;
 
-            print(ret.Log, "\n");
+//            print(ret.Log, "\n");
          }
       }
 
@@ -215,7 +215,7 @@ public class Main extends processing.core.PApplet
    private static void DrawNode(INode n)
    {
       s_app.noStroke();
-      s_app.fill(140);
+      s_app.fill(n.GetColour());
       s_app.ellipse((float) n.GetPos().X, (float) n.GetPos().Y,
             (float) n.GetRad(), (float) n.GetRad());
    }
@@ -232,7 +232,7 @@ public class Main extends processing.core.PApplet
       // in connections are drawn by the other node...
       for(DirectedEdge e : n.GetOutConnections())
       {
-         s_app.stroke(180);
+         s_app.stroke(e.GetColour());
          s_app.strokeWeight((float)(e.Width * 1.75));
          Line(e.Start.GetPos(), e.End.GetPos());
 

@@ -47,12 +47,13 @@ class Graph
    }
 
    DirectedEdge Connect(INode from, INode to,
-                   double min_length, double max_length, double width)
+         double min_length, double max_length, double width)
    {
-      if (!Contains(from)
+      if (from == to
+            || !Contains(from)
             || !Contains(to)
             || from.Connects(to))
-         return null;
+         throw new UnsupportedOperationException();
 
       Node n_from = (Node) from;
       Node n_to = (Node) to;

@@ -49,8 +49,11 @@ class EdgeAdjusterStepper implements IExpandStepper
       m_graph.Disconnect(m_edge.Start, m_edge.End);
       // idea of lengths is to force no more length but allow
       // a longer corridor if required
-      m_graph.Connect(m_edge.Start, c, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.Width);
-      m_graph.Connect(c, m_edge.End, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.Width);
+      DirectedEdge de1 =  m_graph.Connect(m_edge.Start, c, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.Width);
+      DirectedEdge de2 =  m_graph.Connect(c, m_edge.End, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.Width);
+
+      de1.SetColour(m_edge.GetColour());
+      de2.SetColour(m_edge.GetColour());
    }
 
    static void SetChildFactory(IChildFactory factory)

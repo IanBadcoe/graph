@@ -14,7 +14,7 @@ public class TryAllNodesExpandStepper implements IExpandStepper
    {
       m_graph = graph;
       m_templates = templates;
-      m_all_nodes = graph.AllGraphNodes();
+      m_all_nodes = Util.FilterByCodes(graph.AllGraphNodes(), "e");
       m_random = random;
    }
 

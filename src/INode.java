@@ -37,4 +37,12 @@ interface INode
 
    // misc
    public String Print(int tab, boolean full);
+
+   // indices created and read-back for handy data access when relaxing
+   void SetIdx(int i);
+   int GetIdx();
+
+   // colour for pretty drawing
+   int GetColour();
+   void SetColour(int c);
 }

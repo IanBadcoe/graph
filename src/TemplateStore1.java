@@ -32,6 +32,21 @@ public class TemplateStore1 extends TemplateStore
       }
 
       {
+         TemplateBuilder tb = new TemplateBuilder("Space", "e");
+         tb.AddNode(Template.NodeType.In, "i");
+         tb.AddNode(Template.NodeType.Out, "o");
+         tb.AddNode(Template.NodeType.Internal, "j", false, "<target>", null, null, "", 55f);
+         tb.AddNode(Template.NodeType.Internal, "void", true, "<target>", null, null, "", 200f, 0x80808080);
+
+         tb.Connect("i", "j", 90, 110, 10);
+         tb.Connect("j", "o", 90, 110, 10);
+         // just try a different distance
+         tb.Connect("j", "void", 140, 150, 10,  0x80808080);
+
+         AddTemplate(tb.Build());
+      }
+
+      {
          TemplateBuilder tb = new TemplateBuilder("Split", "e");
          tb.AddNode(Template.NodeType.In, "i");
          tb.AddNode(Template.NodeType.Out, "o");
@@ -51,8 +66,8 @@ public class TemplateStore1 extends TemplateStore
          tb.AddNode(Template.NodeType.In, "i");
          tb.AddNode(Template.NodeType.Internal, "j", true, "<target>", null, null, "", 55f);
          // "-i" means in the opposite direction to "i" :-)
-         tb.AddNode(Template.NodeType.Internal, "e1", true, "<target>", null, "i", "e", 55f);
-         tb.AddNode(Template.NodeType.Internal, "e2", true, "<target>", null, "i", "e", 55f);
+         tb.AddNode(Template.NodeType.Internal, "e1", true, "<target>", null, "i", "e", 100f);
+         tb.AddNode(Template.NodeType.Internal, "e2", true, "<target>", null, "i", "e", 75f);
 
          tb.Connect("i", "j", 90, 110, 10);
          tb.Connect("j", "e1", 90, 110, 10);

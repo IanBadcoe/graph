@@ -11,6 +11,7 @@ class ExpandToSizeStepper implements IExpandStepper
          Random random)
    {
       m_graph = graph;
+      m_orig_size = m_graph.NumNodes();
       m_required_size = required_size;
       m_templates = templates;
       m_random = random;
@@ -35,6 +36,12 @@ class ExpandToSizeStepper implements IExpandStepper
                   child, "More expansion required.");
 
          case StepOutFailure:
+            if (m_graph.NumNodes() > m_orig_size)
+            {
+               return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+                     null, "Partial success");
+            }
+
             return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
                   null, "Failed.");
       }
@@ -51,6 +58,7 @@ class ExpandToSizeStepper implements IExpandStepper
    private final int m_required_size;
    private final TemplateStore m_templates;
    private final Random m_random;
+   private final int m_orig_size;
 
    private static IChildFactory m_child_factory;
 }

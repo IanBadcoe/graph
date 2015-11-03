@@ -10,7 +10,7 @@ public class TemplateBuilder
       // a dummy entry used to represent the node we are replacing in positioning rules
       m_nodes.put("<target>", new Template.NodeRecord(Template.NodeType.Target, "<target>",
             false, null, null, null,
-            null, 0));
+            null, 0, 0));
    }
 
    // don't want people recovering from these as just bad programming
@@ -59,6 +59,18 @@ public class TemplateBuilder
                 String positionAwayFromName,
                 String codes, double radius) throws TemplateException
    {
+      AddNode(type, name, nudge,
+            positionOnName, positionTowardsName, positionAwayFromName,
+            codes, radius,
+            0xff8c8c8c);
+   }
+
+   void AddNode(Template.NodeType type, String name, boolean nudge,
+         String positionOnName, String positionTowardsName,
+         String positionAwayFromName,
+         String codes, double radius,
+         int colour) throws TemplateException
+   {
       if (name.contains("->"))
          throw new IllegalArgumentException("Node name: '" + name + "' cannot contain '->'.");
 
@@ -106,7 +118,7 @@ public class TemplateBuilder
 
       m_nodes.put(name, new Template.NodeRecord(type, name, nudge,
             positionOn, positionTowards, positionAwayFrom,
-            codes, radius));
+            codes, radius, colour));
 
       switch (type)
       {
@@ -125,6 +137,17 @@ public class TemplateBuilder
    public void Connect(String from, String to,
                        double min_length, double max_length,
                        double width) throws IllegalArgumentException
+   {
+      Connect(from, to,
+            min_length, max_length,
+            width,
+            0xffb4b4b4);
+   }
+
+   public void Connect(String from, String to,
+         double min_length, double max_length,
+         double width,
+         int colour) throws IllegalArgumentException
    {
       if (from == null)
          throw new NullPointerException("Null node name: 'from'.");
@@ -157,7 +180,7 @@ public class TemplateBuilder
 
       m_connections.put(
             Template.MakeConnectionName(from, to),
-            new Template.ConnectionRecord(nrf, nrt, min_length, max_length, width));
+            new Template.ConnectionRecord(nrf, nrt, min_length, max_length, width, colour));
    }
 
    public Template.NodeRecord FindNodeRecord(String name)

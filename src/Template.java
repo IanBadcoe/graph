@@ -69,7 +69,9 @@ class Template
       {
          if (nr.Type == NodeType.Internal)
          {
-            template_to_graph.put(nr, graph.AddNode(nr.Name, nr.Codes, m_name, nr.Radius));
+            INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.Radius);
+            template_to_graph.put(nr, n);
+            n.SetColour(nr.Colour);
          }
       }
 
@@ -198,24 +200,26 @@ class Template
          INode nf = template_to_graph.get(cr.From);
          INode nt = template_to_graph.get(cr.To);
 
-         graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.Width);
+         DirectedEdge de = graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.Width);
+         de.SetColour(cr.Colour);
       }
    }
 
    final static class NodeRecord
    {
-      public NodeType Type;
-      public String Name;
-      public boolean Nudge;
-      public NodeRecord PositionOn;       // required
-      public NodeRecord PositionTowards;  // null for none
-      public NodeRecord PositionAwayFrom; // null for none
-      public String Codes;                // copied onto node
-      public double Radius;
+      final public NodeType Type;
+      final public String Name;
+      final public boolean Nudge;
+      final public NodeRecord PositionOn;       // required
+      final public NodeRecord PositionTowards;  // null for none
+      final public NodeRecord PositionAwayFrom; // null for none
+      final public String Codes;                // copied onto node
+      final public double Radius;
+      final public int Colour;
 
       NodeRecord(NodeType type, String name,
                  boolean nudge, NodeRecord positionOn, NodeRecord positionTowards, NodeRecord positionAwayFrom,
-                 String codes, double radius)
+                 String codes, double radius, int colour)
       {
          Type = type;
          Name = name;
@@ -225,26 +229,30 @@ class Template
          PositionAwayFrom = positionAwayFrom;
          Codes = codes;
          Radius = radius;
+         Colour = colour;
       }
    }
 
    public static final class ConnectionRecord
    {
-      public NodeRecord From;
-      public NodeRecord To;
-      public double MinLength;
-      public double MaxLength;
-      public double Width;
+      final public NodeRecord From;
+      final public NodeRecord To;
+      final public double MinLength;
+      final public double MaxLength;
+      final public double Width;
+      final public int Colour;
 
       ConnectionRecord(NodeRecord from, NodeRecord to,
                        double min_length, double max_length,
-                       double width)
+                       double width,
+            int colour)
       {
          From = from;
          To = to;
          MinLength = min_length;
          MaxLength = max_length;
          Width = width;
+         Colour = colour;
       }
    }
 

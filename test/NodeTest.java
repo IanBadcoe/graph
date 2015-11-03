@@ -133,4 +133,26 @@ public class NodeTest
          assertNull(de);
       }
    }
+
+   @Test
+   public void testConnects()
+   {
+      Node n1 = new Node("", "", "", 0);
+      Node n2 = new Node("", "", "", 0);
+      Node n3 = new Node("", "", "", 0);
+
+      n1.Connect(n2, 1, 2, 3);
+
+      assertTrue(n1.Connects(n2));
+      assertTrue(n2.Connects(n1));
+      assertFalse(n1.Connects(n3));
+      assertFalse(n3.Connects(n1));
+      assertFalse(n2.Connects(n3));
+      assertFalse(n3.Connects(n2));
+
+      assertTrue(n1.ConnectsForwards(n2));
+      assertFalse(n2.ConnectsForwards(n1));
+      assertFalse(n1.ConnectsBackwards(n2));
+      assertTrue(n2.ConnectsBackwards(n1));
+   }
 }

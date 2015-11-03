@@ -12,6 +12,16 @@ class RelaxerStepper implements IExpandStepper
       m_max_move = max_move;
       m_force_target = force_target;
       m_move_target = move_target;
+
+      // these are shortest path lengths through the graph
+      //
+      // irrespective of node <-> node or node <-> edge forces, we don't want to be pushed further than this
+      // so we shorten the distances of those so they don't stretch edges too far
+      //
+      // (node <-> node and node <-> edge forces have to be stronger than edge forces
+      // as we rely on edges stretching (in other cases) to tell ue when we need to
+      // lengthen an edge (inserting a corner)
+      m_node_dists = ShortestPathFinder.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
    }
 
    @Override
@@ -159,7 +169,8 @@ class RelaxerStepper implements IExpandStepper
    private double AddNodeForces(INode node1, INode node2)
    {
       XY d = node2.GetPos().Minus(node1.GetPos());
-      double summed_radii = node1.GetRad() + node2.GetRad();
+      double adjusted_radius = Math.min(m_node_dists[node1.GetIdx()][node2.GetIdx()],
+            node1.GetRad() + node2.GetRad());
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
@@ -169,7 +180,7 @@ class RelaxerStepper implements IExpandStepper
       double l = d.Length();
       d = d.Divide(l);
 
-      OrderedPair<Double, Double> fd = Util.UnitNodeForce(l, summed_radii);
+      OrderedPair<Double, Double> fd = Util.UnitNodeForce(l, adjusted_radius);
 
       double ratio = fd.First;
 
@@ -198,7 +209,9 @@ class RelaxerStepper implements IExpandStepper
       if (vals == null)
          return 1.0;
 
-      double summed_radii = n.GetRad() + e.Width;
+      double summed_radii = Math.min(m_node_dists[e.Start.GetIdx()][n.GetIdx()],
+            Math.min(m_node_dists[e.End.GetIdx()][n.GetIdx()],
+            n.GetRad() + e.Width));
 
       if (vals.Dist > summed_radii)
       {
@@ -220,6 +233,21 @@ class RelaxerStepper implements IExpandStepper
       return ratio;
    }
 
+   void AdjustPathLengthsForRadii()
+   {
+      for(INode nj : m_graph.AllGraphNodes())
+      {
+         int j = nj.GetIdx();
+         for(INode nk : m_graph.AllGraphNodes())
+         {
+            int k = nk.GetIdx();
+
+            m_node_dists[j][k] = Math.min(nj.GetRad() + nk.GetRad(),
+                  m_node_dists[j][k]);
+         }
+      }
+   }
+
    Graph m_graph;
    ArrayList<INode> m_nodes;
    ArrayList<DirectedEdge> m_edges;
@@ -228,6 +256,14 @@ class RelaxerStepper implements IExpandStepper
 
    final double m_force_target;
    final double m_move_target;
+
+   // whichever is smaller out of the summed-radii and the
+   // shortest path through the graph between two nodes
+   // we use this as d0 in the node <-> node force function
+   // because otherwise a large node can force its second-closest
+   // neighbour (and further) so far away that the edge gets split
+   // and then the new second-closest neighbour is in the same position
+   double[][] m_node_dists;
 
    static final double EDGE_NODE_FORCE_SCALE = 1.0;
    static final double EDGE_FORCE_SCALE = 0.01;
