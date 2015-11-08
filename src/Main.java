@@ -126,6 +126,15 @@ public class Main extends processing.core.PApplet
          }
       }
 
+      if (!m_lay_out_running && !m_level_generated)
+      {
+         m_level = new Level(m_graph);
+
+         m_level.generateGeometry();
+
+         m_level_generated = true;
+      }
+
       double range = min(width, height);
 
       if (m_auto_scale)
@@ -138,6 +147,11 @@ public class Main extends processing.core.PApplet
       translate((float)m_off_x, (float)m_off_y);
 
       DrawGraph(m_graph, m_labels, m_arrows);
+
+      if (m_level != null)
+      {
+         DrawLevel(m_level);
+      }
 
       if (m_show_notes)
       {
@@ -249,6 +263,16 @@ public class Main extends processing.core.PApplet
       }
    }
 
+   private static void DrawLevel(Level level)
+   {
+      s_app.stroke(0xffffffff);
+      s_app.strokeWeight(1);
+      for(GeomEdge ge : level.getEdges())
+      {
+         Line(ge.Start, ge.End);
+      }
+   }
+
    static void Stroke(int red, int green, int blue)
    {
       s_app.stroke(red, green, blue);
@@ -270,6 +294,7 @@ public class Main extends processing.core.PApplet
    Expander m_expander;
 
    boolean m_lay_out_running = true;
+   boolean m_level_generated = false;
 
    // UI data
    boolean m_step = false;
@@ -284,4 +309,6 @@ public class Main extends processing.core.PApplet
    double m_off_x = 0.0;
    double m_off_y = 0.0;
    double m_scale = 1.0;
+
+   Level m_level;
 }

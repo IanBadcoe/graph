@@ -77,7 +77,7 @@ class Template
       {
          if (nr.Type == NodeType.Internal)
          {
-            INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.Radius);
+            INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.GeomCreator, nr.Radius);
             template_to_graph.put(nr, n);
             n.SetColour(nr.Colour);
          }
@@ -243,10 +243,12 @@ class Template
       final public String Codes;                // copied onto node
       final public double Radius;
       final public int Colour;
+      final public GeomLayout.GeomLayoutCreateFromNode GeomCreator;
 
       NodeRecord(NodeType type, String name,
-                 boolean nudge, NodeRecord positionOn, NodeRecord positionTowards, NodeRecord positionAwayFrom,
-                 String codes, double radius, int colour)
+            boolean nudge, NodeRecord positionOn, NodeRecord positionTowards, NodeRecord positionAwayFrom,
+            String codes, double radius, int colour,
+            GeomLayout.GeomLayoutCreateFromNode geomCreator)
       {
          Type = type;
          Name = name;
@@ -257,6 +259,7 @@ class Template
          Codes = codes;
          Radius = radius;
          Colour = colour;
+         GeomCreator = geomCreator;
       }
    }
 

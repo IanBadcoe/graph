@@ -25,7 +25,7 @@ class TryAllTemplatesOnOneNodeStepper implements IExpandStepper
       if (status == Expander.ExpandStatus.StepOutSuccess)
       {
          return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
-               null, "Graph Expand Step Succeeded");
+               null, "Graph Expand step Succeeded");
       }
 
       // no matter what other previous status, if we run out of templates we're a fail

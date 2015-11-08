@@ -8,9 +8,9 @@ import java.util.HashSet;
 interface INode
 {
    // read/write forces and integration
-   void ResetForce();
-   double GetForce();
-   double Step(double interval);
+   void resetForce();
+   double getForce();
+   double step(double interval);
    void AddForce(XY force);
 
    // read/write position
@@ -49,5 +49,7 @@ interface INode
    String GetName();
    void SetName(String s);
 
+   // access the geometry-layout object for this node...
+   GeomLayout.GeomLayoutCreateFromNode geomLayoutCreator();
 
 }

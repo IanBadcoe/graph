@@ -38,7 +38,7 @@ class RelaxerStepper implements IExpandStepper
 
       for(INode n : m_nodes)
       {
-         n.ResetForce();
+         n.resetForce();
       }
 
       double max_edge_stretch = 1.0;
@@ -86,7 +86,7 @@ class RelaxerStepper implements IExpandStepper
 
       for(INode n : m_nodes)
       {
-         maxf = Math.max(n.GetForce(), maxf);
+         maxf = Math.max(n.getForce(), maxf);
       }
 
       boolean ended = true;
@@ -99,7 +99,7 @@ class RelaxerStepper implements IExpandStepper
 
          for (INode n : m_nodes)
          {
-            maxd = Math.max(n.Step(step), maxd);
+            maxd = Math.max(n.step(step), maxd);
          }
 
          ended = maxd < move_target && maxf < force_target;

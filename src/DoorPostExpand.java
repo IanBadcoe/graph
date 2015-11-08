@@ -14,6 +14,10 @@ class DoorPostExpand implements Template.IPostExpand
          n.SetName("Door: " + m_door_count);
          n.SetColour(s_colours[m_door_count % 3]);
       }
+      else if (n.GetName() == "obstacle")
+      {
+         n.SetColour(0xff404040);
+      }
    }
 
    @Override

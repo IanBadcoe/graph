@@ -4,7 +4,13 @@ class Graph
 {
    INode AddNode(String name, String codes, String template, double rad)
    {
-      Node n = new Node(name, codes, template, rad);
+      return AddNode(name, codes, template, GeomLayoutCircular::createFromNode, rad);
+   }
+
+   INode AddNode(String name, String codes, String template,
+         GeomLayout.GeomLayoutCreateFromNode geomCreator, double rad)
+   {
+      Node n = new Node(name, codes, template, geomCreator, rad);
 
       if (m_restore != null)
       {

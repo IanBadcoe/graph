@@ -15,7 +15,7 @@ public class TemplateBuilder
       // a dummy entry used to represent the node we are replacing in positioning rules
       m_nodes.put("<target>", new Template.NodeRecord(Template.NodeType.Target, "<target>",
             false, null, null, null,
-            null, 0, 0));
+            null, 0, 0, null));
 
       m_post_expand = post_expand;
    }
@@ -57,26 +57,30 @@ public class TemplateBuilder
 
    void AddNode(Template.NodeType type, String name) throws TemplateException
    {
-      AddNode(type, name, false, "<target>", null, null, "", 0f);
+      AddNode(type, name, false,
+            "<target>", null, null,
+            "", 0f);
    }
 
    // types In and Out ignore all parameters after "name"
    void AddNode(Template.NodeType type, String name, boolean nudge,
-                String positionOnName, String positionTowardsName,
-                String positionAwayFromName,
-                String codes, double radius) throws TemplateException
+         String positionOnName, String positionTowardsName,
+         String positionAwayFromName,
+         String codes, double radius) throws TemplateException
    {
       AddNode(type, name, nudge,
             positionOnName, positionTowardsName, positionAwayFromName,
             codes, radius,
-            0xff8c8c8c);
+            0xff8c8c8c,
+            GeomLayoutCircular::createFromNode);
    }
 
    void AddNode(Template.NodeType type, String name, boolean nudge,
          String positionOnName, String positionTowardsName,
          String positionAwayFromName,
          String codes, double radius,
-         int colour) throws TemplateException
+         int colour,
+         GeomLayout.GeomLayoutCreateFromNode geomCreator) throws TemplateException
    {
       if (name.contains("->"))
          throw new IllegalArgumentException("Node name: '" + name + "' cannot contain '->'.");
@@ -125,7 +129,9 @@ public class TemplateBuilder
 
       m_nodes.put(name, new Template.NodeRecord(type, name, nudge,
             positionOn, positionTowards, positionAwayFrom,
-            codes, radius, colour));
+            codes, radius,
+            colour,
+            geomCreator));
 
       switch (type)
       {

@@ -94,15 +94,17 @@ public class TemplateStore1 extends TemplateStore
          tb.AddNode(Template.NodeType.In, "i");
          tb.AddNode(Template.NodeType.Out, "o");
          tb.AddNode(Template.NodeType.Internal, "j", false, "<target>", null, null, "e", 55f);
-         tb.AddNode(Template.NodeType.Internal, "obstacle", true, "<target>", null, null, "e", 55f);
-         tb.AddNode(Template.NodeType.Internal, "key", true, "obstacle", null, null, "", 55f);
+         tb.AddNode(Template.NodeType.Internal, "e", true, "<target>", null, null, "e", 55f);
+         tb.AddNode(Template.NodeType.Internal, "obstacle", true, "e", null, null, "", 55f);
+         tb.AddNode(Template.NodeType.Internal, "key", true, "obstacle", null, null, "", 30f);
          tb.AddNode(Template.NodeType.Internal, "door", false, "<target>", "o", null, "", 55f);
 
-         tb.Connect("i", "j", 70, 90, 15);
-         tb.Connect("j", "obstacle", 70, 90, 15);
-         tb.Connect("obstacle", "key", 70, 90, 15);
-         tb.Connect("j", "door", 70, 90, 30);
-         tb.Connect("door", "o", 70, 90, 15);
+         tb.Connect("i", "j", 70, 90, 10);
+         tb.Connect("j", "e", 70, 90, 10);
+         tb.Connect("e", "obstacle", 70, 90, 10);
+         tb.Connect("obstacle", "key", 70, 90, 10);
+         tb.Connect("j", "door", 70, 90, 10);
+         tb.Connect("door", "o", 70, 90, 10);
 
          AddTemplate(tb.Build());
       }

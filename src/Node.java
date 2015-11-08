@@ -4,6 +4,12 @@ class Node implements INode
 {
    Node(String name, String codes, String template, double rad)
    {
+      this(name, codes, template, GeomLayoutCircular::createFromNode, rad);
+   }
+
+   Node(String name, String codes, String template,
+         GeomLayout.GeomLayoutCreateFromNode gl_creator, double rad)
+   {
       m_name = name;
       m_connections = new HashSet<DirectedEdge>();
       m_codes = codes;
@@ -12,6 +18,8 @@ class Node implements INode
       m_num = s_rand.nextInt();
 
       m_rad = rad;
+
+      m_gl_creator = gl_creator;
    }
 
    // we need hashsets of these and things built from these to be in a defined order
@@ -141,6 +149,12 @@ class Node implements INode
       m_name = s;
    }
 
+   @Override
+   public GeomLayout.GeomLayoutCreateFromNode geomLayoutCreator()
+   {
+      return m_gl_creator;
+   }
+
    int NumConnections()
    {
       return m_connections.size();
@@ -217,7 +231,7 @@ class Node implements INode
    }
 
    @Override
-   public void ResetForce()
+   public void resetForce()
    {
       m_force = new XY();
    }
@@ -229,13 +243,13 @@ class Node implements INode
    }
 
    @Override
-   public double GetForce()
+   public double getForce()
    {
       return Math.sqrt(m_force.X * m_force.X + m_force.Y * m_force.Y);
    }
 
    @Override
-   public double Step(double t)
+   public double step(double t)
    {
       XY d = m_force.Multiply(t);
       m_pos = m_pos.Plus(d);
@@ -297,4 +311,6 @@ class Node implements INode
    private int m_idx;
 
    private int m_colour = 0xff8c8c8c;
+
+   private final GeomLayout.GeomLayoutCreateFromNode m_gl_creator;
 }
