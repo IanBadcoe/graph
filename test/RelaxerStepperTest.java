@@ -447,4 +447,100 @@ public class RelaxerStepperTest
          assertTrue(n2.GetPos().Minus(n3.GetPos()).Length() > 20);
       }
    }
+
+   @Test
+   public void testAdjoiningEdgeOverridesRadii()
+   {
+      Graph g = new Graph();
+      INode n1 = g.AddNode("n1", "", "", 100);
+      INode n2 = g.AddNode("n2", "", "", 100);
+
+      // place them non-overlapping and separated in both dimensions
+      n1.SetPos(new XY(0, 0));
+      n2.SetPos(new XY(-100, 0));
+
+      // edge wants distance of 100, node-radii want 200 but node-radii
+      // should be ignored between connected nodes
+      g.Connect(n1, n2, 100, 100, 0);
+
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+
+      Expander.ExpandRetInner ret;
+      int count = 0;
+      do
+      {
+         count++;
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
+      }
+      while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+
+      // should be already relaxed
+      assertEquals(1, count);
+
+      DirectedEdge e12 = n1.GetConnectionTo(n2);
+      assertEquals(100, e12.Length(), 1);
+   }
+
+   @Test
+   public void testNonAdjoiningEdgesOverrideRadii()
+   {
+      Graph g = new Graph();
+      INode n1 = g.AddNode("n1", "", "", 6);
+      INode n2 = g.AddNode("n2", "", "", 0);
+      INode n3 = g.AddNode("n3", "", "", 0);
+      INode n4 = g.AddNode("n4", "", "", 0);
+      INode n5 = g.AddNode("n5", "", "", 0);
+
+      // place them non-overlapping and separated in both dimensions
+      n1.SetPos(new XY(0, 0));
+      n2.SetPos(new XY(10, 0));
+      n3.SetPos(new XY(10, 10));
+      n4.SetPos(new XY(20, 10));
+      n5.SetPos(new XY(20, 20));
+
+      // edges wants distances of 2, n1 radius wants 6 but shortest path through
+      // graph should come out below that (for n2, n3) and let them get closer
+      g.Connect(n1, n2, 2, 2, 0);
+      g.Connect(n2, n3, 2, 2, 0);
+      g.Connect(n3, n4, 2, 2, 0);
+      g.Connect(n4, n5, 2, 2, 0);
+
+      // run it to a tighter convergence than usual
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+
+      Expander.ExpandRetInner ret;
+      int count = 0;
+      do
+      {
+         count++;
+         // RelaxerStepper doesn't use previous status
+         ret = rs.Step(Expander.ExpandStatus.Iterate);
+      }
+      while(ret.Status == Expander.ExpandStatus.Iterate);
+
+      // should be already relaxed
+      assertTrue(count < 3000);
+
+      // simple case should succeed
+      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+
+      // all edges should be able to reach ~2 even if that violates the radius of n1
+      DirectedEdge e12 = n1.GetConnectionTo(n2);
+      assertEquals(2, e12.Length(), .1);
+      DirectedEdge e23 = n2.GetConnectionTo(n3);
+      assertEquals(2, e23.Length(), .1);
+      DirectedEdge e34 = n3.GetConnectionTo(n4);
+      assertEquals(2, e34.Length(), .1);
+      DirectedEdge e45 = n4.GetConnectionTo(n5);
+      assertEquals(2, e45.Length(), .1);
+
+      // n4 and n5 hve enough edge length to get far enough from n1 and should do so
+      assertTrue(n1.GetPos().Minus(n4.GetPos()).Length() >= 6);
+      assertTrue(n1.GetPos().Minus(n5.GetPos()).Length() >= 6);
+   }
 }

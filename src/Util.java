@@ -245,21 +245,4 @@ class Util
       // shouldn't happen
       return null;
    }
-
-   static Collection<INode> FilterByCodes(Collection<INode> nodes, String s)
-   {
-      assert nodes.size() > 0;
-
-      ArrayList<INode> ret = new ArrayList<>();
-
-      for(INode n : nodes)
-      {
-         if (n.GetCodes().contains(s))
-         {
-            ret.add(n);
-         }
-      }
-
-      return ret;
-   }
 }

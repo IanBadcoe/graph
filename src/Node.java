@@ -135,6 +135,12 @@ class Node implements INode
       return m_name;
    }
 
+   @Override
+   public void SetName(String s)
+   {
+      m_name = s;
+   }
+
    int NumConnections()
    {
       return m_connections.size();
@@ -147,7 +153,7 @@ class Node implements INode
    }
 
    @Override
-   public HashSet<DirectedEdge> GetInConnections()
+   public Collection<DirectedEdge> GetInConnections()
    {
       HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
 
@@ -161,7 +167,7 @@ class Node implements INode
    }
 
    @Override
-   public HashSet<DirectedEdge> GetOutConnections()
+   public Collection<DirectedEdge> GetOutConnections()
    {
       HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
 
@@ -243,6 +249,30 @@ class Node implements INode
       return m_rad;
    }
 
+   @Override
+   public void SetIdx(int i)
+   {
+      m_idx = i;
+   }
+
+   @Override
+   public int GetIdx()
+   {
+      return m_idx;
+   }
+
+   @Override
+   public int GetColour()
+   {
+      return m_colour;
+   }
+
+   @Override
+   public void SetColour(int c)
+   {
+      m_colour = c;
+   }
+
    private HashSet<DirectedEdge> m_connections;
 
    // e : Expandable
@@ -251,7 +281,7 @@ class Node implements INode
    // c : put on dummy connections in templates, possibly never searched for...
    private String m_codes;
 
-   private final String m_name;
+   private String m_name;
    private final String m_template;
 
    private final int m_num;
@@ -262,5 +292,9 @@ class Node implements INode
 
    private double m_rad;
 
-   private static Random s_rand = new Random(1);
+   private final static Random s_rand = new Random(1);
+
+   private int m_idx;
+
+   private int m_colour = 0xff8c8c8c;
 }

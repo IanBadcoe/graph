@@ -63,4 +63,16 @@ class DirectedEdge {
    {
       return n == Start || n == End;
    }
+
+   int GetColour()
+   {
+      return m_colour;
+   }
+
+   void SetColour(int c)
+   {
+      m_colour = c;
+   }
+
+   private int m_colour = 0xff4b4b4b;
 } 

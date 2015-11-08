@@ -409,37 +409,6 @@ public class UtilTest
       }
    }
 
-   @Test
-   public void testFilterByCodes()
-   {
-      INode n1 = new Node("n1", "abc", "", 0);
-      INode n2 = new Node("n2", "bc", "", 0);
-      INode n3 = new Node("n3", "bcd", "", 0);
-
-      ArrayList<INode> col = new ArrayList<>();
-
-      col.add(n1);
-      col.add(n2);
-      col.add(n3);
-
-      Collection<INode> ret = Util.FilterByCodes(col, "b");
-
-      assertEquals(3, ret.size());
-      assertTrue(ret.contains(n1));
-      assertTrue(ret.contains(n2));
-      assertTrue(ret.contains(n3));
-
-      ret = Util.FilterByCodes(col, "a");
-
-      assertEquals(1, ret.size());
-      assertTrue(ret.contains(n1));
-
-
-      ret = Util.FilterByCodes(col, "e");
-
-      assertEquals(0, ret.size());
-   }
-
    private Node makeNodeAt(double x, double y)
    {
       return makeRadiusNodeAt(x, y, 0.0);

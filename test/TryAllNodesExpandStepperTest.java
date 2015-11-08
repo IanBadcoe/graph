@@ -1,8 +1,6 @@
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -11,19 +9,13 @@ public class TryAllNodesExpandStepperTest
 {
    static ArrayList<INode> m_nodes = new ArrayList<>();
 
-   class FailAllStepper implements IExpandStepper
+   class TestStepperLoggingNodes extends TestStepper
    {
-      FailAllStepper(Graph graph, INode n, Collection<Template> templates,
-                             Random r)
+      TestStepperLoggingNodes(INode n)
       {
-         m_nodes.add(n);
-      }
+         super(false, null);
 
-      @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
-      {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
-               null, "");
+         m_nodes.add(n);
       }
    }
 
@@ -31,13 +23,14 @@ public class TryAllNodesExpandStepperTest
    public void testTryAllNodes() throws Exception
    {
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new FailAllStepper(a, b, c, d));
+            (a, b, c, d) -> new TestStepperLoggingNodes(b));
 
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      INode n3 = g.AddNode("", "", "", 0);
+      // all nodes must be tagged "e" to be considered expandable
+      INode n1 = g.AddNode("", "e", "", 0);
+      INode n2 = g.AddNode("", "e", "", 0);
+      INode n3 = g.AddNode("", "e", "", 0);
 
       Expander e = new Expander(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new Random(1)));
@@ -60,32 +53,18 @@ public class TryAllNodesExpandStepperTest
       assertTrue(m_nodes.contains(n3));
    }
 
-   class SucceedStepper implements IExpandStepper
-   {
-      SucceedStepper(Graph graph, INode n, Collection<Template> templates,
-            Random r)
-      {
-      }
-
-      @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
-      {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
-               null, "");
-      }
-   }
-
    @Test
    public void testSuccess()
    {
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new SucceedStepper(a, b, c, d));
+            (a, b, c, d) -> new TestStepper(true, null));
 
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      INode n3 = g.AddNode("", "", "", 0);
+      // all nodes must be tagged "e" to be considered expandable
+      INode n1 = g.AddNode("", "e", "", 0);
+      INode n2 = g.AddNode("", "e", "", 0);
+      INode n3 = g.AddNode("", "e", "", 0);
 
       Expander e = new Expander(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new Random(1)));

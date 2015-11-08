@@ -10,6 +10,12 @@ class Template
       Target
    }
 
+   interface IPostExpand
+   {
+      void AfterExpand(INode n);
+      void Done();
+   }
+
    Template(TemplateBuilder builder)
    {
       m_name = builder.GetName();
@@ -21,6 +27,8 @@ class Template
       m_num_in_nodes = builder.GetNumInNodes();
       m_num_out_nodes = builder.GetNumOutNodes();
       m_num_internal_nodes = builder.GetNumInternalNodes();
+
+      m_post_expand = builder.GetPostExpand();
 
       // cannot use this again
       builder.Clear();
@@ -45,8 +53,8 @@ class Template
 
    boolean Expand(Graph graph, INode target, Random random)
    {
-      HashSet<DirectedEdge> target_in_connections = target.GetInConnections();
-      HashSet<DirectedEdge> target_out_connections = target.GetOutConnections();
+      Collection<DirectedEdge> target_in_connections = target.GetInConnections();
+      Collection<DirectedEdge> target_out_connections = target.GetOutConnections();
 
       if (m_num_in_nodes != target_in_connections.size())
       {
@@ -69,7 +77,9 @@ class Template
       {
          if (nr.Type == NodeType.Internal)
          {
-            template_to_graph.put(nr, graph.AddNode(nr.Name, nr.Codes, m_name, nr.Radius));
+            INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.Radius);
+            template_to_graph.put(nr, n);
+            n.SetColour(nr.Colour);
          }
       }
 
@@ -118,6 +128,8 @@ class Template
             // we needed target for use in position calculations
             // but now we're done with it
             graph.RemoveNode(target);
+
+            ApplyPostExpand(template_to_graph);
 
             return true;
          }
@@ -198,24 +210,43 @@ class Template
          INode nf = template_to_graph.get(cr.From);
          INode nt = template_to_graph.get(cr.To);
 
-         graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.Width);
+         DirectedEdge de = graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.Width);
+         de.SetColour(cr.Colour);
       }
+   }
+
+   private void ApplyPostExpand(HashMap<NodeRecord, INode> template_to_graph)
+   {
+      if (m_post_expand == null)
+         return;
+
+      for(NodeRecord nr : m_nodes.values())
+      {
+         // could have chance to modify existing (e.g. In/Out nodes?)
+         if (nr.Type == NodeType.Internal)
+         {
+            m_post_expand.AfterExpand(template_to_graph.get(nr));
+         }
+      }
+
+      m_post_expand.Done();
    }
 
    final static class NodeRecord
    {
-      public NodeType Type;
-      public String Name;
-      public boolean Nudge;
-      public NodeRecord PositionOn;       // required
-      public NodeRecord PositionTowards;  // null for none
-      public NodeRecord PositionAwayFrom; // null for none
-      public String Codes;                // copied onto node
-      public double Radius;
+      final public NodeType Type;
+      final public String Name;
+      final public boolean Nudge;
+      final public NodeRecord PositionOn;       // required
+      final public NodeRecord PositionTowards;  // null for none
+      final public NodeRecord PositionAwayFrom; // null for none
+      final public String Codes;                // copied onto node
+      final public double Radius;
+      final public int Colour;
 
       NodeRecord(NodeType type, String name,
                  boolean nudge, NodeRecord positionOn, NodeRecord positionTowards, NodeRecord positionAwayFrom,
-                 String codes, double radius)
+                 String codes, double radius, int colour)
       {
          Type = type;
          Name = name;
@@ -225,26 +256,30 @@ class Template
          PositionAwayFrom = positionAwayFrom;
          Codes = codes;
          Radius = radius;
+         Colour = colour;
       }
    }
 
    public static final class ConnectionRecord
    {
-      public NodeRecord From;
-      public NodeRecord To;
-      public double MinLength;
-      public double MaxLength;
-      public double Width;
+      final public NodeRecord From;
+      final public NodeRecord To;
+      final public double MinLength;
+      final public double MaxLength;
+      final public double Width;
+      final public int Colour;
 
       ConnectionRecord(NodeRecord from, NodeRecord to,
                        double min_length, double max_length,
-                       double width)
+                       double width,
+            int colour)
       {
          From = from;
          To = to;
          MinLength = min_length;
          MaxLength = max_length;
          Width = width;
+         Colour = colour;
       }
    }
 
@@ -269,4 +304,6 @@ class Template
    final private int m_num_internal_nodes;
 
    final private String m_codes;
+
+   final private IPostExpand m_post_expand;
 }

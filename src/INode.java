@@ -23,13 +23,12 @@ interface INode
    boolean ConnectsForwards(INode to);
    boolean ConnectsBackwards(INode from);
    Collection<DirectedEdge> GetConnections();
-   HashSet<DirectedEdge> GetInConnections();
-   HashSet<DirectedEdge> GetOutConnections();
+   Collection<DirectedEdge> GetInConnections();
+   Collection<DirectedEdge> GetOutConnections();
    DirectedEdge GetConnectionTo(INode node);
    DirectedEdge GetConnectionFrom(INode from);
 
    // other read-only properties
-   String GetName();
    String LongName();
    String GetCodes();
    String GetTemplate();
@@ -37,4 +36,18 @@ interface INode
 
    // misc
    public String Print(int tab, boolean full);
+
+   // indices created and read-back for handy data access when relaxing
+   void SetIdx(int i);
+   int GetIdx();
+
+   // colour for pretty drawing
+   int GetColour();
+   void SetColour(int c);
+
+   // name (currently writable for showing door <-> key relations etc
+   String GetName();
+   void SetName(String s);
+
+
 }

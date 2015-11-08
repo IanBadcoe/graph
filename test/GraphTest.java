@@ -79,21 +79,9 @@ public class GraphTest
    {
       Graph g = new Graph();
 
-      // cannot connect two nodes we never neard of
-      assertFalse(g.Connect(new Node("", "", "", 0),
-            new Node("", "", "", 0), 0, 0, 0));
       assertEquals(0, g.NumEdges());
 
       INode n = g.AddNode("n", "x", "y", 10);
-
-      {
-         // cannot connect a node we know and one we don't
-         INode dummy = new Node("", "", "", 0);
-         assertFalse(g.Connect(n, dummy, 0, 0, 0));
-         assertEquals(0, g.NumEdges());
-         assertFalse(n.Connects(dummy));
-         assertFalse(dummy.Connects(n));
-      }
 
       INode n2 = g.AddNode("n2", "x2", "y2", 20);
 
@@ -101,7 +89,7 @@ public class GraphTest
       assertFalse(n2.Connects(n));
       assertEquals(0, g.NumEdges());
 
-      assertTrue(g.Connect(n, n2, 1, 2, 3));
+      assertNotNull(g.Connect(n, n2, 1, 2, 3));
       assertEquals(1, g.NumEdges());
       assertTrue(n.Connects(n2));
       assertTrue(n2.Connects(n));
@@ -743,5 +731,36 @@ public class GraphTest
          assertTrue(splits[first + 1].contains("xx"));
          assertTrue(splits[second + 1].contains("aa"));
       }
+   }
+
+   private void testCatchUnsupported(Runnable action)
+   {
+      boolean thrown = false;
+
+      try
+      {
+         action.run();
+      }
+      catch (UnsupportedOperationException uoe)
+      {
+         thrown = true;
+      }
+
+      assertTrue(thrown);
+   }
+
+   @Test
+   public void testConnect_Exceptions()
+   {
+      Graph g = new Graph();
+
+      // cannot connect two nodes we never neard of
+      testCatchUnsupported(() -> g.Connect(new Node("", "", "", 0),
+            new Node("", "", "", 0), 0, 0, 0));
+
+      INode n = g.AddNode("n", "x", "y", 10);
+
+      // cannot connect a node we know and one we don't
+      testCatchUnsupported(() -> g.Connect(n, new Node("", "", "", 0), 0, 0, 0));
    }
 }

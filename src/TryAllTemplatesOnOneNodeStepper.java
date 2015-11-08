@@ -9,12 +9,13 @@ class TryAllTemplatesOnOneNodeStepper implements IExpandStepper
    }
 
    TryAllTemplatesOnOneNodeStepper(Graph graph, INode node, Collection<Template> templates,
-                                   Random random)
+         Random random)
    {
       m_graph = graph;
       m_node = node;
       m_templates = templates;
       m_random = random;
+
    }
 
    @Override
@@ -48,10 +49,11 @@ class TryAllTemplatesOnOneNodeStepper implements IExpandStepper
       s_child_factory = factory;
    }
 
-   private Graph m_graph;
-   private INode m_node;
-   private Collection<Template> m_templates;
-   private Random m_random;
+   private final Graph m_graph;
+   private final INode m_node;
+   private final Collection<Template> m_templates;
+   private final Random m_random;
 
    private static IChildFactory s_child_factory;
+
 }
