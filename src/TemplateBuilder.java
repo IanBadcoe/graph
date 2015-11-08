@@ -4,6 +4,11 @@ public class TemplateBuilder
 {
    TemplateBuilder(String name, String codes)
    {
+      this(name, codes, null);
+   }
+
+   TemplateBuilder(String name, String codes, Template.IPostExpand post_expand)
+   {
       m_name = name;
       m_codes = codes;
 
@@ -11,6 +16,8 @@ public class TemplateBuilder
       m_nodes.put("<target>", new Template.NodeRecord(Template.NodeType.Target, "<target>",
             false, null, null, null,
             null, 0, 0));
+
+      m_post_expand = post_expand;
    }
 
    // don't want people recovering from these as just bad programming
@@ -241,17 +248,24 @@ public class TemplateBuilder
       return new Template(this);
    }
 
+   Template.IPostExpand GetPostExpand()
+   {
+      return m_post_expand;
+   }
+
    private final String m_name;
 
-   HashMap<String, Template.NodeRecord> m_nodes = new HashMap<>();
-   HashMap<String, Template.ConnectionRecord> m_connections = new HashMap<>();
+   private HashMap<String, Template.NodeRecord> m_nodes = new HashMap<>();
+   private HashMap<String, Template.ConnectionRecord> m_connections = new HashMap<>();
 
    // just to avoid keeping counting
-   int m_num_in_nodes = 0;
-   int m_num_out_nodes = 0;
-   int m_num_internal_nodes = 0;
+   private int m_num_in_nodes = 0;
+   private int m_num_out_nodes = 0;
+   private int m_num_internal_nodes = 0;
 
-   private String m_codes;
+   private final String m_codes;
 
-   boolean m_cleared = false;
+   private boolean m_cleared = false;
+
+   private Template.IPostExpand m_post_expand;
 }

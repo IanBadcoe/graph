@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class TryAllNodesExpandStepper implements IExpandStepper
 {
@@ -14,7 +16,8 @@ public class TryAllNodesExpandStepper implements IExpandStepper
    {
       m_graph = graph;
       m_templates = templates;
-      m_all_nodes = Util.FilterByCodes(graph.AllGraphNodes(), "e");
+      m_all_nodes = graph.AllGraphNodes().stream().filter(n -> n.GetCodes().contains("e"))
+            .collect(Collectors.toCollection(ArrayList::new));
       m_random = random;
    }
 
@@ -37,8 +40,17 @@ public class TryAllNodesExpandStepper implements IExpandStepper
 
       INode node = Util.RemoveRandom(m_random, m_all_nodes);
 
+      Collection<Template> templates = m_templates.GetTemplatesCopy();
+
+      // if this was our last chance at a node, take only templates that expand further
+      // (could also allow those that expand enough, but that would involve copying the
+      // required size down here...
+      if (m_all_nodes.size() == 0)
+         templates = templates.stream().filter(t -> t.GetCodes().contains("e"))
+               .collect(Collectors.toCollection(ArrayList::new));
+
       IExpandStepper child = s_child_factory.MakeChild(
-            m_graph, node, m_templates.GetTemplatesCopy(), m_random);
+            m_graph, node, templates, m_random);
 
       return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
             child, "Trying to expand node: " + node.GetName());
@@ -49,10 +61,10 @@ public class TryAllNodesExpandStepper implements IExpandStepper
       s_child_factory = factory;
    }
 
-   private Graph m_graph;
-   private TemplateStore m_templates;
-   private Collection<INode> m_all_nodes;
-   private Random m_random;
+   private final Graph m_graph;
+   private final TemplateStore m_templates;
+   private final Collection<INode> m_all_nodes;
+   private final Random m_random;
 
    static IChildFactory s_child_factory;
 }

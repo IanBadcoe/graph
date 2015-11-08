@@ -29,7 +29,6 @@ interface INode
    DirectedEdge GetConnectionFrom(INode from);
 
    // other read-only properties
-   String GetName();
    String LongName();
    String GetCodes();
    String GetTemplate();
@@ -45,4 +44,10 @@ interface INode
    // colour for pretty drawing
    int GetColour();
    void SetColour(int c);
+
+   // name (currently writable for showing door <-> key relations etc
+   String GetName();
+   void SetName(String s);
+
+
 }

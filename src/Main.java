@@ -44,7 +44,7 @@ public class Main extends processing.core.PApplet
       m_graph = MakeSeed();
       m_expander = new Expander(m_graph,
             new ExpandToSizeStepper(m_graph, m_reqSize, m_templates,
-                  new Random(87)));
+                  new Random(86)));
    }
 
    @Override
@@ -265,7 +265,7 @@ public class Main extends processing.core.PApplet
 
    TemplateStore m_templates = new TemplateStore1();
 
-   int m_reqSize = 100;
+   int m_reqSize = 30;
 
    Expander m_expander;
 

@@ -11,7 +11,7 @@ class ExpandToSizeStepper implements IExpandStepper
          Random random)
    {
       m_graph = graph;
-      m_orig_size = m_graph.NumNodes();
+      m_orig_size = m_graph == null ? 0 : m_graph.NumNodes();
       m_required_size = required_size;
       m_templates = templates;
       m_random = random;

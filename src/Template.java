@@ -10,6 +10,12 @@ class Template
       Target
    }
 
+   interface IPostExpand
+   {
+      void AfterExpand(INode n);
+      void Done();
+   }
+
    Template(TemplateBuilder builder)
    {
       m_name = builder.GetName();
@@ -21,6 +27,8 @@ class Template
       m_num_in_nodes = builder.GetNumInNodes();
       m_num_out_nodes = builder.GetNumOutNodes();
       m_num_internal_nodes = builder.GetNumInternalNodes();
+
+      m_post_expand = builder.GetPostExpand();
 
       // cannot use this again
       builder.Clear();
@@ -121,6 +129,8 @@ class Template
             // but now we're done with it
             graph.RemoveNode(target);
 
+            ApplyPostExpand(template_to_graph);
+
             return true;
          }
       }
@@ -205,6 +215,23 @@ class Template
       }
    }
 
+   private void ApplyPostExpand(HashMap<NodeRecord, INode> template_to_graph)
+   {
+      if (m_post_expand == null)
+         return;
+
+      for(NodeRecord nr : m_nodes.values())
+      {
+         // could have chance to modify existing (e.g. In/Out nodes?)
+         if (nr.Type == NodeType.Internal)
+         {
+            m_post_expand.AfterExpand(template_to_graph.get(nr));
+         }
+      }
+
+      m_post_expand.Done();
+   }
+
    final static class NodeRecord
    {
       final public NodeType Type;
@@ -277,4 +304,6 @@ class Template
    final private int m_num_internal_nodes;
 
    final private String m_codes;
+
+   final private IPostExpand m_post_expand;
 }

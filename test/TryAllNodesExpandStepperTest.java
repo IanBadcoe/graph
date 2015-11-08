@@ -27,9 +27,10 @@ public class TryAllNodesExpandStepperTest
 
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      INode n3 = g.AddNode("", "", "", 0);
+      // all nodes must be tagged "e" to be considered expandable
+      INode n1 = g.AddNode("", "e", "", 0);
+      INode n2 = g.AddNode("", "e", "", 0);
+      INode n3 = g.AddNode("", "e", "", 0);
 
       Expander e = new Expander(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new Random(1)));
@@ -60,9 +61,10 @@ public class TryAllNodesExpandStepperTest
 
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      INode n3 = g.AddNode("", "", "", 0);
+      // all nodes must be tagged "e" to be considered expandable
+      INode n1 = g.AddNode("", "e", "", 0);
+      INode n2 = g.AddNode("", "e", "", 0);
+      INode n3 = g.AddNode("", "e", "", 0);
 
       Expander e = new Expander(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new Random(1)));

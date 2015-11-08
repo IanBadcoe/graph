@@ -135,6 +135,12 @@ class Node implements INode
       return m_name;
    }
 
+   @Override
+   public void SetName(String s)
+   {
+      m_name = s;
+   }
+
    int NumConnections()
    {
       return m_connections.size();
@@ -275,7 +281,7 @@ class Node implements INode
    // c : put on dummy connections in templates, possibly never searched for...
    private String m_codes;
 
-   private final String m_name;
+   private String m_name;
    private final String m_template;
 
    private final int m_num;
