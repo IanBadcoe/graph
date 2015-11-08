@@ -10,7 +10,7 @@ class GeomLayoutCircular extends GeomLayout
 
    static GeomLayoutCircular createFromNode(Level l, INode n)
    {
-      return new GeomLayoutCircular(l, n.GetPos(), n.GetRad());
+      return new GeomLayoutCircular(l, n.GetPos(), n.GetRad() * 0.95);
    }
 
    @Override

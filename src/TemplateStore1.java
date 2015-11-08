@@ -110,19 +110,36 @@ public class TemplateStore1 extends TemplateStore
       }
 
       {
-         TemplateBuilder tb = new TemplateBuilder("EndLoop", "e");
+         TemplateBuilder tb = new TemplateBuilder("Cluster", "e");
          tb.AddNode(Template.NodeType.In, "i");
-         tb.AddNode(Template.NodeType.Internal, "j", true, "<target>", null, null, "", 55f);
-         // "-i" means in the opposite direction to "i" :-)
-         tb.AddNode(Template.NodeType.Internal, "e1", true, "<target>", null, "i", "e", 100f);
-         tb.AddNode(Template.NodeType.Internal, "e2", true, "<target>", null, "i", "e", 75f);
+         tb.AddNode(Template.NodeType.Out, "o");
+         tb.AddNode(Template.NodeType.Internal, "a", false, "<target>", "i", null, "", 55f);
+         tb.AddNode(Template.NodeType.Internal, "b", false, "<target>", "o", null, "", 55f);
+         tb.AddNode(Template.NodeType.Internal, "c", true, "a", "b", null, "", 55f);
 
-         tb.Connect("i", "j", 90, 110, 10);
-         tb.Connect("j", "e1", 90, 110, 10);
-         tb.Connect("j", "e2", 90, 110, 10);
-         tb.Connect("e1", "e2", 90, 110, 10);
+         tb.Connect("i", "a", 70, 90, 10);
+         tb.Connect("a", "b", 70, 90, 10);
+         tb.Connect("b", "o", 70, 90, 10);
+         tb.Connect("a", "c", 70, 90, 10);
+         tb.Connect("c", "b", 70, 90, 10);
 
          AddTemplate(tb.Build());
       }
+
+//      {
+//         TemplateBuilder tb = new TemplateBuilder("EndLoop", "e");
+//         tb.AddNode(Template.NodeType.In, "i");
+//         tb.AddNode(Template.NodeType.Internal, "j", true, "<target>", null, null, "", 55f);
+//         // "-i" means in the opposite direction to "i" :-)
+//         tb.AddNode(Template.NodeType.Internal, "e1", true, "<target>", null, "i", "e", 100f);
+//         tb.AddNode(Template.NodeType.Internal, "e2", true, "<target>", null, "i", "e", 75f);
+//
+//         tb.Connect("i", "j", 90, 110, 10);
+//         tb.Connect("j", "e1", 90, 110, 10);
+//         tb.Connect("j", "e2", 90, 110, 10);
+//         tb.Connect("e1", "e2", 90, 110, 10);
+//
+//         AddTemplate(tb.Build());
+//      }
    }
 }
