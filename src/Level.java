@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class Level
@@ -15,30 +12,20 @@ class Level
    {
       for(INode n : m_graph.AllGraphNodes())
       {
-         GeomLayout gl = n.geomLayoutCreator().create(this, n);
-         m_layouts.add(gl);
-         gl.makeBaseGeometry();
+         GeomLayout gl = n.geomLayoutCreator().create(n);
+         m_layouts.put(n, gl);
+         Loop l = gl.makeBaseGeometry();
+         m_loops.put(n, l);
       }
    }
 
-   void addEdge(GeomEdge ge)
+   Collection<Loop> getLoops()
    {
-      m_edges.add(ge);
+      return Collections.unmodifiableCollection(m_loops.values());
    }
-
-   void removeEdge(GeomEdge ge)
-   {
-      m_edges.remove(ge);
-   }
-
-   Collection<GeomEdge> getEdges()
-   {
-      return m_edges.stream().collect(Collectors.toCollection(ArrayList::new));
-   }
-
-   private final ArrayList<GeomEdge> m_edges = new ArrayList<>();
 
    Graph m_graph;
 
-   HashSet<GeomLayout> m_layouts = new HashSet<>();
+   HashMap<INode, GeomLayout> m_layouts = new HashMap<>();
+   HashMap<INode, Loop> m_loops = new HashMap<>();
 }

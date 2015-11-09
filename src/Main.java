@@ -267,10 +267,28 @@ public class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      for(GeomEdge ge : level.getEdges())
+      for(Loop l : level.getLoops())
       {
-         Line(ge.Start, ge.End);
+         DrawLoop(l);
       }
+   }
+
+   private static void DrawLoop(Loop l)
+   {
+      double r = l.paramRange();
+
+      XY prev = l.computePos(0.0);
+
+      for(double p = r / 20; p < r; p += r / 20)
+      {
+         XY curr = l.computePos(p);
+
+         Line(prev, curr);
+
+         prev = curr;
+      }
+
+      Line(prev, l.computePos(r));
    }
 
    static void Stroke(int red, int green, int blue)
