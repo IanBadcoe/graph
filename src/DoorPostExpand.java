@@ -4,19 +4,19 @@ class DoorPostExpand implements Template.IPostExpand
    @Override
    public void AfterExpand(INode n)
    {
-      if (n.GetName() == "key")
+      if (n.getName() == "key")
       {
-         n.SetName("Key: " + m_door_count);
-         n.SetColour(s_colours[m_door_count % 3]);
+         n.setName("Key: " + m_door_count);
+         n.setColour(s_colours[m_door_count % 3]);
       }
-      else if (n.GetName() == "door")
+      else if (n.getName() == "door")
       {
-         n.SetName("Door: " + m_door_count);
-         n.SetColour(s_colours[m_door_count % 3]);
+         n.setName("Door: " + m_door_count);
+         n.setColour(s_colours[m_door_count % 3]);
       }
-      else if (n.GetName() == "obstacle")
+      else if (n.getName() == "obstacle")
       {
-         n.SetColour(0xff404040);
+         n.setColour(0xff404040);
       }
    }
 

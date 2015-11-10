@@ -56,8 +56,8 @@ class Util
          return null;
       }
 
-      return EdgeIntersect(edge1Start.GetPos(), edge1End.GetPos(),
-            edge2Start.GetPos(), edge2End.GetPos());
+      return EdgeIntersect(edge1Start.getPos(), edge1End.getPos(),
+            edge2Start.getPos(), edge2End.getPos());
    }
 
    private static OrderedPair<Double, Double> EdgeIntersect(double edge1StartX, double edge1StartY,
@@ -155,6 +155,117 @@ class Util
       // at the moment the relationship between force and overlap is trivial
       // but will keep the two return values in case the force develops a squared term or something...
       return new OrderedPair<>(-force, force);
+   }
+
+   public static ArrayList<OrderedPair<Double,Double>> curveCurveIntersect(Curve c1, Curve c2)
+   {
+      if (c1 instanceof CurveCircle)
+      {
+         return circleCurveIntersect((CurveCircle)c1, c2);
+      }
+
+      throw new UnsupportedOperationException("Unknown type of curve");
+   }
+
+   private static ArrayList<OrderedPair<Double,Double>> circleCurveIntersect(CurveCircle c1, Curve c2)
+   {
+      if (c2 instanceof CurveCircle)
+      {
+         return circleCircleIntersect(c1, (CurveCircle)c2);
+      }
+
+      throw new UnsupportedOperationException("Unknown type of curve");
+   }
+
+   public static ArrayList<OrderedPair<Double,Double>> circleCircleIntersect(CurveCircle c1, CurveCircle c2)
+   {
+      // coincident
+      if (c1.equals(c2))
+         return null;
+
+      OrderedPair<XY, XY> pts = circleCircleIntersect(c1.Position, c1.Radius, c2.Position, c2.Radius);
+
+      ArrayList<OrderedPair<Double,Double>> ret = new ArrayList<>();
+
+      {
+         Double pc1 = c1.findParamForPoint(pts.First, 1e-6);
+         Double pc2 = c2.findParamForPoint(pts.First, 1e-6);
+
+         if (pc1 != null && pc2 != null)
+         {
+            ret.add(new OrderedPair<>(pc1, pc2));
+         }
+      }
+
+      if (pts.Second != null)
+      {
+         Double pc1 = c1.findParamForPoint(pts.Second, 1e-6);
+         Double pc2 = c2.findParamForPoint(pts.Second, 1e-6);
+
+         if (pc1 != null && pc2 != null)
+         {
+            ret.add(new OrderedPair<>(pc1, pc2));
+         }
+      }
+
+      if (ret.size() > 0)
+         return ret;
+
+      return null;
+   }
+
+   public static OrderedPair<XY, XY> circleCircleIntersect(XY c1, double r1, XY c2, double r2)
+   {
+      double dist_2 = c1.Minus(c2).Length2();
+      double dist = Math.sqrt(dist_2);
+
+      // too far apart
+      if (dist > r1 + r2)
+         return null;
+
+      // too close together
+      if (dist < Math.abs(r1 - r2))
+         return null;
+
+      double a = c1.X;
+      double b = c1.Y;
+      double c = c2.X;
+      double d = c2.Y;
+
+      double delta_2 = (dist + r1 + r2)
+            * (dist + r1 - r2)
+            * (dist - r1 + r2)
+            * (-dist + r1 + r2);
+
+      // should have assured this with the ifs above...
+      assert delta_2 >= 0;
+
+      double delta = 0.25 * Math.sqrt(delta_2);
+
+      double xi1 = (a + c) / 2
+            + (c - a) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            + 2 * (b - d) * delta / dist_2;
+      double xi2 = (a + c) / 2
+            + (c - a) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            - 2 * (b - d) * delta / dist_2;
+
+      double yi1 = (b + d) / 2
+            + (b - d) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            + 2 * (a - c) * delta / dist_2;
+      double yi2 = (b + d) / 2
+            + (b - d) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            - 2 * (a - c) * delta / dist_2;
+
+      XY p1 = new XY(xi1, yi1);
+
+      XY p2 = null;
+
+      if (delta > 1e-6)
+      {
+         p2 = new XY(xi2, yi2);
+      }
+
+      return new OrderedPair<>(p1, p2);
    }
 
    static class NEDRet

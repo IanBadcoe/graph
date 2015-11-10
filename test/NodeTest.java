@@ -13,15 +13,15 @@ public class NodeTest
       Node n1 = new Node("", "", "", 0);
       Node n2 = new Node("", "", "", 0);
 
-      assertEquals(0, n1.NumConnections());
+      assertEquals(0, n1.numConnections());
 
-      n1.Connect(n2, 0, 0, 0);
+      n1.connect(n2, 0, 0, 0);
 
-      assertEquals(1, n1.NumConnections());
+      assertEquals(1, n1.numConnections());
 
-      n1.Disconnect(n2);
+      n1.disconnect(n2);
 
-      assertEquals(0, n1.NumConnections());
+      assertEquals(0, n1.numConnections());
    }
 
    @Test
@@ -30,12 +30,12 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.Connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0);
 
          boolean thrown = false;
          try
          {
-            n1.Connect(n2, 0, 0, 0);
+            n1.connect(n2, 0, 0, 0);
          }
          catch(IllegalArgumentException iae)
          {
@@ -52,12 +52,12 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.Connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0);
 
          boolean thrown = false;
          try
          {
-            n2.Connect(n1, 0, 0, 0);
+            n2.connect(n1, 0, 0, 0);
          }
          catch(IllegalArgumentException iae)
          {
@@ -78,9 +78,9 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.Connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0);
 
-         DirectedEdge de = n1.GetConnectionTo(n2);
+         DirectedEdge de = n1.getConnectionTo(n2);
 
          assertNotNull(de);
          assertEquals(de.Start, n1);
@@ -90,14 +90,14 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.Connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0);
 
-         DirectedEdge de = n1.GetConnectionTo(null);
+         DirectedEdge de = n1.getConnectionTo(null);
 
          assertNull(de);
 
          // these are found by node-identity, not name
-         de = n1.GetConnectionTo(new Node("yyy", "", "", 0));
+         de = n1.getConnectionTo(new Node("yyy", "", "", 0));
 
          assertNull(de);
       }
@@ -109,9 +109,9 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.Connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0);
 
-         DirectedEdge de = n2.GetConnectionFrom(n1);
+         DirectedEdge de = n2.getConnectionFrom(n1);
 
          assertNotNull(de);
          assertEquals(de.Start, n1);
@@ -121,14 +121,14 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.Connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0);
 
-         DirectedEdge de = n1.GetConnectionFrom(null);
+         DirectedEdge de = n1.getConnectionFrom(null);
 
          assertNull(de);
 
          // these are found by node-identity, not name
-         de = n1.GetConnectionFrom(new Node("xxx", "", "", 0));
+         de = n1.getConnectionFrom(new Node("xxx", "", "", 0));
 
          assertNull(de);
       }
@@ -141,18 +141,70 @@ public class NodeTest
       Node n2 = new Node("", "", "", 0);
       Node n3 = new Node("", "", "", 0);
 
-      n1.Connect(n2, 1, 2, 3);
+      n1.connect(n2, 1, 2, 3);
 
-      assertTrue(n1.Connects(n2));
-      assertTrue(n2.Connects(n1));
-      assertFalse(n1.Connects(n3));
-      assertFalse(n3.Connects(n1));
-      assertFalse(n2.Connects(n3));
-      assertFalse(n3.Connects(n2));
+      assertTrue(n1.connects(n2));
+      assertTrue(n2.connects(n1));
+      assertFalse(n1.connects(n3));
+      assertFalse(n3.connects(n1));
+      assertFalse(n2.connects(n3));
+      assertFalse(n3.connects(n2));
 
-      assertTrue(n1.ConnectsForwards(n2));
-      assertFalse(n2.ConnectsForwards(n1));
-      assertFalse(n1.ConnectsBackwards(n2));
-      assertTrue(n2.ConnectsBackwards(n1));
+      assertTrue(n1.connectsForwards(n2));
+      assertFalse(n2.connectsForwards(n1));
+      assertFalse(n1.connectsBackwards(n2));
+      assertTrue(n2.connectsBackwards(n1));
+   }
+
+   @Test
+   public void testSetName()
+   {
+      Node n1 = new Node("", "", "", 0);
+
+      assertEquals("", n1.getName());
+
+      n1.setName("x");
+      assertEquals("x", n1.getName());
+
+      boolean thrown = false;
+
+      try
+      {
+         n1.setName(null);
+      }
+      catch(NullPointerException npe)
+      {
+         thrown = true;
+      }
+
+      assertTrue(thrown);
+   }
+
+   @Test
+   public void testSetColour()
+   {
+      Node n1 = new Node("", "", "", 0);
+
+      assertEquals(0xff8c8c8c, n1.getColour());
+
+      n1.setColour(0x12345678);
+      assertEquals(0x12345678, n1.getColour());
+   }
+
+   static GeomLayout dummy(INode n)
+   {
+      return null;
+   }
+
+   @Test
+   public void testGeomLayoutCreator()
+   {
+      Node n1 = new Node("", "", "", 0);
+
+      assertTrue((GeomLayout.IGeomLayoutCreateFromNode)GeomLayoutCircular::createFromNode == n1.geomLayoutCreator());
+
+      Node n2 = new Node("", "", "", NodeTest::dummy, 0);
+
+      assertTrue((GeomLayout.IGeomLayoutCreateFromNode)NodeTest::dummy == n2.geomLayoutCreator());
    }
 }

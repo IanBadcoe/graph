@@ -56,7 +56,7 @@ class DirectedEdge {
 
    double Length()
    {
-      return End.GetPos().Minus(Start.GetPos()).Length();
+      return End.getPos().Minus(Start.getPos()).Length();
    }
 
    boolean Connects(INode n)

@@ -1,18 +1,17 @@
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.function.Function;
 
-/**
- * uses the Floyd-Warshall algorithm to find all shortest path lengths in a graph
- *
- * at the moment, we ultimately want the minimum of the shortest path through the graph
- * between two nodes, and the two nodes summed radii, so we could see this with the summed radii
- * instead fo 1e30.  However writing this as an un-mucked-about "shortest path through graph edges"
- * algorithm feels more likely to have other uses later...
- */
-class ShortestPathFinder<T>
+//
+// uses the Floyd-Warshall algorithm to find all shortest path lengths in a graph
+//
+// at the moment, we ultimately want the minimum of the shortest path through the graph
+// between two nodes, and the two nodes summed radii, so we could seed this with the summed radii
+// instead of 1e30.  However writing this as an un-mucked-about "shortest path through graph edges"
+// algorithm feels more likely to have other uses later...
+//
+class ShortestPathFinder
 {
-   static double[][] FindPathLengths(Graph g, Function<DirectedEdge, Double> get_edge_length)
+   public static double[][] FindPathLengths(Graph g, Function<DirectedEdge, Double> get_edge_length)
    {
       double[][] ret = new double[g.NumNodes()][g.NumNodes()];
 
@@ -26,7 +25,7 @@ class ShortestPathFinder<T>
 
       for(INode n : g.AllGraphNodes())
       {
-         n.SetIdx(count);
+         n.setIdx(count);
 
          ret[count][count] = 0;
 
@@ -35,8 +34,8 @@ class ShortestPathFinder<T>
 
       for(DirectedEdge de : g.AllGraphEdges())
       {
-         int si = de.Start.GetIdx();
-         int ei = de.End.GetIdx();
+         int si = de.Start.getIdx();
+         int ei = de.End.getIdx();
 
          double len = get_edge_length.apply(de); //(de.MaxLength + de.MinLength) / 2;
 
@@ -45,13 +44,13 @@ class ShortestPathFinder<T>
 
       for(INode nk : g.AllGraphNodes())
       {
-         int k = nk.GetIdx();
+         int k = nk.getIdx();
          for(INode ni : g.AllGraphNodes())
          {
-            int i = ni.GetIdx();
+            int i = ni.getIdx();
             for(INode nj : g.AllGraphNodes())
             {
-               int j = nj.GetIdx();
+               int j = nj.getIdx();
                ret[i][j] = Math.min(ret[i][j], ret[i][k] + ret[k][j]);
             }
          }

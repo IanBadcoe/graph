@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 abstract class Curve
 {
    Curve(double start_param, double end_param)
@@ -7,6 +9,12 @@ abstract class Curve
    }
 
    public abstract XY computePos(double m_start_param);
+
+   public abstract int hashCode();
+
+   public abstract boolean equals(Object o);
+
+   public abstract Double findParamForPoint(XY first, double tol);
 
    public XY startPos()
    {
@@ -31,6 +39,13 @@ abstract class Curve
    public double paramRange()
    {
       return m_end_param - m_start_param;
+   }
+
+   ArrayList<OrderedPair<Double, Double>> intersect(Curve other)
+   {
+      // efficient implementation of this requires knowledge of sub-classes
+      // so hide in utility class to make me feel more comfortable
+      return Util.curveCurveIntersect(this, other);
    }
 
    final private double m_start_param;

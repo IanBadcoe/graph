@@ -8,7 +8,7 @@ class Graph
    }
 
    INode AddNode(String name, String codes, String template,
-         GeomLayout.GeomLayoutCreateFromNode geomCreator, double rad)
+                 GeomLayout.IGeomLayoutCreateFromNode geomCreator, double rad)
    {
       Node n = new Node(name, codes, template, geomCreator, rad);
 
@@ -32,7 +32,7 @@ class Graph
       if (!Contains(inode))
          return false;
 
-      if (inode.GetConnections().size() > 0)
+      if (inode.getConnections().size() > 0)
          return false;
 
       Node node = (Node) inode;
@@ -58,7 +58,7 @@ class Graph
       if (from == to
             || !Contains(from)
             || !Contains(to)
-            || from.Connects(to))
+            || from.connects(to))
          throw new UnsupportedOperationException();
 
       Node n_from = (Node) from;
@@ -78,7 +78,7 @@ class Graph
    {
       assert !m_edges.contains(e);
 
-      DirectedEdge real_edge = ((Node)e.Start).Connect((Node)e.End, e.MinLength, e.MaxLength, e.Width);
+      DirectedEdge real_edge = ((Node)e.Start).connect((Node)e.End, e.MinLength, e.MaxLength, e.Width);
 
       m_edges.add(real_edge);
 
@@ -90,7 +90,7 @@ class Graph
       if (!Contains(from) || !Contains(to))
          return false;
 
-      DirectedEdge e = from.GetConnectionTo(to);
+      DirectedEdge e = from.getConnectionTo(to);
 
       if (e == null)
          return false;
@@ -110,7 +110,7 @@ class Graph
       Node n_from = (Node)e.Start;
       Node n_to = (Node)e.End;
 
-      n_from.Disconnect(n_to);
+      n_from.disconnect(n_to);
 
       assert m_edges.contains(e);
       m_edges.remove(e);
@@ -151,16 +151,16 @@ class Graph
          return new Box();
 
       ArrayList<INode> nodes = AllGraphNodes();
-      XY min = nodes.get(0).GetPos();
-      XY max = nodes.get(0).GetPos();
+      XY min = nodes.get(0).getPos();
+      XY max = nodes.get(0).getPos();
 
       for (INode n : nodes)
       {
-         XY rad_box = new XY(n.GetRad(), n.GetRad());
+         XY rad_box = new XY(n.getRad(), n.getRad());
 
          // extend by node radius
-         min = min.Min(n.GetPos().Minus(rad_box));
-         max = max.Max(n.GetPos().Plus(rad_box));
+         min = min.Min(n.getPos().Minus(rad_box));
+         max = max.Max(n.getPos().Plus(rad_box));
       }
 
       return new Box(min, max);
@@ -177,7 +177,7 @@ class Graph
 
       for(INode n : m_nodes)
       {
-         ret += n.Print(0, true);
+         ret += n.print(0, true);
 
          ret += "\n";
       }
@@ -222,7 +222,7 @@ class Graph
 
          for (INode n : Graph.this.AllGraphNodes())
          {
-            m_positions.add(new NodePos(n, n.GetPos()));
+            m_positions.add(new NodePos(n, n.getPos()));
          }
       }
 
@@ -299,7 +299,7 @@ class Graph
 
             if (me.getValue() == RestoreAction.Break)
             {
-               assert e.Start.Connects(e.End);
+               assert e.Start.connects(e.End);
 
                Graph.this.Disconnect_Inner(e);
             }
@@ -324,7 +324,7 @@ class Graph
 
             if (me.getValue() == RestoreAction.Make)
             {
-               assert !e.Start.Connects(e.End);
+               assert !e.Start.connects(e.End);
 
                Graph.this.Connect_Inner(e);
             }
@@ -339,7 +339,7 @@ class Graph
          // and finally put all the positions back
          for (NodePos np : m_positions)
          {
-            np.N.SetPos(np.Pos);
+            np.N.setPos(np.Pos);
          }
 
          CleanUp();

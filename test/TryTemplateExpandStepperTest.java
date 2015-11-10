@@ -92,7 +92,7 @@ public class TryTemplateExpandStepperTest
       g.Connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
-      n2.SetPos(new XY(10, 0));
+      n2.setPos(new XY(10, 0));
 
       Expander e = new Expander(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1)));
@@ -123,7 +123,7 @@ public class TryTemplateExpandStepperTest
       @Override
       public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
       {
-         m_e.Start.SetPos(new XY(5, 0));
+         m_e.Start.setPos(new XY(5, 0));
 
          m_success_count++;
 
@@ -156,7 +156,7 @@ public class TryTemplateExpandStepperTest
       g.Connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
-      n2.SetPos(new XY(10, 0));
+      n2.setPos(new XY(10, 0));
 
       // move n1 as n2 will have been replaced by the template
       TryTemplateExpandStepper.SetAdjusterFactory(
@@ -181,8 +181,8 @@ public class TryTemplateExpandStepperTest
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
       assertEquals(1, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.GetName() == "internal"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.GetName() == "n1"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "internal"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1"));
    }
 
    @Test
@@ -209,7 +209,7 @@ public class TryTemplateExpandStepperTest
       g.Connect(n11, n2, 0, 0, 0);
       // space nodes far enough apart both the edges the template adds will
       // be "stressed"
-      n2.SetPos(new XY(10, 0));
+      n2.setPos(new XY(10, 0));
 
       // move n1 as n2 will have been replaced by the template
       TryTemplateExpandStepper.SetAdjusterFactory(
@@ -234,9 +234,9 @@ public class TryTemplateExpandStepperTest
       // we should have replaced n2
       assertEquals(3, g.NumNodes());
       assertEquals(2, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.GetName() == "internal"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.GetName() == "n1"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.GetName() == "n1a"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "internal"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1a"));
    }
 
    @Test
@@ -261,7 +261,7 @@ public class TryTemplateExpandStepperTest
       INode n2 = g.AddNode("n2", "", "", 0);
       g.Connect(n1, n2, 0, 0, 0);
       // space nodes far as the new edge requires
-      n2.SetPos(new XY(5, 0));
+      n2.setPos(new XY(5, 0));
 
       Expander e = new Expander(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1)));
@@ -282,8 +282,8 @@ public class TryTemplateExpandStepperTest
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
       assertEquals(1, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.GetName() == "internal"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.GetName() == "n1"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "internal"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1"));
    }
 
    @Test
@@ -306,7 +306,7 @@ public class TryTemplateExpandStepperTest
       g.Connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
-      n2.SetPos(new XY(10, 0));
+      n2.setPos(new XY(10, 0));
 
       // move n1 as n2 will have been replaced by the template
       TryTemplateExpandStepper.SetAdjusterFactory(
@@ -358,7 +358,7 @@ public class TryTemplateExpandStepperTest
       g.Connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
-      n2.SetPos(new XY(10, 0));
+      n2.setPos(new XY(10, 0));
 
       // move n1 as n2 will have been replaced by the template
       TryTemplateExpandStepper.SetAdjusterFactory(

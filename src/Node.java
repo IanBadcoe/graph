@@ -8,7 +8,7 @@ class Node implements INode
    }
 
    Node(String name, String codes, String template,
-         GeomLayout.GeomLayoutCreateFromNode gl_creator, double rad)
+        GeomLayout.IGeomLayoutCreateFromNode gl_creator, double rad)
    {
       m_name = name;
       m_connections = new HashSet<DirectedEdge>();
@@ -32,57 +32,57 @@ class Node implements INode
    }
 
    @Override
-   public boolean Connects(INode n)
+   public boolean connects(INode n)
    {
-      return ConnectsForwards(n) || ConnectsBackwards(n);
+      return connectsForwards(n) || connectsBackwards(n);
    }
 
    @Override
-   public boolean ConnectsForwards(INode n)
+   public boolean connectsForwards(INode n)
    {
       return m_connections.contains(new DirectedEdge(this, n, 0, 0, 0));
    }
 
    @Override
-   public boolean ConnectsBackwards(INode n)
+   public boolean connectsBackwards(INode n)
    {
       return m_connections.contains(new DirectedEdge(n, this, 0, 0, 0));
    }
 
-   void Disconnect(Node n)
+   void disconnect(Node n)
    {
-      if (!Connects(n))
+      if (!connects(n))
          return;
 
       // simplest just to try removing the forward and reverse edges
       m_connections.remove(new DirectedEdge(this, n, 0, 0, 0));
       m_connections.remove(new DirectedEdge(n, this, 0, 0, 0));
 
-      n.Disconnect(this);
+      n.disconnect(this);
    }
 
    // must have an empty slot available to take the new connection
-   DirectedEdge Connect(Node n, double min_distance, double max_distance, double width)
+   DirectedEdge connect(Node n, double min_distance, double max_distance, double width)
    {
       // cannot multiply connect the same node, forwards or backwards
-      if (Connects(n))
+      if (connects(n))
          throw new IllegalArgumentException("Cannot multiply connect from '" + m_name +
-               "' to '" + n.GetName() + "'");
+               "' to '" + n.getName() + "'");
 
       DirectedEdge e = new DirectedEdge(this, n, min_distance, max_distance, width);
 
-      Connect(e);
-      n.Connect(e);
+      connect(e);
+      n.connect(e);
 
       return e;
    }
 
-   private void Connect(DirectedEdge e)
+   private void connect(DirectedEdge e)
    {
       m_connections.add(e);
    }
 
-   String Tab(int tab)
+   String tab(int tab)
    {
       String ret = "";
 
@@ -94,80 +94,83 @@ class Node implements INode
       return ret;
    }
 
-   public String LongName()
+   public String longName()
    {
       return m_name + "(#" + m_num + ")";
    }
 
    @Override
-   public String Print(int tab, boolean full)
+   public String print(int tab, boolean full)
    {
       String ret = "";
 
       if (full)
       {
-         ret += Tab(tab) + LongName() + " (" + m_template + ", " + m_codes + ")\n";
+         ret += tab(tab) + longName() + " (" + m_template + ", " + m_codes + ")\n";
 
-         ret += Tab(tab) + "{\n";
+         ret += tab(tab) + "{\n";
 
          for(DirectedEdge e : m_connections)
          {
-            ret += e.OtherNode(this).Print(tab + 1, false);
+            ret += e.OtherNode(this).print(tab + 1, false);
          }
 
-         ret += Tab(tab) + "}\n";
+         ret += tab(tab) + "}\n";
       }
       else
       {
-         ret += Tab(tab) + LongName() + "\n";
+         ret += tab(tab) + longName() + "\n";
       }
 
       return ret;
    }
 
    @Override
-   public String GetCodes()
+   public String getCodes()
    {
       return m_codes;
    }
 
    @Override
-   public String GetTemplate()
+   public String getTemplate()
    {
       return m_template;
    }
 
    @Override
-   public String GetName()
+   public String getName()
    {
       return m_name;
    }
 
    @Override
-   public void SetName(String s)
+   public void setName(String s)
    {
+      if (s == null)
+         throw new NullPointerException("Null node name not permitted.");
+
       m_name = s;
    }
 
    @Override
-   public GeomLayout.GeomLayoutCreateFromNode geomLayoutCreator()
+   public GeomLayout.IGeomLayoutCreateFromNode geomLayoutCreator()
    {
       return m_gl_creator;
    }
 
-   int NumConnections()
+   int numConnections()
    {
       return m_connections.size();
    }
 
    @Override
-   public Collection<DirectedEdge> GetConnections()
+   public Collection<DirectedEdge> getConnections()
    {
       return new HashSet<DirectedEdge>(m_connections);
    }
 
    @Override
-   public Collection<DirectedEdge> GetInConnections()
+   public Collection<DirectedEdge> getInConnections()
    {
       HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
 
@@ -181,7 +184,7 @@ class Node implements INode
    }
 
    @Override
-   public Collection<DirectedEdge> GetOutConnections()
+   public Collection<DirectedEdge> getOutConnections()
    {
       HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
 
@@ -195,7 +198,7 @@ class Node implements INode
    }
 
    @Override
-   public DirectedEdge GetConnectionTo(INode to)
+   public DirectedEdge getConnectionTo(INode to)
    {
       for(DirectedEdge e : m_connections)
       {
@@ -207,7 +210,7 @@ class Node implements INode
    }
 
    @Override
-   public DirectedEdge GetConnectionFrom(INode from)
+   public DirectedEdge getConnectionFrom(INode from)
    {
       for(DirectedEdge e : m_connections)
       {
@@ -219,13 +222,13 @@ class Node implements INode
    }
 
    @Override
-   public void SetPos(XY pos)
+   public void setPos(XY pos)
    {
       m_pos = pos;
    }
 
    @Override
-   public XY GetPos()
+   public XY getPos()
    {
       return m_pos;
    }
@@ -237,7 +240,7 @@ class Node implements INode
    }
 
    @Override
-   public void AddForce(XY force)
+   public void addForce(XY force)
    {
       m_force = m_force.Plus(force);
    }
@@ -258,31 +261,31 @@ class Node implements INode
    }
 
    @Override
-   public double GetRad()
+   public double getRad()
    {
       return m_rad;
    }
 
    @Override
-   public void SetIdx(int i)
+   public void setIdx(int i)
    {
       m_idx = i;
    }
 
    @Override
-   public int GetIdx()
+   public int getIdx()
    {
       return m_idx;
    }
 
    @Override
-   public int GetColour()
+   public int getColour()
    {
       return m_colour;
    }
 
    @Override
-   public void SetColour(int c)
+   public void setColour(int c)
    {
       m_colour = c;
    }
@@ -312,5 +315,5 @@ class Node implements INode
 
    private int m_colour = 0xff8c8c8c;
 
-   private final GeomLayout.GeomLayoutCreateFromNode m_gl_creator;
+   private final GeomLayout.IGeomLayoutCreateFromNode m_gl_creator;
 }

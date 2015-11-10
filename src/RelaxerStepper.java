@@ -74,7 +74,7 @@ class RelaxerStepper implements IExpandStepper
             if (n == m)
                break;
 
-            if (!n.Connects(m))
+            if (!n.connects(m))
             {
                double fraction = AddNodeForces(n, m);
 
@@ -137,7 +137,7 @@ class RelaxerStepper implements IExpandStepper
       INode nStart = e.Start;
       INode nEnd = e.End;
 
-      XY d = nEnd.GetPos().Minus(nStart.GetPos());
+      XY d = nEnd.getPos().Minus(nStart.getPos());
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
@@ -153,12 +153,12 @@ class RelaxerStepper implements IExpandStepper
       double force = fd.Second * EDGE_FORCE_SCALE;
 
       XY f = d.Multiply(force);
-      nStart.AddForce(f);
-      nEnd.AddForce(f.Negate());
+      nStart.addForce(f);
+      nEnd.addForce(f.Negate());
 
 /*      if (notes != null)
       {
-         notes.add(new Annotation(nStart.GetPos(), nEnd.GetPos(), 128, 128, 255,
+         notes.add(new Annotation(nStart.getPos(), nEnd.getPos(), 128, 128, 255,
                String.format("%6.4f\n%6.4f", force, ratio)));
       } */
 
@@ -168,9 +168,9 @@ class RelaxerStepper implements IExpandStepper
    // returns separation as a fraction of summed_radii
    private double AddNodeForces(INode node1, INode node2)
    {
-      XY d = node2.GetPos().Minus(node1.GetPos());
-      double adjusted_radius = Math.min(m_node_dists[node1.GetIdx()][node2.GetIdx()],
-            node1.GetRad() + node2.GetRad());
+      XY d = node2.getPos().Minus(node1.getPos());
+      double adjusted_radius = Math.min(m_node_dists[node1.getIdx()][node2.getIdx()],
+            node1.getRad() + node2.getRad());
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
@@ -189,12 +189,12 @@ class RelaxerStepper implements IExpandStepper
          double force = fd.Second * NODE_FORCE_SCALE;
 
          XY f = d.Multiply(force);
-         node1.AddForce(f);
-         node2.AddForce(f.Negate());
+         node1.addForce(f);
+         node2.addForce(f.Negate());
 
 /*         if (notes != null)
          {
-            notes.add(new Annotation(node1.GetPos(), node2.GetPos(), 255, 128, 128,
+            notes.add(new Annotation(node1.getPos(), node2.getPos(), 255, 128, 128,
                   String.format("%6.4f\n%6.4f", force, 1 - ratio)));
          } */
       }
@@ -204,14 +204,14 @@ class RelaxerStepper implements IExpandStepper
 
    private double AddNodeEdgeForces(DirectedEdge e, INode n)
    {
-      Util.NEDRet vals = Util.NodeEdgeDist(n.GetPos(), e.Start.GetPos(), e.End.GetPos());
+      Util.NEDRet vals = Util.NodeEdgeDist(n.getPos(), e.Start.getPos(), e.End.getPos());
 
       if (vals == null)
          return 1.0;
 
-      double summed_radii = Math.min(m_node_dists[e.Start.GetIdx()][n.GetIdx()],
-            Math.min(m_node_dists[e.End.GetIdx()][n.GetIdx()],
-            n.GetRad() + e.Width));
+      double summed_radii = Math.min(m_node_dists[e.Start.getIdx()][n.getIdx()],
+            Math.min(m_node_dists[e.End.getIdx()][n.getIdx()],
+            n.getRad() + e.Width));
 
       if (vals.Dist > summed_radii)
       {
@@ -224,11 +224,11 @@ class RelaxerStepper implements IExpandStepper
 
       XY f = vals.Direction.Multiply(force);
 
-      n.AddForce(f);
+      n.addForce(f);
       // the divide by two seems to be important, otherwise we can add "momentum" to the system and it can spin without ever converging
       f = f.Negate().Divide(2);
-      e.Start.AddForce(f);
-      e.End.AddForce(f);
+      e.Start.addForce(f);
+      e.End.addForce(f);
 
       return ratio;
    }
@@ -237,12 +237,12 @@ class RelaxerStepper implements IExpandStepper
    {
       for(INode nj : m_graph.AllGraphNodes())
       {
-         int j = nj.GetIdx();
+         int j = nj.getIdx();
          for(INode nk : m_graph.AllGraphNodes())
          {
-            int k = nk.GetIdx();
+            int k = nk.getIdx();
 
-            m_node_dists[j][k] = Math.min(nj.GetRad() + nk.GetRad(),
+            m_node_dists[j][k] = Math.min(nj.getRad() + nk.getRad(),
                   m_node_dists[j][k]);
          }
       }

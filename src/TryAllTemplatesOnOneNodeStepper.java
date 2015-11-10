@@ -32,7 +32,7 @@ class TryAllTemplatesOnOneNodeStepper implements IExpandStepper
       if (m_templates.size() == 0)
       {
          return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
-               null, "Node: " + m_node.GetName() + " failed to expand");
+               null, "Node: " + m_node.getName() + " failed to expand");
       }
 
       Template t = Util.RemoveRandom(m_random, m_templates);
@@ -41,7 +41,7 @@ class TryAllTemplatesOnOneNodeStepper implements IExpandStepper
             m_graph, m_node, t, m_random);
 
       return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
-            child, "Trying to expand node: " + m_node.GetName() + " with template: " + t.GetName());
+            child, "Trying to expand node: " + m_node.getName() + " with template: " + t.GetName());
    }
 
    public static void SetChildFactory(IChildFactory factory)

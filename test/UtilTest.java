@@ -3,7 +3,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -418,7 +417,7 @@ public class UtilTest
    {
       Node ret = new Node("", "", "", radius);
 
-      ret.SetPos(new XY(x, y));
+      ret.setPos(new XY(x, y));
 
       return ret;
    }

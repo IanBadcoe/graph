@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 abstract class GeomLayout
 {
-   interface GeomLayoutCreateFromNode
+   interface IGeomLayoutCreateFromNode
    {
       GeomLayout create(INode n);
    }

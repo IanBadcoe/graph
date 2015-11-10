@@ -53,8 +53,8 @@ class Template
 
    boolean Expand(Graph graph, INode target, Random random)
    {
-      Collection<DirectedEdge> target_in_connections = target.GetInConnections();
-      Collection<DirectedEdge> target_out_connections = target.GetOutConnections();
+      Collection<DirectedEdge> target_in_connections = target.getInConnections();
+      Collection<DirectedEdge> target_out_connections = target.getOutConnections();
 
       if (m_num_in_nodes != target_in_connections.size())
       {
@@ -79,7 +79,7 @@ class Template
          {
             INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.GeomCreator, nr.Radius);
             template_to_graph.put(nr, n);
-            n.SetColour(nr.Colour);
+            n.setColour(nr.Colour);
          }
       }
 
@@ -149,7 +149,7 @@ class Template
          {
             INode positionOn = template_to_graph.get(nr.PositionOn);
 
-            XY pos = positionOn.GetPos();
+            XY pos = positionOn.getPos();
             XY towards_step = new XY();
             XY away_step = new XY();
 
@@ -157,7 +157,7 @@ class Template
             {
                INode positionTowards = template_to_graph.get(nr.PositionTowards);
 
-               XY d = positionTowards.GetPos().Minus(pos);
+               XY d = positionTowards.getPos().Minus(pos);
 
                towards_step = d.Multiply(0.1);
             }
@@ -166,7 +166,7 @@ class Template
             {
                INode positionAwayFrom = template_to_graph.get(nr.PositionAwayFrom);
 
-               XY d = positionAwayFrom.GetPos().Minus(pos);
+               XY d = positionAwayFrom.getPos().Minus(pos);
 
                away_step = d.Multiply(0.1);
             }
@@ -184,7 +184,7 @@ class Template
 
             INode n = template_to_graph.get(nr);
 
-            n.SetPos(pos);
+            n.setPos(pos);
          }
       }
 
@@ -199,7 +199,7 @@ class Template
    private void ApplyConnections(INode node_replacing, HashMap<NodeRecord, INode> template_to_graph,
                          Graph graph)
    {
-      for(DirectedEdge e : node_replacing.GetConnections())
+      for(DirectedEdge e : node_replacing.getConnections())
       {
          graph.Disconnect(e.Start, e.End);
       }
@@ -243,12 +243,12 @@ class Template
       final public String Codes;                // copied onto node
       final public double Radius;
       final public int Colour;
-      final public GeomLayout.GeomLayoutCreateFromNode GeomCreator;
+      final public GeomLayout.IGeomLayoutCreateFromNode GeomCreator;
 
       NodeRecord(NodeType type, String name,
             boolean nudge, NodeRecord positionOn, NodeRecord positionTowards, NodeRecord positionAwayFrom,
             String codes, double radius, int colour,
-            GeomLayout.GeomLayoutCreateFromNode geomCreator)
+            GeomLayout.IGeomLayoutCreateFromNode geomCreator)
       {
          Type = type;
          Name = name;

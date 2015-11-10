@@ -93,9 +93,9 @@ public class DirectedEdgeTest
       DirectedEdge e1 = new DirectedEdge(n1, n2, 0, 0, 0);
 
       assertEquals(0, e1.Length(), 0);
-      n1.SetPos(new XY(1, 0));
+      n1.setPos(new XY(1, 0));
       assertEquals(1, e1.Length(), 0);
-      n2.SetPos(new XY(0, 1));
+      n2.setPos(new XY(0, 1));
       assertEquals(Math.sqrt(2), e1.Length(), 0);
    }
 

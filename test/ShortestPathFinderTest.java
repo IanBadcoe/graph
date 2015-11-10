@@ -47,7 +47,7 @@ public class ShortestPathFinderTest
       {
          for(int j = 0; j < g.NumNodes(); j++)
          {
-            assertEquals(exp[i][j], ans[nodes[i].GetIdx()][nodes[j].GetIdx()], 1e-9);
+            assertEquals(exp[i][j], ans[nodes[i].getIdx()][nodes[j].getIdx()], 1e-9);
          }
       }
    }

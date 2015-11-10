@@ -42,9 +42,9 @@ class EdgeAdjusterStepper implements IExpandStepper
    {
       INode c = m_graph.AddNode("c", "", "EdgeExtend", m_edge.Width);
 
-      XY mid = m_edge.Start.GetPos().Plus(m_edge.End.GetPos()).Divide(2);
+      XY mid = m_edge.Start.getPos().Plus(m_edge.End.getPos()).Divide(2);
 
-      c.SetPos(mid);
+      c.setPos(mid);
 
       m_graph.Disconnect(m_edge.Start, m_edge.End);
       // idea of lengths is to force no more length but allow

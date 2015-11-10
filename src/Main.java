@@ -183,9 +183,9 @@ public class Main extends processing.core.PApplet
       INode expander = ret.AddNode("Expander", "e", "Seed", 55f);
       INode end = ret.AddNode("End", ">", "Seed", 55f);
 
-      start.SetPos(new XY(-100, 0));
-      expander.SetPos(new XY(0, 0));
-      end.SetPos(new XY(0, 100));
+      start.setPos(new XY(-100, 0));
+      expander.setPos(new XY(0, 0));
+      end.setPos(new XY(0, 100));
 
       ret.Connect(start, expander, 90, 110, 10);
       ret.Connect(expander, end, 90, 110, 10);
@@ -229,36 +229,36 @@ public class Main extends processing.core.PApplet
    private static void DrawNode(INode n)
    {
       s_app.noStroke();
-      s_app.fill(n.GetColour());
-      s_app.ellipse((float) n.GetPos().X, (float) n.GetPos().Y,
-            (float) n.GetRad(), (float) n.GetRad());
+      s_app.fill(n.getColour());
+      s_app.ellipse((float) n.getPos().X, (float) n.getPos().Y,
+            (float) n.getRad(), (float) n.getRad());
    }
 
    private static void DrawLabel(INode n)
    {
       s_app.fill(255, 255, 255);
-      s_app.text(n.GetName(),
-            (float) n.GetPos().X, (float) n.GetPos().Y);
+      s_app.text(n.getName(),
+            (float) n.getPos().X, (float) n.getPos().Y);
    }
 
    private static void DrawConnections(INode n, boolean show_arrows)
    {
       // in connections are drawn by the other node...
-      for(DirectedEdge e : n.GetOutConnections())
+      for(DirectedEdge e : n.getOutConnections())
       {
          s_app.stroke(e.GetColour());
          s_app.strokeWeight((float)(e.Width * 1.75));
-         Line(e.Start.GetPos(), e.End.GetPos());
+         Line(e.Start.getPos(), e.End.getPos());
 
          if (show_arrows)
          {
-            XY d = e.End.GetPos().Minus(e.Start.GetPos());
+            XY d = e.End.getPos().Minus(e.Start.getPos());
             d = d.Divide(10);
 
             XY rot = new XY(-d.Y, d.X);
 
-            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Minus(rot));
-            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Plus(rot));
+            Line(e.End.getPos(), e.End.getPos().Minus(d).Minus(rot));
+            Line(e.End.getPos(), e.End.getPos().Minus(d).Plus(rot));
          }
       }
    }

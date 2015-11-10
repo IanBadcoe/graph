@@ -80,7 +80,7 @@ public class TemplateBuilder
          String positionAwayFromName,
          String codes, double radius,
          int colour,
-         GeomLayout.GeomLayoutCreateFromNode geomCreator) throws TemplateException
+         GeomLayout.IGeomLayoutCreateFromNode geomCreator) throws TemplateException
    {
       if (name.contains("->"))
          throw new IllegalArgumentException("Node name: '" + name + "' cannot contain '->'.");

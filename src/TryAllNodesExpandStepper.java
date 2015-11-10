@@ -16,7 +16,7 @@ public class TryAllNodesExpandStepper implements IExpandStepper
    {
       m_graph = graph;
       m_templates = templates;
-      m_all_nodes = graph.AllGraphNodes().stream().filter(n -> n.GetCodes().contains("e"))
+      m_all_nodes = graph.AllGraphNodes().stream().filter(n -> n.getCodes().contains("e"))
             .collect(Collectors.toCollection(ArrayList::new));
       m_random = random;
    }
@@ -53,7 +53,7 @@ public class TryAllNodesExpandStepper implements IExpandStepper
             m_graph, node, templates, m_random);
 
       return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
-            child, "Trying to expand node: " + node.GetName());
+            child, "Trying to expand node: " + node.getName());
    }
 
    public static void SetChildFactory(IChildFactory factory)

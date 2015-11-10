@@ -68,11 +68,6 @@ class XY
       return new XY(X * f, Y * f);
    }
 
-   double Length()
-   {
-      return Math.sqrt(X * X + Y * Y);
-   }
-
    XY Min(XY rhs)
    {
       return new XY(Math.min(X, rhs.X),
@@ -93,5 +88,15 @@ class XY
    double Dot(XY rhs)
    {
       return X * rhs.X + Y * rhs.Y;
+   }
+
+   public double Length2()
+   {
+      return X * X + Y * Y;
+   }
+
+   double Length()
+   {
+      return Math.sqrt(Length2());
    }
 }
