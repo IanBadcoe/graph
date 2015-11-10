@@ -4,7 +4,7 @@ class Node implements INode
 {
    Node(String name, String codes, String template, double rad)
    {
-      this(name, codes, template, GeomLayoutCircular::createFromNode, rad);
+      this(name, codes, template, DefaultLayourGreator, rad);
    }
 
    Node(String name, String codes, String template,
@@ -157,6 +157,8 @@ class Node implements INode
    {
       return m_gl_creator;
    }
+
+   public final static GeomLayout.IGeomLayoutCreateFromNode DefaultLayourGreator = GeomLayoutCircular::createFromNode;
 
    int numConnections()
    {

@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.atomic.DoubleAccumulator;
 
 import static org.junit.Assert.*;
 
@@ -405,6 +406,225 @@ public class UtilTest
          assertTrue(i == j);
 
          assertNull(Util.RemoveRandom(r1, c));
+      }
+   }
+
+   class Fake extends Curve
+   {
+      Fake()
+      {
+         super(0, 1);
+      }
+
+      @Override
+      public XY computePos(double m_start_param)
+      {
+         return null;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         return 0;
+      }
+
+      @Override
+      public boolean equals(Object o)
+      {
+         return false;
+      }
+
+      @Override
+      public Double findParamForPoint(XY first, double tol)
+      {
+         return null;
+      }
+   }
+
+   @Test
+   public void testCurveCurveIntersect_Exception()
+   {
+      CircleCurve cc = new CircleCurve(new XY(), 10);
+
+      Fake f = new Fake();
+
+      {
+         boolean thrown = false;
+
+         try
+         {
+            Util.curveCurveIntersect(cc, f);
+         }
+         catch(UnsupportedOperationException uoe)
+         {
+            thrown = true;
+         }
+
+         assertTrue(thrown);
+      }
+
+      {
+         boolean thrown = false;
+
+         try
+         {
+            Util.curveCurveIntersect(f, cc);
+         }
+         catch(UnsupportedOperationException uoe)
+         {
+            thrown = true;
+         }
+
+         assertTrue(thrown);
+      }
+   }
+
+   @Test
+   public void testCircleCircleIntersect_None()
+   {
+      // same object
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc1));
+      }
+
+      // same circle
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(), 1);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+      }
+
+      // concentric
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // non-concentric, still inside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0, 0.5), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // non-concentric, still inside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0, -0.5), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // non-concentric, still inside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0.5, 0), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // non-concentric, still inside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(-0.5, 0), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // outside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(5, 0), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // outside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(-50, 0), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // outside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0, 500), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+
+      // outside
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0, -5000), 2);
+
+         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.circleCircleIntersect(cc2, cc1));
+      }
+   }
+
+   @Test
+   public void testCircleCircleIntersect_One()
+   {
+      // one point of contact
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0, 3), 2);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.circleCircleIntersect(cc1, cc2);
+
+         assertEquals(1, ret.size());
+         assertEquals(0, ret.get(0).First, 0);
+         assertEquals(Math.PI, ret.get(0).Second, 0);
+      }
+
+      // one point of contact
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0, -3), 2);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.circleCircleIntersect(cc1, cc2);
+
+         assertEquals(1, ret.size());
+         assertEquals(Math.PI, ret.get(0).First, 0);
+         assertEquals(0, ret.get(0).Second, 0);
+      }
+   }
+
+   @Test
+   public void testCircleCircleIntersect_Two()
+   {
+      for(double ang = 0.0; ang < Math.PI * 2; ang += 0.01)
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(Math.sin(ang) * 11, Math.cos(ang) * 11), 10);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.circleCircleIntersect(cc1, cc2);
+
+         assertEquals(1, ret.size());
+         assertEquals(ang, ret.get(0).First, 1e-6);
+
+         double other_ang = ang > Math.PI ? ang - Math.PI : ang + Math.PI;
+         assertEquals(other_ang, ret.get(0).Second, 1e-6);
       }
    }
 

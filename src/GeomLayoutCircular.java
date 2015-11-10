@@ -14,7 +14,7 @@ class GeomLayoutCircular extends GeomLayout
    @Override
    Loop makeBaseGeometry()
    {
-      return new Loop(new CurveCircle(m_position, m_rad));
+      return new Loop(new CircleCurve(m_position, m_rad));
    }
 
    private final XY m_position;

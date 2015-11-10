@@ -201,10 +201,11 @@ public class NodeTest
    {
       Node n1 = new Node("", "", "", 0);
 
-      assertTrue((GeomLayout.IGeomLayoutCreateFromNode)GeomLayoutCircular::createFromNode == n1.geomLayoutCreator());
+      assertEquals(Node.DefaultLayourGreator, n1.geomLayoutCreator());
 
-      Node n2 = new Node("", "", "", NodeTest::dummy, 0);
+      GeomLayout.IGeomLayoutCreateFromNode iDummy = NodeTest::dummy;
+      Node n2 = new Node("", "", "", iDummy, 0);
 
-      assertTrue((GeomLayout.IGeomLayoutCreateFromNode)NodeTest::dummy == n2.geomLayoutCreator());
+      assertEquals(iDummy, n2.geomLayoutCreator());
    }
 }

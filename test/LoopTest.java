@@ -8,8 +8,8 @@ class LoopTest
    @Test
    void testUnion() throws Exception
    {
-//      Curve c1 = new CurveCircle(new XY(0, 0), 10);
-//      Curve c2 = new CurveCircle(new XY(0, 0), 10);
+//      Curve c1 = new CircleCurve(new XY(0, 0), 10);
+//      Curve c2 = new CircleCurve(new XY(0, 0), 10);
 //
 //      Loop l1 = new Loop(c1);
 //      Loop l2 = new Loop(c2);
@@ -19,9 +19,9 @@ class LoopTest
 //      assertEquals(1, l1.numCurves());
 //
 //      Curve c_out = l_out.getCurves().get(0);
-//      assertTrue(c_out instanceof CurveCircle);
+//      assertTrue(c_out instanceof CircleCurve);
 //
-//      CurveCircle cc_out = (CurveCircle)c_out;
+//      CircleCurve cc_out = (CircleCurve)c_out;
 //      assertEquals(new XY(0, 0), cc_out.Position);
 //      assertEquals(10, cc_out.Radius, 0);
    }

@@ -159,31 +159,34 @@ class Util
 
    public static ArrayList<OrderedPair<Double,Double>> curveCurveIntersect(Curve c1, Curve c2)
    {
-      if (c1 instanceof CurveCircle)
+      if (c1 instanceof CircleCurve)
       {
-         return circleCurveIntersect((CurveCircle)c1, c2);
+         return circleCurveIntersect((CircleCurve)c1, c2);
       }
 
       throw new UnsupportedOperationException("Unknown type of curve");
    }
 
-   private static ArrayList<OrderedPair<Double,Double>> circleCurveIntersect(CurveCircle c1, Curve c2)
+   private static ArrayList<OrderedPair<Double,Double>> circleCurveIntersect(CircleCurve c1, Curve c2)
    {
-      if (c2 instanceof CurveCircle)
+      if (c2 instanceof CircleCurve)
       {
-         return circleCircleIntersect(c1, (CurveCircle)c2);
+         return circleCircleIntersect(c1, (CircleCurve)c2);
       }
 
       throw new UnsupportedOperationException("Unknown type of curve");
    }
 
-   public static ArrayList<OrderedPair<Double,Double>> circleCircleIntersect(CurveCircle c1, CurveCircle c2)
+   public static ArrayList<OrderedPair<Double,Double>> circleCircleIntersect(CircleCurve c1, CircleCurve c2)
    {
       // coincident
       if (c1.equals(c2))
          return null;
 
       OrderedPair<XY, XY> pts = circleCircleIntersect(c1.Position, c1.Radius, c2.Position, c2.Radius);
+
+      if (pts == null)
+         return null;
 
       ArrayList<OrderedPair<Double,Double>> ret = new ArrayList<>();
 
@@ -250,10 +253,10 @@ class Util
             - 2 * (b - d) * delta / dist_2;
 
       double yi1 = (b + d) / 2
-            + (b - d) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            + (d - b) * (r1 * r1 - r2 * r2) / (2 * dist_2)
             + 2 * (a - c) * delta / dist_2;
       double yi2 = (b + d) / 2
-            + (b - d) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            + (d - b) * (r1 * r1 - r2 * r2) / (2 * dist_2)
             - 2 * (a - c) * delta / dist_2;
 
       XY p1 = new XY(xi1, yi1);

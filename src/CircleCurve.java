@@ -1,9 +1,9 @@
-class CurveCircle extends Curve
+class CircleCurve extends Curve
 {
    final public XY Position;
    final public double Radius;
 
-   CurveCircle(XY position, double radius)
+   CircleCurve(XY position, double radius)
    {
       // we'll only represent whole circles like this
       // so only this exact params will mean completely cyclic
@@ -31,10 +31,10 @@ class CurveCircle extends Curve
       if (o == this)
          return true;
 
-      if (!(o instanceof CurveCircle))
+      if (!(o instanceof CircleCurve))
          return false;
 
-      CurveCircle cc_o = (CurveCircle)o;
+      CircleCurve cc_o = (CircleCurve)o;
 
       return Position.equals(cc_o.Position) && Radius == cc_o.Radius;
    }
