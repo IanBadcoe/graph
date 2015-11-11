@@ -240,8 +240,12 @@ class Util
             * (dist - r1 + r2)
             * (-dist + r1 + r2);
 
-      // should have assured this with the ifs above...
-      assert delta_2 >= 0;
+      // should have assured delta_2 +ve with the ifs above...
+      // but rounding can give v. small negative numbers
+      assert delta_2 > -1e-6;
+
+      if (delta_2 < 0)
+         delta_2 = 0;
 
       double delta = 0.25 * Math.sqrt(delta_2);
 
@@ -254,10 +258,10 @@ class Util
 
       double yi1 = (b + d) / 2
             + (d - b) * (r1 * r1 - r2 * r2) / (2 * dist_2)
-            + 2 * (a - c) * delta / dist_2;
+            - 2 * (a - c) * delta / dist_2;
       double yi2 = (b + d) / 2
             + (d - b) * (r1 * r1 - r2 * r2) / (2 * dist_2)
-            - 2 * (a - c) * delta / dist_2;
+            + 2 * (a - c) * delta / dist_2;
 
       XY p1 = new XY(xi1, yi1);
 

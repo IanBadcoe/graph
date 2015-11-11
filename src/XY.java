@@ -22,8 +22,7 @@ class XY
 
       XY xyo = (XY)o;
 
-      return Math.abs(X - xyo.X) <= tol
-            && Math.abs(Y - xyo.Y) <= tol;
+      return this.Minus(xyo).Length() < tol;
    }
 
    @Override

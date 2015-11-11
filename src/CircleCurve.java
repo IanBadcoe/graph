@@ -13,6 +13,17 @@ class CircleCurve extends Curve
       Radius = radius;
    }
 
+   CircleCurve(XY position, double radius,
+               double start_angle, double end_angle)
+   {
+      // we'll only represent whole circles like this
+      // so only this exact params will mean completely cyclic
+      super(start_angle, end_angle);
+
+      Position = position;
+      Radius = radius;
+   }
+
    @Override
    public XY computePos(double param)
    {
@@ -50,20 +61,31 @@ class CircleCurve extends Curve
       double ang = Math.atan2(relative.X, relative.Y);
 
       // atan2 returns between -pi and + pi
+      // we use 0 -> 2pi
+      if (ang < 0.0) ang += 2 * Math.PI;
+
       if (isCyclic())
       {
-         if (ang < 0.0) ang += 2 * Math.PI;
-
          return ang;
       }
 
-      if (startParam() - ang < -tol)
-         return null;
-
-      if (ang - endParam() > tol)
+      if (!withinParams(ang, tol))
          return null;
 
       return ang;
+   }
+
+   @Override
+   public boolean withinParams(double p, double tol)
+   {
+      if (endParam() > startParam())
+         return super.withinParams(p, tol);
+
+      // otherwise the end < start because it crosses 12:00
+
+      // so we need to be either between 0:00 and end
+      // or between start and 12:00
+      return p > startParam() - tol || p < endParam() + tol;
    }
 
    boolean isCyclic()

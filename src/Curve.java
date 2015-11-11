@@ -8,6 +8,8 @@ abstract class Curve
       m_end_param = end_param;
    }
 
+   // exquisite abstractions
+
    public abstract XY computePos(double m_start_param);
 
    public abstract int hashCode();
@@ -15,6 +17,20 @@ abstract class Curve
    public abstract boolean equals(Object o);
 
    public abstract Double findParamForPoint(XY first, double tol);
+
+   public abstract Curve cloneWithChangedParams(double start, double end);
+
+   public abstract double paramCoordinateDist(double p1, double p2);
+
+   // overridden for cyclic curves
+
+   public boolean withinParams(double p, double tol)
+   {
+      return p > m_start_param - tol
+            && p < m_end_param + tol;
+   }
+
+   // concrete methods
 
    public XY startPos()
    {
