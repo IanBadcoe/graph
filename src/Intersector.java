@@ -126,7 +126,7 @@ public class Intersector
       HashMap<Curve, Splice> startSpliceMap = new HashMap<>();
       HashMap<Curve, Splice> endSpliceMap = new HashMap<>();
 
-      m_annotation_map = new HashMap<>()
+      m_annotation_map = new HashMap<>();
 
       Curve l1prev = working_loop1.get(working_loop1.size() - 1);
 
@@ -184,10 +184,13 @@ public class Intersector
             continue;
          }
 
+//         Splice next_s = findOtherEnd
 
       }
 
       m_annotation_map = null;
+
+      return null;
    }
 
    private static AnnotatedCurve findUnvisitedOutCurve(Splice s)
