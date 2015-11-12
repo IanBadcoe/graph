@@ -20,8 +20,6 @@ abstract class Curve
 
    public abstract Curve cloneWithChangedParams(double start, double end);
 
-   public abstract double paramCoordinateDist(double p1, double p2);
-
    // overridden for cyclic curves
 
    public boolean withinParams(double p, double tol)
@@ -57,11 +55,9 @@ abstract class Curve
       return m_end_param - m_start_param;
    }
 
-   ArrayList<OrderedPair<Double, Double>> intersect(Curve other)
+   public double paramCoordinateDist(double p1, double p2)
    {
-      // efficient implementation of this requires knowledge of sub-classes
-      // so hide in utility class to make me feel more comfortable
-      return Util.curveCurveIntersect(this, other);
+      return computePos(p1).Minus(computePos(p2)).Length();
    }
 
    final private double m_start_param;

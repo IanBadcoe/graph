@@ -363,4 +363,24 @@ class Util
       // shouldn't happen
       return null;
    }
+
+   // removes any positive or negative whole turns to leave a number
+   // between 0.0 and 2 PI
+   static double fixupAngle(double a)
+   {
+      while(a < 0)
+         a += Math.PI * 2;
+
+      while(a > Math.PI * 2)
+         a -= Math.PI * 2;
+
+      return a;
+   }
+
+   static boolean clockAwareAngleCompare(double a1, double a2, double tol)
+   {
+      double diff = fixupAngle(Math.abs(a1 - a2));
+
+      return diff < tol || diff > Math.PI * 2 - tol;
+   }
 }

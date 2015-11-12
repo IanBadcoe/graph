@@ -78,13 +78,7 @@ class CircleCurve extends Curve
    @Override
    public Curve cloneWithChangedParams(double start, double end)
    {
-      return null;
-   }
-
-   @Override
-   public double paramCoordinateDist(double p1, double p2)
-   {
-      return 0;
+      return new CircleCurve(Position, Radius, start, end);
    }
 
    @Override
