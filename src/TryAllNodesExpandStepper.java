@@ -38,7 +38,7 @@ public class TryAllNodesExpandStepper implements IExpandStepper
                null, "All nodes failed to expand");
       }
 
-      INode node = Util.RemoveRandom(m_random, m_all_nodes);
+      INode node = Util.removeRandom(m_random, m_all_nodes);
 
       Collection<Template> templates = m_templates.GetTemplatesCopy();
 

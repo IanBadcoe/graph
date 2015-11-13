@@ -10,23 +10,23 @@ public class UtilTest
    @Test
    public void testEdgeIntersectSimple() throws Exception
    {
-      assertNotNull(Util.EdgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(0, 1), new XY(0, -1)));
-      assertNull(Util.EdgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(1, 0), new XY(-1, 0)));
+      assertNotNull(Util.edgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(0, 1), new XY(0, -1)));
+      assertNull(Util.edgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(1, 0), new XY(-1, 0)));
 
-      assertNotNull(Util.EdgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(0, -1), new XY(0, 1)));
-      assertNull(Util.EdgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(-1, 0), new XY(1, 0)));
+      assertNotNull(Util.edgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(0, -1), new XY(0, 1)));
+      assertNull(Util.edgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(-1, 0), new XY(1, 0)));
 
-      assertNotNull(Util.EdgeIntersect(new XY(0, 1), new XY(0, -1), new XY(1, 0), new XY(-1, 0)));
-      assertNull(Util.EdgeIntersect(new XY(0, 1), new XY(0, -1), new XY(0, 1), new XY(0, -1)));
+      assertNotNull(Util.edgeIntersect(new XY(0, 1), new XY(0, -1), new XY(1, 0), new XY(-1, 0)));
+      assertNull(Util.edgeIntersect(new XY(0, 1), new XY(0, -1), new XY(0, 1), new XY(0, -1)));
 
-      assertNotNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, 0), new XY(1, 0)));
-      assertNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(0, -1), new XY(0, 1)));
+      assertNotNull(Util.edgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, 0), new XY(1, 0)));
+      assertNull(Util.edgeIntersect(new XY(0, -1), new XY(0, 1), new XY(0, -1), new XY(0, 1)));
 
-      assertNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, 2), new XY(1, 2)));
-      assertNull(Util.EdgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, -2), new XY(1, -2)));
+      assertNull(Util.edgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, 2), new XY(1, 2)));
+      assertNull(Util.edgeIntersect(new XY(0, -1), new XY(0, 1), new XY(-1, -2), new XY(1, -2)));
 
-      assertNull(Util.EdgeIntersect(new XY(2, -1), new XY(2, 1), new XY(-1, 0), new XY(1, 0)));
-      assertNull(Util.EdgeIntersect(new XY(-2, -1), new XY(-2, 1), new XY(-1, 0), new XY(1, 0)));
+      assertNull(Util.edgeIntersect(new XY(2, -1), new XY(2, 1), new XY(-1, 0), new XY(1, 0)));
+      assertNull(Util.edgeIntersect(new XY(-2, -1), new XY(-2, 1), new XY(-1, 0), new XY(1, 0)));
    }
 
    @Test
@@ -36,7 +36,7 @@ public class UtilTest
 
       for (double f : values)
       {
-         assertEquals(f, Util.EdgeIntersect(new XY(0, 0), new XY(1, 0),
+         assertEquals(f, Util.edgeIntersect(new XY(0, 0), new XY(1, 0),
                new XY(f, 0.5), new XY(f, -0.5)).First, 1e-8);
       }
    }
@@ -48,7 +48,7 @@ public class UtilTest
 
       for (double f : values)
       {
-         assertEquals(f, Util.EdgeIntersect(new XY(f, 0.5), new XY(f, -0.5),
+         assertEquals(f, Util.edgeIntersect(new XY(f, 0.5), new XY(f, -0.5),
                new XY(0, 0), new XY(1, 0)).Second, 1e-8);
       }
    }
@@ -61,14 +61,14 @@ public class UtilTest
       for (double f : values)
       {
          // increasing slant on x
-         OrderedPair<Double, Double> ret = Util.EdgeIntersect(new XY(f, 0), new XY(-f, 1),
+         OrderedPair<Double, Double> ret = Util.edgeIntersect(new XY(f, 0), new XY(-f, 1),
                new XY(0, 0), new XY(0, 1));
 
          assertEquals(0.5,  ret.First, 1e-8);
          assertEquals(0.5,  ret.Second, 1e-8);
 
          // same on y
-         ret = Util.EdgeIntersect(new XY(0, f), new XY(1, -f),
+         ret = Util.edgeIntersect(new XY(0, f), new XY(1, -f),
                new XY(0, 0), new XY(1, 0));
 
          assertEquals(0.5,  ret.First, 1e-8);
@@ -85,7 +85,7 @@ public class UtilTest
       {
          for (double g : values)
          {
-            OrderedPair<Double, Double> ret = Util.EdgeIntersect(new XY(1 + f, 0 + g), new XY(-1 + f, 0 + g),
+            OrderedPair<Double, Double> ret = Util.edgeIntersect(new XY(1 + f, 0 + g), new XY(-1 + f, 0 + g),
                   new XY(0 + f, 1 + g), new XY(0 + f, -1 + g));
 
             assertEquals(0.5, ret.First, 1e-8);
@@ -97,27 +97,27 @@ public class UtilTest
    @Test
    public void testEdgeIntersectSimple_Node() throws Exception
    {
-      assertNotNull(Util.EdgeIntersect(makeNodeAt(1, 0), makeNodeAt(-1, 0), makeNodeAt(0, 1), makeNodeAt(0, -1)));
-      assertNull(Util.EdgeIntersect(makeNodeAt(1, 0), makeNodeAt(-1, 0), makeNodeAt(1, 0), makeNodeAt(-1, 0)));
+      assertNotNull(Util.edgeIntersect(makeNodeAt(1, 0), makeNodeAt(-1, 0), makeNodeAt(0, 1), makeNodeAt(0, -1)));
+      assertNull(Util.edgeIntersect(makeNodeAt(1, 0), makeNodeAt(-1, 0), makeNodeAt(1, 0), makeNodeAt(-1, 0)));
 
-      assertNotNull(Util.EdgeIntersect(makeNodeAt(-1, 0), makeNodeAt(1, 0), makeNodeAt(0, -1), makeNodeAt(0, 1)));
-      assertNull(Util.EdgeIntersect(makeNodeAt(-1, 0), makeNodeAt(1, 0), makeNodeAt(-1, 0), makeNodeAt(1, 0)));
+      assertNotNull(Util.edgeIntersect(makeNodeAt(-1, 0), makeNodeAt(1, 0), makeNodeAt(0, -1), makeNodeAt(0, 1)));
+      assertNull(Util.edgeIntersect(makeNodeAt(-1, 0), makeNodeAt(1, 0), makeNodeAt(-1, 0), makeNodeAt(1, 0)));
 
-      assertNotNull(Util.EdgeIntersect(makeNodeAt(0, 1), makeNodeAt(0, -1), makeNodeAt(1, 0), makeNodeAt(-1, 0)));
-      assertNull(Util.EdgeIntersect(makeNodeAt(0, 1), makeNodeAt(0, -1), makeNodeAt(0, 1), makeNodeAt(0, -1)));
+      assertNotNull(Util.edgeIntersect(makeNodeAt(0, 1), makeNodeAt(0, -1), makeNodeAt(1, 0), makeNodeAt(-1, 0)));
+      assertNull(Util.edgeIntersect(makeNodeAt(0, 1), makeNodeAt(0, -1), makeNodeAt(0, 1), makeNodeAt(0, -1)));
 
-      assertNotNull(Util.EdgeIntersect(makeNodeAt(0, -1), makeNodeAt(0, 1), makeNodeAt(-1, 0), makeNodeAt(1, 0)));
-      assertNull(Util.EdgeIntersect(makeNodeAt(0, -1), makeNodeAt(0, 1), makeNodeAt(0, -1), makeNodeAt(0, 1)));
+      assertNotNull(Util.edgeIntersect(makeNodeAt(0, -1), makeNodeAt(0, 1), makeNodeAt(-1, 0), makeNodeAt(1, 0)));
+      assertNull(Util.edgeIntersect(makeNodeAt(0, -1), makeNodeAt(0, 1), makeNodeAt(0, -1), makeNodeAt(0, 1)));
    }
 
    @Test
    public void testEdgeIntersectAdjoining_Node() throws Exception
    {
       // we can detect end-collisions of edges
-      assertNotNull(Util.EdgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(-1, 0), new XY(0, 1)));
-      assertNotNull(Util.EdgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(-1, 0), new XY(0, 1)));
-      assertNotNull(Util.EdgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(0, 1), new XY(-1, 0)));
-      assertNotNull(Util.EdgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(0, 1), new XY(-1, 0)));
+      assertNotNull(Util.edgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(-1, 0), new XY(0, 1)));
+      assertNotNull(Util.edgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(-1, 0), new XY(0, 1)));
+      assertNotNull(Util.edgeIntersect(new XY(1, 0), new XY(-1, 0), new XY(0, 1), new XY(-1, 0)));
+      assertNotNull(Util.edgeIntersect(new XY(-1, 0), new XY(1, 0), new XY(0, 1), new XY(-1, 0)));
 
       Node n1 = makeNodeAt(1, 0);
       Node n2 = makeNodeAt(-1, 0);
@@ -125,10 +125,10 @@ public class UtilTest
 
       // but we don't if we know it is deliberate edge concatenation
       // e.g. if the node is shared
-      assertNull(Util.EdgeIntersect(n1, n2, n2, n3));
-      assertNull(Util.EdgeIntersect(n2, n1, n2, n3));
-      assertNull(Util.EdgeIntersect(n1, n2, n3, n2));
-      assertNull(Util.EdgeIntersect(n2, n1, n3, n2));
+      assertNull(Util.edgeIntersect(n1, n2, n2, n3));
+      assertNull(Util.edgeIntersect(n2, n1, n2, n3));
+      assertNull(Util.edgeIntersect(n1, n2, n3, n2));
+      assertNull(Util.edgeIntersect(n2, n1, n3, n2));
    }
 
    @Test
@@ -140,13 +140,13 @@ public class UtilTest
          Node n3 = makeNodeAt(0, 1);
 
          // check same adjoining-edge behaviour as we checked with nodes
-         assertNull(Util.EdgeIntersect(makeEdge(n1, n2), makeEdge(n2, n3)));
-         assertNull(Util.EdgeIntersect(makeEdge(n2, n1), makeEdge(n2, n3)));
-         assertNull(Util.EdgeIntersect(makeEdge(n1, n2), makeEdge(n3, n2)));
-         assertNull(Util.EdgeIntersect(makeEdge(n2, n1), makeEdge(n3, n2)));
+         assertNull(Util.edgeIntersect(makeEdge(n1, n2), makeEdge(n2, n3)));
+         assertNull(Util.edgeIntersect(makeEdge(n2, n1), makeEdge(n2, n3)));
+         assertNull(Util.edgeIntersect(makeEdge(n1, n2), makeEdge(n3, n2)));
+         assertNull(Util.edgeIntersect(makeEdge(n2, n1), makeEdge(n3, n2)));
       }
 
-      // just repeat a couplw of the above tests and check we get the same t values
+      // just repeat a couple of the above tests and check we get the same t values
       double[] values = {1e-6, 2e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 1e-1, 2e-1, 5e-1};
 
       Node n1 = makeNodeAt(0, 0);
@@ -160,7 +160,7 @@ public class UtilTest
          DirectedEdge e2 = makeEdge(n3, n4);
 
          {
-            DirectedEdgePair ret = Util.EdgeIntersect(e1, e2);
+            DirectedEdgePair ret = Util.edgeIntersect(e1, e2);
 
             assertEquals(e1, ret.m_e1);
             assertEquals(e2, ret.m_e2);
@@ -169,7 +169,7 @@ public class UtilTest
          }
 
          {
-            DirectedEdgePair ret = Util.EdgeIntersect(e2, e1);
+            DirectedEdgePair ret = Util.edgeIntersect(e2, e1);
 
             assertEquals(e2, ret.m_e1);
             assertEquals(e1, ret.m_e2);
@@ -187,7 +187,7 @@ public class UtilTest
       {
          double l = 10.0 + i;
 
-         OrderedPair<Double, Double> ret = Util.UnitEdgeForce(l, 10.0, 20.0);
+         OrderedPair<Double, Double> ret = Util.unitEdgeForce(l, 10.0, 20.0);
 
          assertEquals(0.0, ret.Second, 0.0);
          assertEquals(1.0, ret.First, 0.0);
@@ -195,7 +195,7 @@ public class UtilTest
 
       {
          // at 10% compression, force should be -0.1 and distortion 0.9
-         OrderedPair<Double, Double> ret = Util.UnitEdgeForce(9.0, 10.0, 20.0);
+         OrderedPair<Double, Double> ret = Util.unitEdgeForce(9.0, 10.0, 20.0);
 
          assertEquals(-0.1, ret.Second, 1e-6);
          assertEquals(0.9, ret.First, 0.0);
@@ -203,7 +203,7 @@ public class UtilTest
 
       {
          // at 10% stretch, force should be 0.1 and distortion 1.1
-         OrderedPair<Double, Double> ret = Util.UnitEdgeForce(22.0, 10.0, 20.0);
+         OrderedPair<Double, Double> ret = Util.unitEdgeForce(22.0, 10.0, 20.0);
 
          assertEquals(0.1, ret.Second, 1e-6);
          assertEquals(1.1, ret.First, 0.0);
@@ -214,7 +214,7 @@ public class UtilTest
    public void testUnitNodeForce()
    {
       {
-         OrderedPair<Double, Double> ret = Util.UnitNodeForce(1.0, 2.0);
+         OrderedPair<Double, Double> ret = Util.unitNodeForce(1.0, 2.0);
 
          // 50% compression and 50% repulsion force
          assertEquals(0.5, ret.First, 0);
@@ -222,7 +222,7 @@ public class UtilTest
       }
 
       {
-         OrderedPair<Double, Double> ret = Util.UnitNodeForce(2.0, 2.0);
+         OrderedPair<Double, Double> ret = Util.unitNodeForce(2.0, 2.0);
 
          // 0% compression and no force
          assertEquals(0, ret.First, 0);
@@ -230,7 +230,7 @@ public class UtilTest
       }
 
       {
-         OrderedPair<Double, Double> ret = Util.UnitNodeForce(4.0, 2.0);
+         OrderedPair<Double, Double> ret = Util.unitNodeForce(4.0, 2.0);
 
          // 200% of minimum size and no force
          assertEquals(0, ret.First, 0);
@@ -263,7 +263,7 @@ public class UtilTest
       XY h_ee = mat.Multiply(ee.plus(offset));
       XY h_exp_targ = mat.Multiply(exp_targ.plus(offset));
       XY h_exp_dir = mat.Multiply(exp_dir);
-      Util.NEDRet vals = Util.NodeEdgeDist(h_n, h_es, h_ee);
+      Util.NEDRet vals = Util.nodeEdgeDist(h_n, h_es, h_ee);
 
       assertEquals(exp_dist, vals.Dist, 1e-5);
       assertEquals(h_exp_targ.X, vals.Target.X, 1e-6);
@@ -357,39 +357,39 @@ public class UtilTest
          Random r1 = new Random(1);
          Random r2 = new Random(1);
 
-         int i = Util.RemoveRandom(r1, c);
+         int i = Util.removeRandom(r1, c);
 
          assertTrue(i < 4 && i > 0);
          assertEquals(2, c.size());
          assertFalse(c.contains(i));
 
-         int j = Util.RemoveRandom(r2, d);
+         int j = Util.removeRandom(r2, d);
 
          assertTrue(i == j);
 
 
-         i = Util.RemoveRandom(r1, c);
+         i = Util.removeRandom(r1, c);
 
          assertTrue(i < 4 && i > 0);
          assertEquals(1, c.size());
          assertFalse(c.contains(i));
 
-         j = Util.RemoveRandom(r2, d);
+         j = Util.removeRandom(r2, d);
 
          assertTrue(i == j);
 
 
-         i = Util.RemoveRandom(r1, c);
+         i = Util.removeRandom(r1, c);
 
          assertTrue(i < 4 && i > 0);
          assertEquals(0, c.size());
          assertFalse(c.contains(i));
 
-         j = Util.RemoveRandom(r2, d);
+         j = Util.removeRandom(r2, d);
 
          assertTrue(i == j);
 
-         assertNull(Util.RemoveRandom(r1, c));
+         assertNull(Util.removeRandom(r1, c));
       }
    }
 
@@ -505,7 +505,7 @@ public class UtilTest
       {
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc1));
       }
 
       // same circle
@@ -513,7 +513,7 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(), 1);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
       }
 
       // concentric
@@ -521,8 +521,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // non-concentric, still inside
@@ -530,8 +530,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(0, 0.5), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // non-concentric, still inside
@@ -539,8 +539,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(0, -0.5), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // non-concentric, still inside
@@ -548,8 +548,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(0.5, 0), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // non-concentric, still inside
@@ -557,8 +557,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(-0.5, 0), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // outside
@@ -566,8 +566,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(5, 0), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // outside
@@ -575,8 +575,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(-50, 0), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // outside
@@ -584,8 +584,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(0, 500), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
 
       // outside
@@ -593,8 +593,8 @@ public class UtilTest
          CircleCurve cc1 = new CircleCurve(new XY(), 1);
          CircleCurve cc2 = new CircleCurve(new XY(0, -5000), 2);
 
-         assertNull(Util.circleCircleIntersect(cc1, cc2));
-         assertNull(Util.circleCircleIntersect(cc2, cc1));
+         assertNull(Util.curveCurveIntersect(cc1, cc2));
+         assertNull(Util.curveCurveIntersect(cc2, cc1));
       }
    }
 
@@ -607,7 +607,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(0, 3), 2);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(0, ret.get(0).First, 0);
@@ -620,7 +620,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(0, -4), 3);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(Math.PI, ret.get(0).First, 0);
@@ -633,7 +633,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1.01, 0), 0.01);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(Math.PI / 2, ret.get(0).First, 0);
@@ -646,7 +646,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(-3001, 0), 3000);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(Math.PI * 3 / 2, ret.get(0).First, 0);
@@ -664,7 +664,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(Math.sin(ang), Math.cos(ang)), 1);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertNotNull(ret);
 
@@ -696,7 +696,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, 0, Math.PI * 3 / 2);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(Math.PI * 2 * 5 / 12, ret.get(0).First, 0);
@@ -711,7 +711,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, Math.PI * 3 / 2, Math.PI);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(Math.PI * 2 * 1 / 12, ret.get(0).First, 1e-6);
@@ -725,7 +725,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, 0, Math.PI * 2);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(Math.PI * 2 * 5 / 12, ret.get(0).First, 0);
@@ -739,7 +739,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, 0, Math.PI * 2);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
          assertEquals(Math.PI * 2 * 1 / 12, ret.get(0).First, 1e-6);
@@ -753,7 +753,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, 0, Math.PI * 2);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(2, ret.size());
 
@@ -773,7 +773,7 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, Math.PI, Math.PI / 2);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(2, ret.size());
 
@@ -794,11 +794,348 @@ public class UtilTest
          CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, Math.PI * 3 / 2, Math.PI);
 
          ArrayList<OrderedPair<Double, Double>> ret =
-               Util.circleCircleIntersect(cc1, cc2);
+               Util.curveCurveIntersect(cc1, cc2);
 
          assertNull(ret);
       }
    }
+
+   @Test
+   public void testLineLineIntersect()
+   {
+      // only need to sanity check as is using same internal routine as edge intersection
+      // which is tested thoroughly above
+
+      LineCurve lc1 = new LineCurve(new XY(), new XY(1, 0), 4);
+      LineCurve lc2 = new LineCurve(new XY(2, -2), new XY(0, 1), 4);
+      LineCurve lc3a = new LineCurve(new XY(0, -2), new XY(1, 0), 1, 3);
+      LineCurve lc3b = new LineCurve(new XY(-1, -2), new XY(1, 0), 1, 3);
+      LineCurve lc3c = new LineCurve(new XY(-2, -2), new XY(1, 0), 1, 3);
+
+      // crossing
+      {
+         ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc1, lc2);
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(2, ret.get(0).First, 1e-6);
+         assertEquals(2, ret.get(0).Second, 1e-6);
+      }
+
+      // parallel
+      {
+         ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc1, lc3a);
+
+         assertNull(ret);
+      }
+
+      // crossing at one end
+      {
+         ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc3a, lc2);
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(2, ret.get(0).First, 1e-6);
+         assertEquals(0, ret.get(0).Second, 1e-6);
+      }
+
+      // crossing end to end
+      {
+         ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc3b, lc2);
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(3, ret.get(0).First, 1e-6);
+         assertEquals(0, ret.get(0).Second, 1e-6);
+      }
+
+      // off the end
+      {
+         ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc3c, lc2);
+
+         assertNull(ret);
+      }
+   }
+
+   @Test
+   public void testLineCircleIntersect_None()
+   {
+      // line outside in various orientations
+      {
+         CircleCurve cc = new CircleCurve(new XY(), 1);
+         LineCurve lc1 = new LineCurve(new XY(3, 0), new XY(1, 0), 1);
+         LineCurve lc2 = new LineCurve(new XY(3, 0), new XY(-1, 0), 1);
+         LineCurve lc3 = new LineCurve(new XY(3, 0), new XY(0, 1), 1);
+         LineCurve lc4 = new LineCurve(new XY(3, 0), new XY(0, -1), 1);
+
+         assertNull(Util.curveCurveIntersect(cc, lc1));
+         assertNull(Util.curveCurveIntersect(cc, lc2));
+         assertNull(Util.curveCurveIntersect(cc, lc3));
+         assertNull(Util.curveCurveIntersect(cc, lc4));
+
+         assertNull(Util.curveCurveIntersect(lc1, cc));
+         assertNull(Util.curveCurveIntersect(lc2, cc));
+         assertNull(Util.curveCurveIntersect(lc3, cc));
+         assertNull(Util.curveCurveIntersect(lc4, cc));
+      }
+
+      // line inside in various orientations
+      {
+         CircleCurve cc = new CircleCurve(new XY(), 2);
+         LineCurve lc1 = new LineCurve(new XY(0, 0), new XY(1, 0), 1);
+         LineCurve lc2 = new LineCurve(new XY(0, 0), new XY(-1, 0), 1);
+         LineCurve lc3 = new LineCurve(new XY(0, 0), new XY(0, 1), 1);
+         LineCurve lc4 = new LineCurve(new XY(0, 0), new XY(0, -1), 1);
+
+         assertNull(Util.curveCurveIntersect(cc, lc1));
+         assertNull(Util.curveCurveIntersect(cc, lc2));
+         assertNull(Util.curveCurveIntersect(cc, lc3));
+         assertNull(Util.curveCurveIntersect(cc, lc4));
+
+         assertNull(Util.curveCurveIntersect(lc1, cc));
+         assertNull(Util.curveCurveIntersect(lc2, cc));
+         assertNull(Util.curveCurveIntersect(lc3, cc));
+         assertNull(Util.curveCurveIntersect(lc4, cc));
+      }
+   }
+
+   @Test
+   public void testLineCircleIntersect_One()
+   {
+      // line inside penetrating outwards
+      {
+         CircleCurve cc = new CircleCurve(new XY(), 2);
+         LineCurve lc1 = new LineCurve(new XY(0, 0), new XY(1, 0), 4);
+         LineCurve lc2 = new LineCurve(new XY(0, 0), new XY(-1, 0), 40);
+         LineCurve lc3 = new LineCurve(new XY(0, 0), new XY(0, 1), 400);
+         LineCurve lc4 = new LineCurve(new XY(0, 0), new XY(0, -1), 4000);
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc1);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(Math.PI / 2, ret.get(0).First, 1e-6);
+            assertEquals(2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc1, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(2, ret.get(0).First, 1e-6);
+            assertEquals(Math.PI / 2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc2);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(Math.PI * 3 / 2, ret.get(0).First, 1e-6);
+            assertEquals(2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc2, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(2, ret.get(0).First, 1e-6);
+            assertEquals(Math.PI * 3 / 2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc3);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(0, ret.get(0).First, 1e-6);
+            assertEquals(2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc3, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(2, ret.get(0).First, 1e-6);
+            assertEquals(0, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc4);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(Math.PI, ret.get(0).First, 1e-6);
+            assertEquals(2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc4, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(2, ret.get(0).First, 1e-6);
+            assertEquals(Math.PI, ret.get(0).Second, 1e-6);
+         }
+      }
+
+      // line outside penetrating outwards
+      {
+         CircleCurve cc = new CircleCurve(new XY(), 2);
+         LineCurve lc1 = new LineCurve(new XY(100, 0), new XY(-1, 0), 100);
+         LineCurve lc2 = new LineCurve(new XY(-10, 0), new XY(1, 0), 10);
+         LineCurve lc3 = new LineCurve(new XY(0, 10000), new XY(0, -1), 10000);
+         LineCurve lc4 = new LineCurve(new XY(0, -1000), new XY(0, 1), 1000);
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc1);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(Math.PI / 2, ret.get(0).First, 1e-6);
+            assertEquals(98, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc1, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(98, ret.get(0).First, 1e-6);
+            assertEquals(Math.PI / 2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc2);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(Math.PI * 3 / 2, ret.get(0).First, 1e-6);
+            assertEquals(8, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc2, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(8, ret.get(0).First, 1e-6);
+            assertEquals(Math.PI * 3 / 2, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc3);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(0, ret.get(0).First, 1e-6);
+            assertEquals(9998, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc3, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(9998, ret.get(0).First, 1e-6);
+            assertEquals(0, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc4);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(Math.PI, ret.get(0).First, 1e-6);
+            assertEquals(998, ret.get(0).Second, 1e-6);
+         }
+
+         {
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc4, cc);
+
+            assertNotNull(ret);
+            assertEquals(1, ret.size());
+            assertEquals(998, ret.get(0).First, 1e-6);
+            assertEquals(Math.PI, ret.get(0).Second, 1e-6);
+         }
+      }
+   }
+
+
+   @Test
+   public void testLineCircleIntersect_Two()
+   {
+      CircleCurve cc = new CircleCurve(new XY(), 1);
+
+      for(double d = -2; d < 2; d += 0.01)
+      {
+         {
+            LineCurve lc = new LineCurve(new XY(d, -2), new XY(0, 1), 4);
+
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(lc, cc);
+
+            if (ret == null)
+            {
+               assertTrue(Math.abs(d) > 1 - 1e-6);
+            }
+            else if (ret.size() == 1)
+            {
+               assertEquals(1, d, 1e-6);
+               assertEquals(0, lc.computePos(ret.get(0).First).X, 1e-6);
+               assertEquals(0, cc.computePos(ret.get(0).Second).X, 1e-6);
+            }
+            else
+            {
+               assertTrue(d < 1);
+               XY exp_where1 = new XY(d, Math.sqrt(1 - d * d));
+               XY exp_where2 = new XY(d, -Math.sqrt(1 - d * d));
+
+               XY obs_where1 = lc.computePos(ret.get(0).First);
+               XY obs_where2 = lc.computePos(ret.get(1).First);
+
+
+               assertTrue((exp_where1.equals(obs_where1, 1e-6) && exp_where2.equals(obs_where2, 1e-6))
+                     || (exp_where1.equals(obs_where2, 1e-6) && exp_where2.equals(obs_where1, 1e-6)));
+            }
+         }
+
+         {
+            LineCurve lc = new LineCurve(new XY(-2, d), new XY(1, 0), 4);
+
+            ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(cc, lc);
+
+            if (ret == null)
+            {
+               assertTrue(Math.abs(d) > 1 - 1e-6);
+            }
+            else if (ret.size() == 1)
+            {
+               assertEquals(1, d, 1e-6);
+               assertEquals(0, lc.computePos(ret.get(0).First).Y, 1e-6);
+               assertEquals(0, cc.computePos(ret.get(0).Second).Y, 1e-6);
+            }
+            else
+            {
+               assertTrue(d < 1);
+               XY exp_where1 = new XY(Math.sqrt(1 - d * d), d);
+               XY exp_where2 = new XY(-Math.sqrt(1 - d * d), d);
+
+               XY obs_where1 = lc.computePos(ret.get(0).Second);
+               XY obs_where2 = lc.computePos(ret.get(1).Second);
+
+
+               assertTrue((exp_where1.equals(obs_where1, 1e-6) && exp_where2.equals(obs_where2, 1e-6))
+                     || (exp_where1.equals(obs_where2, 1e-6) && exp_where2.equals(obs_where1, 1e-6)));
+            }
+         }
+      }
+   }
+
+   // ------------------
 
    private Node makeNodeAt(double x, double y)
    {

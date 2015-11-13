@@ -188,7 +188,7 @@ class Template
          }
       }
 
-      if (Util.FindCrossingEdges(graph.AllGraphEdges()).size() > 0)
+      if (Util.findCrossingEdges(graph.AllGraphEdges()).size() > 0)
       {
          return false;
       }

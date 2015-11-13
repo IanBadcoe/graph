@@ -1,3 +1,5 @@
+import java.security.InvalidParameterException;
+
 class LineCurve extends Curve
 {
    LineCurve(XY position, XY directionCosines, double length)
@@ -6,6 +8,9 @@ class LineCurve extends Curve
 
       Position = position;
       DirectionCosines = directionCosines;
+
+      if (!DirectionCosines.isUnit())
+         throw new InvalidParameterException();
    }
 
    LineCurve(XY position, XY directionCosines, double start, double end)

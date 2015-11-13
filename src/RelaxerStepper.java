@@ -105,7 +105,7 @@ class RelaxerStepper implements IExpandStepper
          ended = maxd < move_target && maxf < force_target;
       }
 
-      int crossings = Util.FindCrossingEdges(m_edges).size();
+      int crossings = Util.findCrossingEdges(m_edges).size();
 
       if (crossings > 0)
       {
@@ -147,7 +147,7 @@ class RelaxerStepper implements IExpandStepper
       double l = d.length();
       d = d.divide(l);
 
-      OrderedPair<Double, Double> fd = Util.UnitEdgeForce(l, dmin, dmax);
+      OrderedPair<Double, Double> fd = Util.unitEdgeForce(l, dmin, dmax);
 
       double ratio = fd.First;
       double force = fd.Second * EDGE_FORCE_SCALE;
@@ -180,7 +180,7 @@ class RelaxerStepper implements IExpandStepper
       double l = d.length();
       d = d.divide(l);
 
-      OrderedPair<Double, Double> fd = Util.UnitNodeForce(l, adjusted_radius);
+      OrderedPair<Double, Double> fd = Util.unitNodeForce(l, adjusted_radius);
 
       double ratio = fd.First;
 
@@ -204,7 +204,7 @@ class RelaxerStepper implements IExpandStepper
 
    private double AddNodeEdgeForces(DirectedEdge e, INode n)
    {
-      Util.NEDRet vals = Util.NodeEdgeDist(n.getPos(), e.Start.getPos(), e.End.getPos());
+      Util.NEDRet vals = Util.nodeEdgeDist(n.getPos(), e.Start.getPos(), e.End.getPos());
 
       if (vals == null)
          return 1.0;

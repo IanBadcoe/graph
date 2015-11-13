@@ -35,7 +35,7 @@ class TryAllTemplatesOnOneNodeStepper implements IExpandStepper
                null, "Node: " + m_node.getName() + " failed to expand");
       }
 
-      Template t = Util.RemoveRandom(m_random, m_templates);
+      Template t = Util.removeRandom(m_random, m_templates);
 
       IExpandStepper child = s_child_factory.MakeChild(
             m_graph, m_node, t, m_random);

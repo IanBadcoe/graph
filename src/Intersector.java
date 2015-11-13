@@ -163,26 +163,26 @@ public class Intersector
 
             XY mid_point = c.computePos((c.startParam() + c.endParam()) / 2);
 
-            ArrayList<OrderedPair<Double, Integer>> intervals
-                  = tryFindIntersections(mid_point, all_curves, curve_joints, random);
+//            ArrayList<OrderedPair<Double, Integer>> intervals
+//                  = tryFindIntersections(mid_point, all_curves, curve_joints, random);
          }
       }
 
       return null;
    }
 
-   private static ArrayList<OrderedPair<Double, Integer>>
-         tryFindIntersections(XY mid_point, HashSet<Curve> all_curves,
-                              HashSet<XY> curve_joints,
-                              Random random)
-   {
-      for(int i = 0; i < 5; i++)
-      {
-         double rand_ang = random.nextDouble() * Math.PI * 2;
-         double dx = Math.sin(rand_ang);
-         double dy = Math.cos(rand_ang);
-      }
-   }
+//   private static ArrayList<OrderedPair<Double, Integer>>
+//         tryFindIntersections(XY mid_point, HashSet<Curve> all_curves,
+//                              HashSet<XY> curve_joints,
+//                              Random random)
+//   {
+//      for(int i = 0; i < 5; i++)
+//      {
+//         double rand_ang = random.nextDouble() * Math.PI * 2;
+//         double dx = Math.sin(rand_ang);
+//         double dy = Math.cos(rand_ang);
+//      }
+//   }
 
    public static void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
                                   HashMap<Curve, AnnotatedCurve> forward_annotations_map,
