@@ -22,7 +22,7 @@ public class Box
 
    XY Center()
    {
-      return Min.Plus(Max).Divide(2);
+      return Min.plus(Max).divide(2);
    }
 
    double DX()

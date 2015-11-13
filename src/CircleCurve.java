@@ -27,7 +27,7 @@ class CircleCurve extends Curve
    @Override
    public XY computePos(double param)
    {
-      return Position.Plus(new XY(Math.sin(param), Math.cos(param)).Multiply(Radius));
+      return Position.plus(new XY(Math.sin(param), Math.cos(param)).multiply(Radius));
    }
 
    @Override
@@ -56,9 +56,9 @@ class CircleCurve extends Curve
    @Override
    public Double findParamForPoint(XY pnt, double tol)
    {
-      XY relative = pnt.Minus(Position);
+      XY relative = pnt.minus(Position);
 
-      if (Math.abs(relative.Length() - Radius) > tol)
+      if (Math.abs(relative.length() - Radius) > tol)
          return null;
 
       double ang = Math.atan2(relative.X, relative.Y);

@@ -42,7 +42,7 @@ class EdgeAdjusterStepper implements IExpandStepper
    {
       INode c = m_graph.AddNode("c", "", "EdgeExtend", m_edge.Width);
 
-      XY mid = m_edge.Start.getPos().Plus(m_edge.End.getPos()).Divide(2);
+      XY mid = m_edge.Start.getPos().plus(m_edge.End.getPos()).divide(2);
 
       c.setPos(mid);
 

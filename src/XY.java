@@ -22,7 +22,7 @@ class XY
 
       XY xyo = (XY)o;
 
-      return this.Minus(xyo).Length() < tol;
+      return this.minus(xyo).length() < tol;
    }
 
    @Override
@@ -42,60 +42,65 @@ class XY
       return ((Double)X).hashCode() * 31 + ((Double)Y).hashCode();
    }
 
-   XY Plus(XY rhs)
+   XY plus(XY rhs)
    {
       return new XY(rhs.X + X, rhs.Y + Y);
    }
 
-   XY Minus(XY rhs)
+   XY minus(XY rhs)
    {
       return new XY(X - rhs.X, Y - rhs.Y);
    }
 
-   XY Negate()
+   XY negate()
    {
       return new XY(-X, -Y);
    }
 
-   XY Divide(double f)
+   XY divide(double f)
    {
       return new XY(X / f, Y / f);
    }
 
-   XY Multiply(double f)
+   XY multiply(double f)
    {
       return new XY(X * f, Y * f);
    }
 
-   XY Min(XY rhs)
+   XY min(XY rhs)
    {
       return new XY(Math.min(X, rhs.X),
             Math.min(Y, rhs.Y));
    }
 
-   XY Max(XY rhs)
+   XY max(XY rhs)
    {
       return new XY(Math.max(X, rhs.X),
             Math.max(Y, rhs.Y));
    }
 
-   boolean IsZero()
+   boolean isZero()
    {
       return X == 0 && Y == 0;
    }
 
-   double Dot(XY rhs)
+   double dot(XY rhs)
    {
       return X * rhs.X + Y * rhs.Y;
    }
 
-   public double Length2()
+   public double length2()
    {
       return X * X + Y * Y;
    }
 
-   double Length()
+   double length()
    {
-      return Math.sqrt(Length2());
+      return Math.sqrt(length2());
+   }
+
+   public XY rot90()
+   {
+      return new XY(Y, -X);
    }
 }

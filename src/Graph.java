@@ -159,8 +159,8 @@ class Graph
          XY rad_box = new XY(n.getRad(), n.getRad());
 
          // extend by node radius
-         min = min.Min(n.getPos().Minus(rad_box));
-         max = max.Max(n.getPos().Plus(rad_box));
+         min = min.min(n.getPos().minus(rad_box));
+         max = max.max(n.getPos().plus(rad_box));
       }
 
       return new Box(min, max);

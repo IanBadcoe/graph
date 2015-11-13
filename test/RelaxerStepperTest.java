@@ -186,7 +186,7 @@ public class RelaxerStepperTest
       // shouldn't take many cycle to bring them close to the target separation
       assertTrue(count < 100);
 
-      double dist = n2.getPos().Minus(n1.getPos()).Length();
+      double dist = n2.getPos().minus(n1.getPos()).length();
 
       assertEquals(20.0, dist, 0.1);
    }
@@ -404,9 +404,9 @@ public class RelaxerStepperTest
 
          // rather a lot?
          assertTrue(count < 50000);
-         assertEquals(100, n1.getPos().Minus(n2.getPos()).Length(), 1);
-         assertEquals(100, n2.getPos().Minus(n3.getPos()).Length(), 1);
-         assertTrue(n1.getPos().Minus(n3.getPos()).Length() > 20);
+         assertEquals(100, n1.getPos().minus(n2.getPos()).length(), 1);
+         assertEquals(100, n2.getPos().minus(n3.getPos()).length(), 1);
+         assertTrue(n1.getPos().minus(n3.getPos()).length() > 20);
       }
 
       // zero node separation
@@ -442,9 +442,9 @@ public class RelaxerStepperTest
 
          // rather a lot?
          assertTrue(count < 10000);
-         assertEquals(100, n1.getPos().Minus(n2.getPos()).Length(), 1);
-         assertTrue(n1.getPos().Minus(n3.getPos()).Length() > 20);
-         assertTrue(n2.getPos().Minus(n3.getPos()).Length() > 20);
+         assertEquals(100, n1.getPos().minus(n2.getPos()).length(), 1);
+         assertTrue(n1.getPos().minus(n3.getPos()).length() > 20);
+         assertTrue(n2.getPos().minus(n3.getPos()).length() > 20);
       }
    }
 
@@ -540,7 +540,7 @@ public class RelaxerStepperTest
       assertEquals(2, e45.Length(), .1);
 
       // n4 and n5 hve enough edge length to get far enough from n1 and should do so
-      assertTrue(n1.getPos().Minus(n4.getPos()).Length() >= 6);
-      assertTrue(n1.getPos().Minus(n5.getPos()).Length() >= 6);
+      assertTrue(n1.getPos().minus(n4.getPos()).length() >= 6);
+      assertTrue(n1.getPos().minus(n5.getPos()).length() >= 6);
    }
 }

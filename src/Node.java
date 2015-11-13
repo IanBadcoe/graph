@@ -244,7 +244,7 @@ class Node implements INode
    @Override
    public void addForce(XY force)
    {
-      m_force = m_force.Plus(force);
+      m_force = m_force.plus(force);
    }
 
    @Override
@@ -256,10 +256,10 @@ class Node implements INode
    @Override
    public double step(double t)
    {
-      XY d = m_force.Multiply(t);
-      m_pos = m_pos.Plus(d);
+      XY d = m_force.multiply(t);
+      m_pos = m_pos.plus(d);
 
-      return d.Length();
+      return d.length();
    }
 
    @Override

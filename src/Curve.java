@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 abstract class Curve
 {
    Curve(double start_param, double end_param)
@@ -10,9 +8,9 @@ abstract class Curve
 
    // exquisite abstractions
 
-   public abstract XY computePos(double m_start_param);
+   public abstract XY computePos(double param);
 
-   public abstract Double findParamForPoint(XY first, double tol);
+   public abstract Double findParamForPoint(XY pnt, double tol);
 
    public abstract Curve cloneWithChangedParams(double start, double end);
 
@@ -72,7 +70,7 @@ abstract class Curve
 
    public double paramCoordinateDist(double p1, double p2)
    {
-      return computePos(p1).Minus(computePos(p2)).Length();
+      return computePos(p1).minus(computePos(p2)).length();
    }
 
    final private double m_start_param;

@@ -137,24 +137,24 @@ class RelaxerStepper implements IExpandStepper
       INode nStart = e.Start;
       INode nEnd = e.End;
 
-      XY d = nEnd.getPos().Minus(nStart.getPos());
+      XY d = nEnd.getPos().minus(nStart.getPos());
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
-      if (d.IsZero())
+      if (d.isZero())
          return 1.0;
 
-      double l = d.Length();
-      d = d.Divide(l);
+      double l = d.length();
+      d = d.divide(l);
 
       OrderedPair<Double, Double> fd = Util.UnitEdgeForce(l, dmin, dmax);
 
       double ratio = fd.First;
       double force = fd.Second * EDGE_FORCE_SCALE;
 
-      XY f = d.Multiply(force);
+      XY f = d.multiply(force);
       nStart.addForce(f);
-      nEnd.addForce(f.Negate());
+      nEnd.addForce(f.negate());
 
 /*      if (notes != null)
       {
@@ -168,17 +168,17 @@ class RelaxerStepper implements IExpandStepper
    // returns separation as a fraction of summed_radii
    private double AddNodeForces(INode node1, INode node2)
    {
-      XY d = node2.getPos().Minus(node1.getPos());
+      XY d = node2.getPos().minus(node1.getPos());
       double adjusted_radius = Math.min(m_node_dists[node1.getIdx()][node2.getIdx()],
             node1.getRad() + node2.getRad());
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
-      if (d.IsZero())
+      if (d.isZero())
          return 0.0;
 
-      double l = d.Length();
-      d = d.Divide(l);
+      double l = d.length();
+      d = d.divide(l);
 
       OrderedPair<Double, Double> fd = Util.UnitNodeForce(l, adjusted_radius);
 
@@ -188,9 +188,9 @@ class RelaxerStepper implements IExpandStepper
       {
          double force = fd.Second * NODE_FORCE_SCALE;
 
-         XY f = d.Multiply(force);
+         XY f = d.multiply(force);
          node1.addForce(f);
-         node2.addForce(f.Negate());
+         node2.addForce(f.negate());
 
 /*         if (notes != null)
          {
@@ -222,11 +222,11 @@ class RelaxerStepper implements IExpandStepper
 
       double force = (ratio - 1) * EDGE_NODE_FORCE_SCALE;
 
-      XY f = vals.Direction.Multiply(force);
+      XY f = vals.Direction.multiply(force);
 
       n.addForce(f);
       // the divide by two seems to be important, otherwise we can add "momentum" to the system and it can spin without ever converging
-      f = f.Negate().Divide(2);
+      f = f.negate().divide(2);
       e.Start.addForce(f);
       e.End.addForce(f);
 

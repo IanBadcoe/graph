@@ -252,13 +252,13 @@ public class Main extends processing.core.PApplet
 
          if (show_arrows)
          {
-            XY d = e.End.getPos().Minus(e.Start.getPos());
-            d = d.Divide(10);
+            XY d = e.End.getPos().minus(e.Start.getPos());
+            d = d.divide(10);
 
             XY rot = new XY(-d.Y, d.X);
 
-            Line(e.End.getPos(), e.End.getPos().Minus(d).Minus(rot));
-            Line(e.End.getPos(), e.End.getPos().Minus(d).Plus(rot));
+            Line(e.End.getPos(), e.End.getPos().minus(d).minus(rot));
+            Line(e.End.getPos(), e.End.getPos().minus(d).plus(rot));
          }
       }
    }

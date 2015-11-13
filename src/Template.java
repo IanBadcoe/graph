@@ -157,21 +157,21 @@ class Template
             {
                INode positionTowards = template_to_graph.get(nr.PositionTowards);
 
-               XY d = positionTowards.getPos().Minus(pos);
+               XY d = positionTowards.getPos().minus(pos);
 
-               towards_step = d.Multiply(0.1);
+               towards_step = d.multiply(0.1);
             }
 
             if (nr.PositionAwayFrom != null)
             {
                INode positionAwayFrom = template_to_graph.get(nr.PositionAwayFrom);
 
-               XY d = positionAwayFrom.getPos().Minus(pos);
+               XY d = positionAwayFrom.getPos().minus(pos);
 
-               away_step = d.Multiply(0.1);
+               away_step = d.multiply(0.1);
             }
 
-            pos = pos.Plus(towards_step).Minus(away_step);
+            pos = pos.plus(towards_step).minus(away_step);
 
             if (nr.Nudge)
             {
@@ -179,7 +179,7 @@ class Template
                // 100, so a displacement of 5 should be enough to separate things enough to avoid
                // stupid forces, while being nothing like as far as the nearest existing neighbours
                double angle = (rand.nextFloat() * (2 * Math.PI));
-               pos = pos.Plus(new XY(Math.sin(angle) * 5, Math.cos(angle) * 5));
+               pos = pos.plus(new XY(Math.sin(angle) * 5, Math.cos(angle) * 5));
             }
 
             INode n = template_to_graph.get(nr);

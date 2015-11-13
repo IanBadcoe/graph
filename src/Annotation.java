@@ -24,7 +24,7 @@ class Annotation
 
       Main.Line(P1, P2);
 
-      XY mid = P1.Plus(P2).Divide(2);
+      XY mid = P1.plus(P2).divide(2);
 
       Main.Text(Text, mid);
    }

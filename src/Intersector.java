@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created by badcoei on 11/11/2015.
@@ -16,8 +18,7 @@ public class Intersector
       }
 
       final Curve Curve;
-      boolean UsedForwards;
-      boolean UsedBackwards;
+      boolean Used;
 
       AnnotatedCurve Next;
    }
@@ -59,7 +60,7 @@ public class Intersector
       final HashMap<Curve, Splice> CurveEndSpliceMap;
    }
 
-   static LoopSet union(LoopSet ls1, LoopSet ls2, double tol)
+   static LoopSet union(LoopSet ls1, LoopSet ls2, double tol, Random random)
    {
       // simple case, also covers us being handed the same instance twice
       if (ls1.equals(ls2))
@@ -100,9 +101,6 @@ public class Intersector
          buildAnnotationChains(alc2, forward_annotations_map, reverse_annotations_map);
       }
 
-//      Loop splitl1 = new Loop(working_loop1);
-//      Loop splitl2 = new Loop(working_loop2);
-
       // now find all the splices
       // did not do this in loops above, because of complexity of some of them crossing loop-ends and some of them
       // lying on existing curve boundaries
@@ -122,31 +120,68 @@ public class Intersector
          }
       }
 
-      // Now follow edges between splices, turning as sharply right as possible
-      // to find non-divided cells and make temporary loops of them
+      // build a set of all curves and another of all AnnotatedCurves (Open)
+      // 1) pick a line that crosses at least one open AnnotationCurve
+      // 2) find all curve intersections along the line (taking care to ignore tangent touchings and not duplicate
+      //    an intersection if it occurs at a curve-curve joint)
+      // 3) calculate a count of crossings so that when we cross a curve inwards (crosses us from the right
+      //    as we look down our line) we increase the count and when we cross a curve outwards we decrease it
+      // 4) label the intervals on the line between the intersections with the count in that interval
+      // 5) only counts from zero -> 1 or from 1 -> zero are interesting
+      // 6) for 0 -> 1 crossings we are entering the output shape
+      // 6a) if the forward AnnoationCurve isn't tagged is open
+      // 6b) follow the curve forwards, removing AnnotationCurves from open
+      // 6c) when we get to a splice, find the sharpest left turn (which should be another forwards AnnotationCurve
+      // 6d) until we reach our start curve
+      // 6e) add all these curves as a (forwards) loop in the output
+      // 7) for 1 -> 0 crossings we do the reverse, following the curve backwards, turning sharpest right and
+      //    output a (reverse) loop in the output
+      // 8) for +ve -> +ve or -ve -> -ve crossings we can walk both ways around the loops just removing
+      //    the annotation edges from open
+      // 9) until there are no open AnnotationEdges
 
-      HashSet<Splice> open_splices = new HashSet<>();
-      open_splices.add(startSpliceMap.values().stream().findFirst().get());
+      HashSet<Curve> all_curves = new HashSet<>();
 
-      // we visit each edge twice, once forwards and once backwards
-      while(open_splices.size() > 0)
+      working_loops1.forEach(x -> all_curves.addAll(x));
+      working_loops2.forEach(x -> all_curves.addAll(x));
+
+      HashSet<AnnotatedCurve> open = new HashSet<>();
+
+      open.addAll(forward_annotations_map.values());
+      open.addAll(reverse_annotations_map.values());
+
+      HashSet<XY> curve_joints = all_curves.stream()
+            .map(x -> x.startPos())
+            .collect(Collectors.toCollection(HashSet::new));
+
+      while(open.size() > 0)
       {
-         Splice s = open_splices.stream().findFirst().get();
-
-         AnnotatedCurve ac = findUnvisitedOutCurve(s);
-
-         if (ac == null)
+         for(int i = 0; i < 5; i++)
          {
-            open_splices.remove(s);
+            // get any curve to help pick an intersection line
+            Curve c = open.stream().skip(random.nextInt(open.size())).findFirst().get().Curve;
 
-            continue;
+            XY mid_point = c.computePos((c.startParam() + c.endParam()) / 2);
+
+            ArrayList<OrderedPair<Double, Integer>> intervals
+                  = tryFindIntersections(mid_point, all_curves, curve_joints, random);
          }
-
-//         Splice next_s = findOtherEnd
-
       }
 
       return null;
+   }
+
+   private static ArrayList<OrderedPair<Double, Integer>>
+         tryFindIntersections(XY mid_point, HashSet<Curve> all_curves,
+                              HashSet<XY> curve_joints,
+                              Random random)
+   {
+      for(int i = 0; i < 5; i++)
+      {
+         double rand_ang = random.nextDouble() * Math.PI * 2;
+         double dx = Math.sin(rand_ang);
+         double dy = Math.cos(rand_ang);
+      }
    }
 
    public static void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
@@ -303,27 +338,5 @@ public class Intersector
       AnnotatedCurve ac_reverse_last = reverse_annotations_map.get(prev);
 
       ac_reverse_first.Next = ac_reverse_last;
-   }
-
-   private static AnnotatedCurve findUnvisitedOutCurve(Splice s)
-   {
-      if (!s.Loop1In.UsedBackwards)
-      {
-         return s.Loop1In;
-      }
-      else if (!s.Loop1Out.UsedForwards)
-      {
-         return s.Loop1Out;
-      }
-      else if (!s.Loop2In.UsedBackwards)
-      {
-         return s.Loop2In;
-      }
-      else if (!s.Loop2Out.UsedForwards)
-      {
-         return s.Loop2Out;
-      }
-
-      return null;
    }
 }

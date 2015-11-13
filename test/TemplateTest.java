@@ -54,7 +54,7 @@ public class TemplateTest {
             assertEquals("a", new_n.getName());
 
             // we offset by 5 in a random direction
-            double dist = new XY(-4, 3).Minus(new_n.getPos()).Length();
+            double dist = new XY(-4, 3).minus(new_n.getPos()).length();
             assertEquals(5, dist, 1e-6);
         }
 
@@ -118,7 +118,7 @@ public class TemplateTest {
             assertNotNull(new_n != null);
 
             // we offset by 5 in a random direction
-            double dist = new XY(10, 9).Minus(new_n.getPos()).Length();
+            double dist = new XY(10, 9).minus(new_n.getPos()).length();
             assertEquals(5, dist, 1e-6);
         }
 

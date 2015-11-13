@@ -219,7 +219,7 @@ class Util
 
    public static OrderedPair<XY, XY> circleCircleIntersect(XY c1, double r1, XY c2, double r2)
    {
-      double dist_2 = c1.Minus(c2).Length2();
+      double dist_2 = c1.minus(c2).length2();
       double dist = Math.sqrt(dist_2);
 
       // too far apart
@@ -296,20 +296,20 @@ class Util
                               XY ee)
    {
       // direction and length of edge
-      XY de = ee.Minus(es);
+      XY de = ee.minus(es);
 
       // don't expect to see and hope other forces will pull the ends apart
-      if (de.IsZero())
+      if (de.isZero())
          return null;
 
-      double le = de.Length();
-      de = de.Divide(le);
+      double le = de.length();
+      de = de.divide(le);
 
       // line from n to edge start
-      XY dnes = n.Minus(es);
+      XY dnes = n.minus(es);
 
       // project that line onto the edge direction
-      double proj = de.Dot(dnes);
+      double proj = de.dot(dnes);
 
       XY t;
       if (proj < 0)
@@ -320,7 +320,7 @@ class Util
       else if (proj < le)
       {
          // closest approach between edges
-         t = es.Plus(de.Multiply(proj));
+         t = es.plus(de.multiply(proj));
       }
       else
       {
@@ -328,14 +328,14 @@ class Util
          t = ee;
       }
 
-      XY d = t.Minus(n);
+      XY d = t.minus(n);
 
       // don't expect to see and hope other forces will pull the edge and node apart
-      if (d.IsZero())
+      if (d.isZero())
          return null;
 
-      double l = d.Length();
-      d = d.Divide(l);
+      double l = d.length();
+      d = d.divide(l);
 
       return new NEDRet(l, t, d);
    }
