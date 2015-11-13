@@ -59,40 +59,49 @@ public class Intersector
       final HashMap<Curve, Splice> CurveEndSpliceMap;
    }
 
-   // only exposed so unit-tests can set us up (the bomb)
-   static void begin()
-   {
-      m_forward_annotations_map = new HashMap<>();
-      m_reverse_annotations_map = new HashMap<>();
-   }
-
-   // only exposed so unit-tests can set us up (the bomb)
-   static void clear()
-   {
-      m_forward_annotations_map = null;
-      m_reverse_annotations_map = null;
-   }
-
-   static Loop union(Loop l1, Loop l2, double tol)
+   static LoopSet union(LoopSet ls1, LoopSet ls2, double tol)
    {
       // simple case, also covers us being handed the same instance twice
-      if (l1.equals(l2))
-         return l1;
+      if (ls1.equals(ls2))
+         return ls1;
 
-      begin();
+      ArrayList<ArrayList<Curve>> working_loops1 = new ArrayList<>();
+      for(Loop l : ls1)
+      {
+         working_loops1.add(new ArrayList<>(l.getCurves()));
+      }
 
-      ArrayList<Curve> working_loop1 = new ArrayList<>(l1.getCurves());
-      ArrayList<Curve> working_loop2 = new ArrayList<>(l2.getCurves());
+      ArrayList<ArrayList<Curve>> working_loops2 = new ArrayList<>();
+      for(Loop l : ls2)
+      {
+         working_loops2.add(new ArrayList<>(l.getCurves()));
+      }
 
       // split all curves that intersect
-      splitCurvesAtIntersections(working_loop1, working_loop2, tol);
+      for(ArrayList<Curve> alc1 : working_loops1)
+      {
+         for (ArrayList<Curve> alc2 : working_loops2)
+         {
+            splitCurvesAtIntersections(alc1, alc2, tol);
+         }
+      }
+
+      HashMap<Curve, AnnotatedCurve> forward_annotations_map = new HashMap<>();
+      HashMap<Curve, AnnotatedCurve> reverse_annotations_map = new HashMap<>();
 
       // build forward and reverse chains of annotation-curves around both loops
-      buildAnnotationChains(working_loop1);
-      buildAnnotationChains(working_loop2);
+      for(ArrayList<Curve> alc1 : working_loops1)
+      {
+         buildAnnotationChains(alc1, forward_annotations_map, reverse_annotations_map);
+      }
 
-      Loop splitl1 = new Loop(working_loop1);
-      Loop splitl2 = new Loop(working_loop2);
+      for (ArrayList<Curve> alc2 : working_loops2)
+      {
+         buildAnnotationChains(alc2, forward_annotations_map, reverse_annotations_map);
+      }
+
+//      Loop splitl1 = new Loop(working_loop1);
+//      Loop splitl2 = new Loop(working_loop2);
 
       // now find all the splices
       // did not do this in loops above, because of complexity of some of them crossing loop-ends and some of them
@@ -101,40 +110,16 @@ public class Intersector
       HashMap<Curve, Splice> startSpliceMap = new HashMap<>();
       HashMap<Curve, Splice> endSpliceMap = new HashMap<>();
 
-      Curve l1prev = working_loop1.get(working_loop1.size() - 1);
-
-      for(int i = 0; i < working_loop1.size(); i++)
+      for(ArrayList<Curve> alc1 : working_loops1)
       {
-         Curve l1curr = working_loop1.get(i);
-         XY l1_cur_start_pos = l1curr.startPos();
-         assert l1prev.endPos().equals(l1_cur_start_pos, 1e-6);
-
-         Curve l2prev = working_loop2.get(working_loop2.size() - 1);
-
-         for(int j = 0; j < working_loop2.size(); j++)
+         for (ArrayList<Curve> alc2 : working_loops2)
          {
-            Curve l2curr = working_loop2.get(j);
-            XY l2_cur_start_pos = l2curr.startPos();
-            assert l2prev.endPos().equals(l2_cur_start_pos, 1e-6);
-
-            if (l1_cur_start_pos.equals(l2_cur_start_pos, tol))
-            {
-               Splice s = new Splice(
-                     m_reverse_annotations_map.get(l1prev),
-                     m_forward_annotations_map.get(l1curr),
-                     m_reverse_annotations_map.get(l2prev),
-                     m_forward_annotations_map.get(l2curr));
-
-               startSpliceMap.put(l1curr, s);
-               startSpliceMap.put(l2curr, s);
-               endSpliceMap.put(l1prev, s);
-               endSpliceMap.put(l2prev, s);
-            }
-
-            l2prev = l2curr;
+            findSplices(alc1, alc2,
+                  forward_annotations_map,
+                  reverse_annotations_map,
+                  startSpliceMap, endSpliceMap,
+                  tol);
          }
-
-         l1prev = l1curr;
       }
 
       // Now follow edges between splices, turning as sharply right as possible
@@ -161,9 +146,51 @@ public class Intersector
 
       }
 
-      clear();
-
       return null;
+   }
+
+   public static void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
+                                  HashMap<Curve, AnnotatedCurve> forward_annotations_map,
+                                  HashMap<Curve, AnnotatedCurve> reverse_annotations_map,
+                                  HashMap<Curve, Splice> startSpliceMap,
+                                  HashMap<Curve, Splice> endSpliceMap,
+                                  double tol)
+   {
+      Curve l1prev = working_loop1.get(working_loop1.size() - 1);
+
+      for(int i = 0; i < working_loop1.size(); i++)
+      {
+         Curve l1curr = working_loop1.get(i);
+         XY l1_cur_start_pos = l1curr.startPos();
+         assert l1prev.endPos().equals(l1_cur_start_pos, 1e-6);
+
+         Curve l2prev = working_loop2.get(working_loop2.size() - 1);
+
+         for(int j = 0; j < working_loop2.size(); j++)
+         {
+            Curve l2curr = working_loop2.get(j);
+            XY l2_cur_start_pos = l2curr.startPos();
+            assert l2prev.endPos().equals(l2_cur_start_pos, 1e-6);
+
+            if (l1_cur_start_pos.equals(l2_cur_start_pos, tol))
+            {
+               Splice s = new Splice(
+                     reverse_annotations_map.get(l1prev),
+                     forward_annotations_map.get(l1curr),
+                     reverse_annotations_map.get(l2prev),
+                     forward_annotations_map.get(l2curr));
+
+               startSpliceMap.put(l1curr, s);
+               startSpliceMap.put(l2curr, s);
+               endSpliceMap.put(l1prev, s);
+               endSpliceMap.put(l2prev, s);
+            }
+
+            l2prev = l2curr;
+         }
+
+         l1prev = l1curr;
+      }
    }
 
    // non-private only for unit-tests
@@ -239,7 +266,9 @@ public class Intersector
    }
 
    // only non-private for unit-testing
-   static void buildAnnotationChains(ArrayList<Curve> curves)
+   static void buildAnnotationChains(ArrayList<Curve> curves,
+                                     HashMap<Curve, AnnotatedCurve> forward_annotations_map,
+                                     HashMap<Curve, AnnotatedCurve> reverse_annotations_map)
    {
       Curve prev = null;
 
@@ -250,28 +279,28 @@ public class Intersector
 
          if (prev != null)
          {
-            AnnotatedCurve ac_forward_prev = m_forward_annotations_map.get(prev);
-            AnnotatedCurve ac_reverse_prev = m_reverse_annotations_map.get(prev);
+            AnnotatedCurve ac_forward_prev = forward_annotations_map.get(prev);
+            AnnotatedCurve ac_reverse_prev = reverse_annotations_map.get(prev);
 
             ac_forward_prev.Next = ac_forward_curr;
             ac_reverse_curr.Next = ac_reverse_prev;
          }
 
-         m_forward_annotations_map.put(curr, ac_forward_curr);
-         m_reverse_annotations_map.put(curr, ac_reverse_curr);
+         forward_annotations_map.put(curr, ac_forward_curr);
+         reverse_annotations_map.put(curr, ac_reverse_curr);
 
          prev = curr;
       }
 
       Curve first = curves.get(0);
 
-      AnnotatedCurve ac_forward_first = m_forward_annotations_map.get(first);
-      AnnotatedCurve ac_forward_last = m_forward_annotations_map.get(prev);
+      AnnotatedCurve ac_forward_first = forward_annotations_map.get(first);
+      AnnotatedCurve ac_forward_last = forward_annotations_map.get(prev);
 
       ac_forward_last.Next = ac_forward_first;
 
-      AnnotatedCurve ac_reverse_first = m_reverse_annotations_map.get(first);
-      AnnotatedCurve ac_reverse_last = m_reverse_annotations_map.get(prev);
+      AnnotatedCurve ac_reverse_first = reverse_annotations_map.get(first);
+      AnnotatedCurve ac_reverse_last = reverse_annotations_map.get(prev);
 
       ac_reverse_first.Next = ac_reverse_last;
    }
@@ -297,19 +326,4 @@ public class Intersector
 
       return null;
    }
-
-   // for unit-tests
-   static AnnotatedCurve findForwardAnnotation(Curve c)
-   {
-      return m_forward_annotations_map.get(c);
-   }
-
-   // for unit-tests
-   static AnnotatedCurve findReverseAnnotation(Curve c)
-   {
-      return m_reverse_annotations_map.get(c);
-   }
-
-   private static HashMap<Curve, AnnotatedCurve> m_forward_annotations_map;
-   private static HashMap<Curve, AnnotatedCurve> m_reverse_annotations_map;
 }

@@ -12,10 +12,6 @@ abstract class Curve
 
    public abstract XY computePos(double m_start_param);
 
-   public abstract int hashCode();
-
-   public abstract boolean equals(Object o);
-
    public abstract Double findParamForPoint(XY first, double tol);
 
    public abstract Curve cloneWithChangedParams(double start, double end);
@@ -26,6 +22,25 @@ abstract class Curve
    {
       return p > m_start_param - tol
             && p < m_end_param + tol;
+   }
+
+   // overridden but overrides need to call these base implementations
+   public int hashCode()
+   {
+      return Double.hashCode(m_start_param) + Double.hashCode(m_end_param) * 31;
+   }
+
+   public boolean equals(Object o)
+   {
+      if (o == this)
+         return true;
+
+      if (!(o instanceof Curve))
+         return false;
+
+      Curve co = (Curve)o;
+
+      return co.startParam() == startParam() && co.endParam() == endParam();
    }
 
    // concrete methods

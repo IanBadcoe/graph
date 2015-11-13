@@ -33,7 +33,7 @@ class CircleCurve extends Curve
    @Override
    public int hashCode()
    {
-      return Position.hashCode() * 31 ^ Double.hashCode(Radius);
+      return super.hashCode() * 17 + Position.hashCode() * 31 ^ Double.hashCode(Radius);
    }
 
    @Override
@@ -43,6 +43,9 @@ class CircleCurve extends Curve
          return true;
 
       if (!(o instanceof CircleCurve))
+         return false;
+
+      if (!super.equals(o))
          return false;
 
       CircleCurve cc_o = (CircleCurve)o;
