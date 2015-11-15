@@ -495,4 +495,14 @@ class Util
 
       return diff < tol || diff > Math.PI * 2 - tol;
    }
+
+   // d1 is the unit direction vector for the reference line
+   // d2 is the unit direction vector for the line whose angle we're measuring
+   static double relativeAngle(XY d1, XY d2)
+   {
+      double rel_y = d1.dot(d2);
+      double rel_x = d1.rot90().dot(d2);
+
+      return fixupAngle(Math.atan2(rel_x, rel_y));
+   }
 }

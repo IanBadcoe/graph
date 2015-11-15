@@ -26,17 +26,13 @@ public class Intersector
    // only non-private for unit-testing
    static class Splice
    {
-      Splice(AnnotatedCurve l1in, AnnotatedCurve l1out, AnnotatedCurve l2in, AnnotatedCurve l2out)
+      Splice(AnnotatedCurve l1out, AnnotatedCurve l2out)
       {
-         Loop1In = l1in;
          Loop1Out = l1out;
-         Loop2In = l2in;
          Loop2Out = l2out;
       }
 
-      AnnotatedCurve Loop1In;
       AnnotatedCurve Loop1Out;
-      AnnotatedCurve Loop2In;
       AnnotatedCurve Loop2Out;
    }
 
@@ -88,24 +84,22 @@ public class Intersector
       }
 
       HashMap<Curve, AnnotatedCurve> forward_annotations_map = new HashMap<>();
-      HashMap<Curve, AnnotatedCurve> reverse_annotations_map = new HashMap<>();
 
       // build forward and reverse chains of annotation-curves around both loops
       for(ArrayList<Curve> alc1 : working_loops1)
       {
-         buildAnnotationChains(alc1, forward_annotations_map, reverse_annotations_map);
+         buildAnnotationChains(alc1, forward_annotations_map);
       }
 
       for (ArrayList<Curve> alc2 : working_loops2)
       {
-         buildAnnotationChains(alc2, forward_annotations_map, reverse_annotations_map);
+         buildAnnotationChains(alc2, forward_annotations_map);
       }
 
       // now find all the splices
       // did not do this in loops above, because of complexity of some of them crossing loop-ends and some of them
       // lying on existing curve boundaries
 
-      HashMap<Curve, Splice> startSpliceMap = new HashMap<>();
       HashMap<Curve, Splice> endSpliceMap = new HashMap<>();
 
       for(ArrayList<Curve> alc1 : working_loops1)
@@ -114,8 +108,7 @@ public class Intersector
          {
             findSplices(alc1, alc2,
                   forward_annotations_map,
-                  reverse_annotations_map,
-                  startSpliceMap, endSpliceMap,
+                  endSpliceMap,
                   tol);
          }
       }
@@ -148,7 +141,6 @@ public class Intersector
       HashSet<AnnotatedCurve> open = new HashSet<>();
 
       open.addAll(forward_annotations_map.values());
-      open.addAll(reverse_annotations_map.values());
 
       HashSet<XY> curve_joints = all_curves.stream()
             .map(x -> x.startPos())
@@ -194,14 +186,18 @@ public class Intersector
             if (prev_crossings == 0 && crossings == 1)
             {
                ret.add(extractPositiveLoop(
-                     intersection.First,
-                     forward_annotations_map, reverse_annotations_map));
+                     open,
+                     forward_annotations_map.get(intersection.First),
+                     forward_annotations_map,
+                     endSpliceMap));
             }
             else if (prev_crossings == 1 && crossings == 0)
             {
                ret.add(extractPositiveLoop(
-                     intersection.First,
-                     forward_annotations_map, reverse_annotations_map));
+                     open,
+                     forward_annotations_map.get(intersection.First),
+                     forward_annotations_map,
+                     endSpliceMap));
             }
             else
             {
@@ -212,12 +208,76 @@ public class Intersector
       return null;
    }
 
-   static Loop extractPositiveLoop(Curve start_curve,
+   static Loop extractPositiveLoop(
+         HashSet<AnnotatedCurve> open,
+         AnnotatedCurve start_ac,
          HashMap<Curve, AnnotatedCurve> forward_annotations_map,
-         HashMap<Curve, AnnotatedCurve> reverse_annotations_map)
+         HashMap<Curve, Splice> endSpliceMap)
    {
-      return null;
+      AnnotatedCurve curr_ac = start_ac;
+
+      ArrayList<Curve> found_curves = new ArrayList<>();
+
+      do
+      {
+         Curve c = curr_ac.Curve;
+         found_curves.add(c);
+         open.remove(curr_ac);
+
+         // look for a splice that ends this curve
+         Splice splice = endSpliceMap.get(curr_ac);
+
+         // if no splice we just follow the chain of ACs
+         if (splice == null)
+         {
+            curr_ac = curr_ac.Next;
+         }
+         else
+         {
+            AnnotatedCurve ac1 = splice.Loop1Out;
+            AnnotatedCurve ac2 = splice.Loop2Out;
+            Curve c1 = ac1.Curve;
+            Curve c2 = ac2.Curve;
+
+            // we want the sharpest left corner we can find
+            // which we do by taking the direction backwards on the incoming edge and looking for the smallest angle
+            // relative to that (because we normalise angles between 0 and 2pi, any right turns will be > pi)
+            XY rev_curr_dir = c.tangent(c.endParam()).negate();
+            XY dir1 = c1.tangent(c1.startParam());
+            XY dir2 = c2.tangent(c2.startParam());
+
+            double ang1 = Util.relativeAngle(rev_curr_dir, dir1);
+            double ang2 = Util.relativeAngle(rev_curr_dir, dir2);
+
+            if (Math.abs(ang1 - ang2) < 1e-6)
+            {
+               // if we're tangent at the point of contact
+               // then we need to look a small distance in to the curves to see which way they are bending
+               // just going to guess that .1 is a good distance here (not a total guess, for lines makes no
+               // difference and for circles is .1 rad = 6 degrees which should be enough
+
+               dir1 = c1.tangent(c1.startParam());
+               dir2 = c2.tangent(c2.startParam());
+
+               ang1 = Util.relativeAngle(rev_curr_dir, dir1);
+               ang2 = Util.relativeAngle(rev_curr_dir, dir2);
+            }
+
+            if (ang1 < ang2)
+            {
+               curr_ac = ac1;
+            }
+            else
+            {
+               curr_ac = ac2;
+            }
+         }
+      }
+      while (curr_ac != start_ac);
+
+      return new Loop(found_curves);
    }
+
 
    // non-private for unit-testing only
    static ArrayList<OrderedPair<Curve, Integer>>
@@ -329,8 +389,6 @@ public class Intersector
 
    static void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
                                   HashMap<Curve, AnnotatedCurve> forward_annotations_map,
-                                  HashMap<Curve, AnnotatedCurve> reverse_annotations_map,
-                                  HashMap<Curve, Splice> startSpliceMap,
                                   HashMap<Curve, Splice> endSpliceMap,
                                   double tol)
    {
@@ -353,13 +411,9 @@ public class Intersector
             if (l1_cur_start_pos.equals(l2_cur_start_pos, tol))
             {
                Splice s = new Splice(
-                     reverse_annotations_map.get(l1prev),
                      forward_annotations_map.get(l1curr),
-                     reverse_annotations_map.get(l2prev),
                      forward_annotations_map.get(l2curr));
 
-               startSpliceMap.put(l1curr, s);
-               startSpliceMap.put(l2curr, s);
                endSpliceMap.put(l1prev, s);
                endSpliceMap.put(l2prev, s);
             }
@@ -445,27 +499,22 @@ public class Intersector
 
    // only non-private for unit-testing
    static void buildAnnotationChains(ArrayList<Curve> curves,
-                                     HashMap<Curve, AnnotatedCurve> forward_annotations_map,
-                                     HashMap<Curve, AnnotatedCurve> reverse_annotations_map)
+                                     HashMap<Curve, AnnotatedCurve> forward_annotations_map)
    {
       Curve prev = null;
 
       for(Curve curr : curves)
       {
          AnnotatedCurve ac_forward_curr = new AnnotatedCurve(curr);
-         AnnotatedCurve ac_reverse_curr = new AnnotatedCurve(curr);
 
          if (prev != null)
          {
             AnnotatedCurve ac_forward_prev = forward_annotations_map.get(prev);
-            AnnotatedCurve ac_reverse_prev = reverse_annotations_map.get(prev);
 
             ac_forward_prev.Next = ac_forward_curr;
-            ac_reverse_curr.Next = ac_reverse_prev;
          }
 
          forward_annotations_map.put(curr, ac_forward_curr);
-         reverse_annotations_map.put(curr, ac_reverse_curr);
 
          prev = curr;
       }
@@ -476,10 +525,5 @@ public class Intersector
       AnnotatedCurve ac_forward_last = forward_annotations_map.get(prev);
 
       ac_forward_last.Next = ac_forward_first;
-
-      AnnotatedCurve ac_reverse_first = reverse_annotations_map.get(first);
-      AnnotatedCurve ac_reverse_last = reverse_annotations_map.get(prev);
-
-      ac_reverse_first.Next = ac_reverse_last;
    }
 }

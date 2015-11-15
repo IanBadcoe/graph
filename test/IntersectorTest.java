@@ -95,11 +95,9 @@ public class IntersectorTest
       curves.add(ce);
 
       HashMap<Curve, Intersector.AnnotatedCurve> forward_annotations_map = new HashMap<>();
-      HashMap<Curve, Intersector.AnnotatedCurve> reverse_annotations_map = new HashMap<>();
-      
+
       Intersector.buildAnnotationChains(curves,
-            forward_annotations_map,
-            reverse_annotations_map);
+            forward_annotations_map);
 
       for(Curve c : curves)
       {
@@ -112,12 +110,6 @@ public class IntersectorTest
       assertEquals(cd, forward_annotations_map.get(cc).Next.Curve);
       assertEquals(ce, forward_annotations_map.get(cd).Next.Curve);
       assertEquals(ca, forward_annotations_map.get(ce).Next.Curve);
-
-      assertEquals(ce, reverse_annotations_map.get(ca).Next.Curve);
-      assertEquals(ca, reverse_annotations_map.get(cb).Next.Curve);
-      assertEquals(cb, reverse_annotations_map.get(cc).Next.Curve);
-      assertEquals(cc, reverse_annotations_map.get(cd).Next.Curve);
-      assertEquals(cd, reverse_annotations_map.get(ce).Next.Curve);
    }
 
    @Test
@@ -255,19 +247,17 @@ public class IntersectorTest
       HashMap<Curve, Intersector.AnnotatedCurve> reverse_annotations_map = new HashMap<>();
 
       Intersector.buildAnnotationChains(curves1,
-            forward_annotations_map,
-            reverse_annotations_map);
+            forward_annotations_map);
 
       Intersector.buildAnnotationChains(curves2,
-            forward_annotations_map,
-            reverse_annotations_map);
+            forward_annotations_map);
 
       HashMap<Curve, Intersector.Splice> startSpliceMap = new HashMap<>();
       HashMap<Curve, Intersector.Splice> endSpliceMap = new HashMap<>();
 
       Intersector.findSplices(curves1, curves2,
-            forward_annotations_map, reverse_annotations_map,
-            startSpliceMap, endSpliceMap,
+            forward_annotations_map,
+            endSpliceMap,
             1e-6);
 
       // two splices, with two in and two out curves each
@@ -283,53 +273,32 @@ public class IntersectorTest
       for(Intersector.Splice s : unique)
       {
          HashSet<Intersector.AnnotatedCurve> l1fset = new HashSet<>();
-         HashSet<Intersector.AnnotatedCurve> l1rset = new HashSet<>();
          HashSet<Intersector.AnnotatedCurve> l2fset = new HashSet<>();
-         HashSet<Intersector.AnnotatedCurve> l2rset = new HashSet<>();
 
          Intersector.AnnotatedCurve acl1f = s.Loop1Out;
-         Intersector.AnnotatedCurve acl1r = s.Loop1In;
          Intersector.AnnotatedCurve acl2f = s.Loop2Out;
-         Intersector.AnnotatedCurve acl2r = s.Loop2In;
 
          for(int i = 0; i < 4; i++)
          {
             l1fset.add(acl1f);
-            l1rset.add(acl1r);
             l2fset.add(acl2f);
-            l2rset.add(acl2r);
 
             acl1f = acl1f.Next;
-            acl1r = acl1r.Next;
             acl2f = acl2f.Next;
-            acl2r = acl2r.Next;
          }
 
          // although we stepped four times, the loops are of length 3 and we
          // shouldn't have found any more AnnotationCurves
          assertEquals(3, l1fset.size());
-         assertEquals(3, l1rset.size());
          assertEquals(3, l2fset.size());
-         assertEquals(3, l2rset.size());
 
-         // all four loops of AnnotationCurves should be unique
-         assertTrue(Collections.disjoint(l1fset, l1rset));
+         // loops of AnnotationCurves should be unique
          assertTrue(Collections.disjoint(l1fset, l2fset));
-         assertTrue(Collections.disjoint(l1fset, l2rset));
-         assertTrue(Collections.disjoint(l1rset, l2fset));
-         assertTrue(Collections.disjoint(l1rset, l2rset));
-         assertTrue(Collections.disjoint(l2fset, l2rset));
 
          HashSet<Curve> l1fcset = l1fset.stream().map(x -> x.Curve).collect(Collectors.toCollection(HashSet::new));
-         HashSet<Curve> l1rcset = l1rset.stream().map(x -> x.Curve).collect(Collectors.toCollection(HashSet::new));
          HashSet<Curve> l2fcset = l2fset.stream().map(x -> x.Curve).collect(Collectors.toCollection(HashSet::new));
-         HashSet<Curve> l2rcset = l2rset.stream().map(x -> x.Curve).collect(Collectors.toCollection(HashSet::new));
 
-         // running either way around l1 or l2 shoiuld give same curves
-         assertTrue(l1fcset.containsAll(l1rcset));
-         assertTrue(l2fcset.containsAll(l2rcset));
-
-         // but l1 and l2 don't contain any of the same curves
+         // and l1 and l2 don't contain any of the same curves
          assertTrue(Collections.disjoint(l1fcset, l2fcset));
       }
    }

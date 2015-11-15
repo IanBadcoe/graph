@@ -1146,6 +1146,43 @@ public class UtilTest
       }
    }
 
+   @Test
+   public void testRelativeAngle()
+   {
+                              // absolute angle:
+      XY l1 = new XY(1, 0);   // Pi/2
+      XY l2 = new XY(0, 1);   // 0
+      XY l3 = new XY(-1, 0);  // 3Pi/2
+      XY l4 = new XY(0, -1);  // Pi
+
+      assertEquals(0, Util.relativeAngle(l1, l1), 1e-6);
+      assertEquals(0, Util.relativeAngle(l2, l2), 1e-6);
+      assertEquals(0, Util.relativeAngle(l3, l3), 1e-6);
+      assertEquals(0, Util.relativeAngle(l4, l4), 1e-6);
+
+      assertEquals(Math.PI / 2, Util.relativeAngle(l2, l1), 1e-6);
+      assertEquals(Math.PI / 2, Util.relativeAngle(l3, l2), 1e-6);
+      assertEquals(Math.PI / 2, Util.relativeAngle(l4, l3), 1e-6);
+      assertEquals(Math.PI / 2, Util.relativeAngle(l1, l4), 1e-6);
+
+      assertEquals(Math.PI, Util.relativeAngle(l1, l3), 1e-6);
+      assertEquals(Math.PI, Util.relativeAngle(l2, l4), 1e-6);
+      assertEquals(Math.PI, Util.relativeAngle(l3, l1), 1e-6);
+      assertEquals(Math.PI, Util.relativeAngle(l4, l2), 1e-6);
+
+      assertEquals(Math.PI * 3 / 2, Util.relativeAngle(l1, l2), 1e-6);
+      assertEquals(Math.PI * 3 / 2, Util.relativeAngle(l2, l3), 1e-6);
+      assertEquals(Math.PI * 3 / 2, Util.relativeAngle(l3, l4), 1e-6);
+      assertEquals(Math.PI * 3 / 2, Util.relativeAngle(l4, l1), 1e-6);
+
+      XY l5 = new XY(Math.sin(1), Math.cos(1));
+
+      assertEquals(1, Util.relativeAngle(l2, l5), 1e-6);
+      assertEquals(1 + Math.PI / 2, Util.relativeAngle(l3, l5), 1e-6);
+      assertEquals(1 + Math.PI, Util.relativeAngle(l4, l5), 1e-6);
+      assertEquals(1 + Math.PI * 3 / 2, Util.relativeAngle(l1, l5), 1e-6);
+   }
+
    // ------------------
 
    private Node makeNodeAt(double x, double y)
