@@ -60,7 +60,7 @@ public class Intersector
       final HashMap<Curve, Splice> CurveEndSpliceMap;
    }
 
-   static LoopSet union(LoopSet ls1, LoopSet ls2, double tol, Random random)
+   public static LoopSet union(LoopSet ls1, LoopSet ls2, double tol, Random random)
    {
       // simple case, also covers us being handed the same instance twice
       if (ls1.equals(ls2))
@@ -154,8 +154,17 @@ public class Intersector
             .map(x -> x.startPos())
             .collect(Collectors.toCollection(HashSet::new));
 
+      // bounding box allows us to create cutting lines that definitely exceed all loop boundaries
+      Box bounds = all_curves.stream().map(x -> x.boundingBox()).reduce(new Box(), (b, a) -> a.union(b));
+
+      // but all we need from that is the max length in the box
+      Double diameter = bounds.diagonal().length();
+
+      LoopSet ret = new LoopSet();
+
       while(open.size() > 0)
       {
+         ArrayList<OrderedPair<Curve, Integer>> intervals = null;
          for(int i = 0; i < 5; i++)
          {
             // get any curve to help pick an intersection line
@@ -163,28 +172,162 @@ public class Intersector
 
             XY mid_point = c.computePos((c.startParam() + c.endParam()) / 2);
 
-//            ArrayList<OrderedPair<Double, Integer>> intervals
-//                  = tryFindIntersections(mid_point, all_curves, curve_joints, random);
+            intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random);
+
+            if (intervals != null)
+               break;
+         }
+
+         // failure, don't really expect this has have had multiple tries and it
+         // shouldn't be so hard to find a good cutting line
+         if (intervals == null)
+            return null;
+
+         // now use the intervals to decide what to do with the AnnotationEdges
+         int prev_crossings = 0;
+
+         for(OrderedPair<Curve, Integer> intersection : intervals)
+         {
+            int crossings = intersection.Second;
+
+            // three cases, 0 -> 1, 1 -> 0 and anything else
+            if (prev_crossings == 0 && crossings == 1)
+            {
+               ret.add(extractPositiveLoop(
+                     intersection.First,
+                     forward_annotations_map, reverse_annotations_map));
+            }
+            else if (prev_crossings == 1 && crossings == 0)
+            {
+               ret.add(extractPositiveLoop(
+                     intersection.First,
+                     forward_annotations_map, reverse_annotations_map));
+            }
+            else
+            {
+            }
          }
       }
 
       return null;
    }
 
-//   private static ArrayList<OrderedPair<Double, Integer>>
-//         tryFindIntersections(XY mid_point, HashSet<Curve> all_curves,
-//                              HashSet<XY> curve_joints,
-//                              Random random)
-//   {
-//      for(int i = 0; i < 5; i++)
-//      {
-//         double rand_ang = random.nextDouble() * Math.PI * 2;
-//         double dx = Math.sin(rand_ang);
-//         double dy = Math.cos(rand_ang);
-//      }
-//   }
+   static Loop extractPositiveLoop(Curve start_curve,
+         HashMap<Curve, AnnotatedCurve> forward_annotations_map,
+         HashMap<Curve, AnnotatedCurve> reverse_annotations_map)
+   {
+      return null;
+   }
 
-   public static void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
+   // non-private for unit-testing only
+   static ArrayList<OrderedPair<Curve, Integer>>
+         tryFindIntersections(
+         XY mid_point,
+         HashSet<Curve> all_curves,
+         HashSet<XY> curve_joints,
+         double diameter, double tol,
+         Random random)
+   {
+      for(int i = 0; i < 5; i++)
+      {
+         double rand_ang = random.nextDouble() * Math.PI * 2;
+         double dx = Math.sin(rand_ang);
+         double dy = Math.cos(rand_ang);
+
+         XY direction = new XY(dx, dy);
+
+         XY start = mid_point.minus(direction.multiply(diameter));
+
+         LineCurve lc = new LineCurve(start, direction, 2 * diameter);
+
+         if (!lineClearsPoints(lc, curve_joints, tol))
+            continue;
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               tryFindCurveIntersections(lc, all_curves);
+
+         if (ret != null)
+            return ret;
+      }
+
+      return null;
+   }
+
+   private static boolean lineClearsPoints(LineCurve lc, HashSet<XY> curve_joints, double tol)
+   {
+      for(XY pnt : curve_joints)
+      {
+         if (Math.abs(pnt.minus(lc.Position).dot(lc.Direction.rot90())) < tol)
+            return false;
+      }
+
+      return true;
+   }
+
+   // returns a set of <Curve, int> pairs sorted by distance down the line
+   // at which the intersection occurs
+   //
+   // the curve is the curve intersecting and the integer is the
+   // crossing number after we have passed that intersection
+   //
+   // the crossing number is implicitly zero before the first intersection
+   //
+   // non-private only for unit-testing
+   static ArrayList<OrderedPair<Curve, Integer>>
+   tryFindCurveIntersections(
+            LineCurve lc,
+            HashSet<Curve> all_curves)
+   {
+      HashSet<OrderedTriplet<Curve, Double, Double>> intersecting_curves = new HashSet<>();
+
+      for(Curve c : all_curves)
+      {
+         ArrayList<OrderedPair<Double, Double>> intersections =
+               Util.curveCurveIntersect(lc, c);
+
+         if (intersections == null)
+            continue;
+
+         for(OrderedPair<Double, Double> intersection : intersections)
+         {
+            double dot = c.tangent(intersection.Second).dot(lc.Direction.rot270());
+
+            // chicken out and scrap any line that has a glancing contact with a curve
+            // a bit more than .1 degrees
+            if (Math.abs(dot) < 0.001)
+               return null;
+
+            intersecting_curves.add(new OrderedTriplet<>(c, intersection.First, dot));
+         }
+      }
+
+      // sort by distance down the line
+      ArrayList<OrderedTriplet<Curve, Double, Double>> ordered =
+            intersecting_curves.stream().sorted((x, y) -> (int)Math.signum(x.Second - y.Second))
+                  .collect(Collectors.toCollection(ArrayList::new));
+
+      int crossings = 0;
+
+      ArrayList<OrderedPair<Curve, Integer>> ret = new ArrayList<>();
+
+      for(OrderedTriplet<Curve, Double, Double> entry : ordered)
+      {
+         if (entry.Third > 0)
+         {
+            crossings++;
+         }
+         else
+         {
+            crossings--;
+         }
+
+         ret.add(new OrderedPair<>(entry.First, crossings));
+      }
+
+      return ret;
+   }
+
+   static void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
                                   HashMap<Curve, AnnotatedCurve> forward_annotations_map,
                                   HashMap<Curve, AnnotatedCurve> reverse_annotations_map,
                                   HashMap<Curve, Splice> startSpliceMap,

@@ -431,6 +431,18 @@ public class UtilTest
       }
 
       @Override
+      public Box boundingBox()
+      {
+         return null;
+      }
+
+      @Override
+      public XY tangent(Double second)
+      {
+         return null;
+      }
+
+      @Override
       public double paramCoordinateDist(double p1, double p2)
       {
          return 0;
@@ -1064,7 +1076,6 @@ public class UtilTest
          }
       }
    }
-
 
    @Test
    public void testLineCircleIntersect_Two()

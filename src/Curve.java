@@ -14,6 +14,10 @@ abstract class Curve
 
    public abstract Curve cloneWithChangedParams(double start, double end);
 
+   public abstract Box boundingBox();
+
+   public abstract XY tangent(Double param);
+
    // overridden for cyclic curves
 
    public boolean withinParams(double p, double tol)

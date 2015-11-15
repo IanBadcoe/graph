@@ -104,6 +104,11 @@ class XY
       return new XY(Y, -X);
    }
 
+   public XY rot270()
+   {
+      return new XY(-Y, X);
+   }
+
    public boolean isUnit()
    {
       return Math.abs(length() - 1) < 1e-6;

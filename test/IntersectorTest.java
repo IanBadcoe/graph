@@ -1,9 +1,6 @@
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -58,6 +55,18 @@ public class IntersectorTest
 
       @Override
       public Curve cloneWithChangedParams(double start, double end)
+      {
+         return null;
+      }
+
+      @Override
+      public Box boundingBox()
+      {
+         return null;
+      }
+
+      @Override
+      public XY tangent(Double second)
       {
          return null;
       }
@@ -322,6 +331,127 @@ public class IntersectorTest
 
          // but l1 and l2 don't contain any of the same curves
          assertTrue(Collections.disjoint(l1fcset, l2fcset));
+      }
+   }
+
+   @Test
+   public void testTryFindIntersections()
+   {
+      // one circle, expect [0,] 1, 0
+      {
+         CircleCurve cc = new CircleCurve(new XY(), 5);
+
+         HashSet<Curve> all_curves = new HashSet<>();
+         all_curves.add(cc);
+
+         HashSet<XY> curve_joints = new HashSet<>();
+         curve_joints.add(cc.startPos());
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               Intersector.tryFindIntersections(
+                     new XY(0, -5),
+                     all_curves,
+                     curve_joints,
+                     10, 1e-6,
+                     new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(2, ret.size());
+         assertEquals(cc, ret.get(0).First);
+         assertEquals(1, (int)ret.get(0).Second);
+         assertEquals(cc, ret.get(1).First);
+         assertEquals(0, (int)ret.get(1).Second);
+      }
+
+      // one circle, built from two half-circles, should still work
+      // expect [0,] 1, 0
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 5, 0, Math.PI);
+         CircleCurve cc2 = new CircleCurve(new XY(), 5, Math.PI, 2 * Math.PI);
+
+         HashSet<Curve> all_curves = new HashSet<>();
+         all_curves.add(cc1);
+         all_curves.add(cc2);
+
+         LineCurve lc = new LineCurve(new XY(-10, 0), new XY(1, 0), 20);
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               Intersector.tryFindCurveIntersections(
+                     lc,
+                     all_curves);
+
+         assertNotNull(ret);
+         assertEquals(2, ret.size());
+         assertEquals(cc2, ret.get(0).First);
+         assertEquals(1, (int)ret.get(0).Second);
+         assertEquals(cc1, ret.get(1).First);
+         assertEquals(0, (int)ret.get(1).Second);
+      }
+
+      // two concentric circles, expect [0,] 1, 2, 1, 0
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 5);
+         CircleCurve cc2 = new CircleCurve(new XY(), 3);
+
+         HashSet<Curve> all_curves = new HashSet<>();
+         all_curves.add(cc1);
+         all_curves.add(cc2);
+
+         HashSet<XY> curve_joints = new HashSet<>();
+         curve_joints.add(cc1.startPos());
+         curve_joints.add(cc2.startPos());
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               Intersector.tryFindIntersections(
+                     new XY(0, 0),  // use centre to force hitting both circles
+                     all_curves,
+                     curve_joints,
+                     10, 1e-6,
+                     new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(4, ret.size());
+         assertEquals(cc1, ret.get(0).First);
+         assertEquals(1, (int)ret.get(0).Second);
+         assertEquals(cc2, ret.get(1).First);
+         assertEquals(2, (int)ret.get(1).Second);
+         assertEquals(cc2, ret.get(2).First);
+         assertEquals(1, (int)ret.get(2).Second);
+         assertEquals(cc1, ret.get(3).First);
+         assertEquals(0, (int)ret.get(3).Second);
+      }
+
+      // two concentric circles, inner one -ve, expect [0,] 1, 0, 1, 0
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 5);
+         CircleCurve cc2 = new CircleCurve(new XY(), 3, CircleCurve.RotationDirection.Reverse);
+
+         HashSet<Curve> all_curves = new HashSet<>();
+         all_curves.add(cc1);
+         all_curves.add(cc2);
+
+         HashSet<XY> curve_joints = new HashSet<>();
+         curve_joints.add(cc1.startPos());
+         curve_joints.add(cc2.startPos());
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               Intersector.tryFindIntersections(
+                     new XY(0, 0),  // use centre to force hitting both circles
+                     all_curves,
+                     curve_joints,
+                     10, 1e-6,
+                     new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(4, ret.size());
+         assertEquals(cc1, ret.get(0).First);
+         assertEquals(1, (int)ret.get(0).Second);
+         assertEquals(cc2, ret.get(1).First);
+         assertEquals(0, (int)ret.get(1).Second);
+         assertEquals(cc2, ret.get(2).First);
+         assertEquals(1, (int)ret.get(2).Second);
+         assertEquals(cc1, ret.get(3).First);
+         assertEquals(0, (int)ret.get(3).Second);
       }
    }
 }

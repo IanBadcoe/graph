@@ -1,7 +1,14 @@
 class CircleCurve extends Curve
 {
+   enum RotationDirection
+   {
+      Forwards,
+      Reverse
+   }
+
    final public XY Position;
    final public double Radius;
+   final public RotationDirection Rotation;
 
    CircleCurve(XY position, double radius)
    {
@@ -11,6 +18,7 @@ class CircleCurve extends Curve
 
       Position = position;
       Radius = radius;
+      Rotation = RotationDirection.Forwards;
    }
 
    CircleCurve(XY position, double radius,
@@ -22,18 +30,55 @@ class CircleCurve extends Curve
 
       Position = position;
       Radius = radius;
+      Rotation = RotationDirection.Forwards;
+   }
+
+   CircleCurve(XY position, double radius,
+         RotationDirection rotation)
+   {
+      // we'll only represent whole circles like this
+      // so only this exact params will mean completely cyclic
+      super(0.0, 2 * Math.PI);
+
+      Position = position;
+      Radius = radius;
+      Rotation = rotation;
+   }
+
+   CircleCurve(XY position, double radius,
+         double start_angle, double end_angle,
+         RotationDirection rotation)
+   {
+      // we'll only represent whole circles like this
+      // so only this exact params will mean completely cyclic
+      super(start_angle, end_angle);
+
+      Position = position;
+      Radius = radius;
+      Rotation = rotation;
+
+      if (Radius <= 0)
+         throw new IllegalArgumentException("-ve radius");
    }
 
    @Override
    public XY computePos(double param)
    {
-      return Position.plus(new XY(Math.sin(param), Math.cos(param)).multiply(Radius));
+      if (Rotation == RotationDirection.Forwards)
+      {
+         return Position.plus(new XY(Math.sin(param), Math.cos(param)).multiply(Radius));
+      }
+
+      return Position.plus(new XY(Math.sin(-param), Math.cos(-param)).multiply(Radius));
    }
 
    @Override
    public int hashCode()
    {
-      return super.hashCode() * 17 + Position.hashCode() * 31 ^ Double.hashCode(Radius);
+      return super.hashCode() * 17
+            ^ Position.hashCode() * 31
+            ^ Double.hashCode(Radius) * 11
+            ^ Rotation.hashCode();
    }
 
    @Override
@@ -50,7 +95,9 @@ class CircleCurve extends Curve
 
       CircleCurve cc_o = (CircleCurve)o;
 
-      return Position.equals(cc_o.Position) && Radius == cc_o.Radius;
+      return Position.equals(cc_o.Position)
+            && Radius == cc_o.Radius
+            && Rotation == cc_o.Rotation;
    }
 
    @Override
@@ -62,6 +109,11 @@ class CircleCurve extends Curve
          return null;
 
       double ang = Math.atan2(relative.X, relative.Y);
+
+      if (Rotation == RotationDirection.Reverse)
+      {
+         ang =- ang;
+      }
 
       // atan2 returns between -pi and + pi
       // we use 0 -> 2pi
@@ -81,7 +133,30 @@ class CircleCurve extends Curve
    @Override
    public Curve cloneWithChangedParams(double start, double end)
    {
-      return new CircleCurve(Position, Radius, start, end);
+      return new CircleCurve(Position, Radius, start, end, Rotation);
+   }
+
+   @Override
+   public Box boundingBox()
+   {
+      // use whole circle here as the use I have for the moment doesn't need anything
+      // tighter
+      //
+      // proper solution is to union together startPos, EndPos and whichever of
+      // 0, pi/2, pi and 3pi/2 points are within param range
+      return new Box(Position.plus(new XY(Radius, Radius)),
+            Position.minus(new XY(Radius, Radius)));
+   }
+
+   @Override
+   public XY tangent(Double param)
+   {
+      if (Rotation == RotationDirection.Reverse)
+      {
+         return new XY(-Math.cos(-param), Math.sin(-param));
+      }
+
+      return new XY(Math.cos(param), -Math.sin(param));
    }
 
    @Override

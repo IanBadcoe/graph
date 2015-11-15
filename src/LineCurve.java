@@ -7,9 +7,9 @@ class LineCurve extends Curve
       super(0, length);
 
       Position = position;
-      DirectionCosines = directionCosines;
+      Direction = directionCosines;
 
-      if (!DirectionCosines.isUnit())
+      if (!Direction.isUnit())
          throw new InvalidParameterException();
    }
 
@@ -18,13 +18,13 @@ class LineCurve extends Curve
       super(start, end);
 
       Position = position;
-      DirectionCosines = directionCosines;
+      Direction = directionCosines;
    }
 
    @Override
    public XY computePos(double param)
    {
-      return Position.plus(DirectionCosines.multiply(param));
+      return Position.plus(Direction.multiply(param));
    }
 
    @Override
@@ -32,10 +32,10 @@ class LineCurve extends Curve
    {
       XY relative = pnt.minus(Position);
 
-      if (Math.abs(relative.dot(DirectionCosines.rot90())) > tol)
+      if (Math.abs(relative.dot(Direction.rot90())) > tol)
          return null;
 
-      double par = relative.dot(DirectionCosines);
+      double par = relative.dot(Direction);
 
       if (!withinParams(par, tol))
          return null;
@@ -46,13 +46,26 @@ class LineCurve extends Curve
    @Override
    public Curve cloneWithChangedParams(double start, double end)
    {
-      return new LineCurve(Position, DirectionCosines, start, end);
+      return new LineCurve(Position, Direction, start, end);
+   }
+
+   @Override
+   public Box boundingBox()
+   {
+      return new Box(startPos().min(endPos()),
+            startPos().max(endPos()));
+   }
+
+   @Override
+   public XY tangent(Double param)
+   {
+      return Direction;
    }
 
    @Override
    public int hashCode()
    {
-      return super.hashCode() * 17 + Position.hashCode() * 31 ^ DirectionCosines.hashCode();
+      return super.hashCode() * 17 + Position.hashCode() * 31 ^ Direction.hashCode();
    }
 
    @Override
@@ -69,9 +82,9 @@ class LineCurve extends Curve
 
       LineCurve lc_o = (LineCurve)o;
 
-      return Position.equals(lc_o.Position) && DirectionCosines == lc_o.DirectionCosines;
+      return Position.equals(lc_o.Position) && Direction == lc_o.Direction;
    }
 
    public final XY Position;
-   public final XY DirectionCosines;
+   public final XY Direction;
 }
