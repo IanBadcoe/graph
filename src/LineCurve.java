@@ -63,6 +63,28 @@ class LineCurve extends Curve
    }
 
    @Override
+   public Curve merge(Curve c_after)
+   {
+      if (!(c_after instanceof LineCurve))
+         return null;
+
+      LineCurve c_lc = (LineCurve)c_after;
+      // could loop for coaxial line swith different origins here
+      // but current use is more to re-merge stuff we temporarily split
+      // and that all leaves Position the same in both halves
+      if (Position != c_lc.Position)
+         return null;
+
+      if (Direction != c_lc.Direction)
+         return null;
+
+      if (endParam() != c_lc.startParam())
+         return null;
+
+      return new LineCurve(Position, Direction, startParam(), c_lc.endParam());
+   }
+
+   @Override
    public int hashCode()
    {
       return super.hashCode() * 17 + Position.hashCode() * 31 ^ Direction.hashCode();

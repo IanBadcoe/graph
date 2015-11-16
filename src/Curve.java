@@ -18,6 +18,8 @@ abstract class Curve
 
    public abstract XY tangent(Double param);
 
+   public abstract Curve merge(Curve c_after);
+
    // overridden for cyclic curves
 
    public boolean withinParams(double p, double tol)

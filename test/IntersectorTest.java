@@ -11,12 +11,6 @@ import static org.junit.Assert.*;
 public class IntersectorTest
 {
 
-   @Test
-   public void testUnion() throws Exception
-   {
-
-   }
-
    class Fake extends Curve
    {
       Fake(String name)
@@ -67,6 +61,12 @@ public class IntersectorTest
 
       @Override
       public XY tangent(Double second)
+      {
+         return null;
+      }
+
+      @Override
+      public Curve merge(Curve c_after)
       {
          return null;
       }
@@ -244,7 +244,6 @@ public class IntersectorTest
       Intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
 
       HashMap<Curve, Intersector.AnnotatedCurve> forward_annotations_map = new HashMap<>();
-      HashMap<Curve, Intersector.AnnotatedCurve> reverse_annotations_map = new HashMap<>();
 
       Intersector.buildAnnotationChains(curves1,
             forward_annotations_map);
@@ -252,7 +251,6 @@ public class IntersectorTest
       Intersector.buildAnnotationChains(curves2,
             forward_annotations_map);
 
-      HashMap<Curve, Intersector.Splice> startSpliceMap = new HashMap<>();
       HashMap<Curve, Intersector.Splice> endSpliceMap = new HashMap<>();
 
       Intersector.findSplices(curves1, curves2,
@@ -261,11 +259,9 @@ public class IntersectorTest
             1e-6);
 
       // two splices, with two in and two out curves each
-      assertEquals(4, startSpliceMap.size());
       assertEquals(4, endSpliceMap.size());
 
       HashSet<Intersector.Splice> unique = new HashSet<>();
-      unique.addAll(startSpliceMap.values());
       unique.addAll(endSpliceMap.values());
 
       assertEquals(2, unique.size());
@@ -421,6 +417,117 @@ public class IntersectorTest
          assertEquals(1, (int)ret.get(2).Second);
          assertEquals(cc1, ret.get(3).First);
          assertEquals(0, (int)ret.get(3).Second);
+      }
+   }
+
+   @Test
+   public void testUnion() throws Exception
+   {
+      // nothing union nothing should equal nothing
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNull(ret);
+      }
+
+      // something union nothing should equal something
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(ls1, ret);
+      }
+
+      // nothing union something should equal something
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l2 = new Loop(new CircleCurve(new XY(), 1));
+         ls2.add(l2);
+
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(ls2, ret);
+      }
+
+      // union of two identical things should equal either one of them
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Loop l2 = new Loop(new CircleCurve(new XY(), 1));
+         ls2.add(l2);
+
+         // paranoia
+         assertEquals(ls1, ls2);
+
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(ls1, ret);
+      }
+
+      // union of two circles should be one two-part curve
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Loop l2 = new Loop(new CircleCurve(new XY(1, 0), 1));
+         ls2.add(l2);
+
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(2, ret.get(0).numCurves());
+         Curve c1 = ret.get(0).getCurves().get(0);
+         Curve c2 = ret.get(0).getCurves().get(1);
+         assertTrue(c1 instanceof CircleCurve);
+         assertTrue(c2 instanceof CircleCurve);
+
+         CircleCurve cc1 = (CircleCurve)c1;
+         CircleCurve cc2 = (CircleCurve)c2;
+
+         // same radii
+         assertEquals(1, cc1.Radius, 1e-6);
+         assertEquals(1, cc2.Radius, 1e-6);
+
+         // same direction
+         assertEquals(CircleCurve.RotationDirection.Forwards, cc1.Rotation);
+         assertEquals(CircleCurve.RotationDirection.Forwards, cc2.Rotation);
+
+         // joined end-to-end
+         assertEquals(cc1.startParam(), cc2.endParam(), 0);
+         assertEquals(cc2.startParam(), cc1.endParam(), 0);
+
+         CircleCurve left = cc1.Position.X < cc2.Position.X ? cc1 : cc2;
+         CircleCurve right = cc1.Position.X > cc2.Position.X ? cc1 : cc2;
+
+         assertEquals(new XY(0, 0), left.Position);
+         assertEquals(new XY(1, 0), right.Position);
+
+         assertEquals(Math.PI * 2 * 1 / 12, left.endParam(), 1e-6);
+         assertEquals(Math.PI * 2 * 5 / 12, left.startParam(), 1e-6);
       }
    }
 }

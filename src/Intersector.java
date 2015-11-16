@@ -36,28 +36,11 @@ public class Intersector
       AnnotatedCurve Loop2Out;
    }
 
-   static class IntersectRet
-   {
-      IntersectRet(Loop splitLoop1, Loop splitLoop2,
-                   HashMap<Curve, Splice> curveStartSplices,
-                   HashMap<Curve, Splice> curveEndSplices)
-      {
-         SplitLoop1 = splitLoop1;
-         SplitLoop2 = splitLoop2;
-
-         CurveStartSpliceMap = curveStartSplices;
-         CurveEndSpliceMap = curveEndSplices;
-      }
-
-      final Loop SplitLoop1;
-      final Loop SplitLoop2;
-
-      final HashMap<Curve, Splice> CurveStartSpliceMap;
-      final HashMap<Curve, Splice> CurveEndSpliceMap;
-   }
-
    public static LoopSet union(LoopSet ls1, LoopSet ls2, double tol, Random random)
    {
+      if (ls1.size() == 0 && ls2.size() == 0)
+         return null;
+
       // simple case, also covers us being handed the same instance twice
       if (ls1.equals(ls2))
          return ls1;
@@ -121,17 +104,16 @@ public class Intersector
       //    as we look down our line) we increase the count and when we cross a curve outwards we decrease it
       // 4) label the intervals on the line between the intersections with the count in that interval
       // 5) only counts from zero -> 1 or from 1 -> zero are interesting
-      // 6) for 0 -> 1 crossings we are entering the output shape
-      // 6a) if the forward AnnoationCurve isn't tagged is open
+      // 6) for 0 -> 1 or 1 -> 0 crossings we are entering the output shape
+      // 6a) if the forward AnnoationCurve is open
       // 6b) follow the curve forwards, removing AnnotationCurves from open
-      // 6c) when we get to a splice, find the sharpest left turn (which should be another forwards AnnotationCurve
+      // 6c) when we get to a splice, find the sharpest left turn (another forwards AnnotationCurve)
       // 6d) until we reach our start curve
-      // 6e) add all these curves as a (forwards) loop in the output
-      // 7) for 1 -> 0 crossings we do the reverse, following the curve backwards, turning sharpest right and
-      //    output a (reverse) loop in the output
-      // 8) for +ve -> +ve or -ve -> -ve crossings we can walk both ways around the loops just removing
+      // 6e) add all these curves as a loop in the output
+      // 6f (this will be a
+      // 7) for +ve -> +ve or -ve -> -ve crossings we walk backwards around the loop just removing
       //    the annotation edges from open
-      // 9) until there are no open AnnotationEdges
+      // 8) until there are no open AnnotationEdges
 
       HashSet<Curve> all_curves = new HashSet<>();
 
@@ -182,37 +164,53 @@ public class Intersector
          {
             int crossings = intersection.Second;
 
-            // three cases, 0 -> 1, 1 -> 0 and anything else
-            if (prev_crossings == 0 && crossings == 1)
+            AnnotatedCurve ac_current = forward_annotations_map.get(intersection.First);
+
+            if (open.contains(ac_current))
             {
-               ret.add(extractPositiveLoop(
-                     open,
-                     forward_annotations_map.get(intersection.First),
-                     forward_annotations_map,
-                     endSpliceMap));
+               // three cases, 0 -> 1, 1 -> 0 and anything else
+               if (prev_crossings == 0 && crossings == 1
+                     || prev_crossings == 1 && crossings == 0)
+               {
+                  // take a loop that is part of the perimeter
+                  ret.add(extractLoop(
+                        open,
+                        ac_current,
+                        endSpliceMap,
+                        LoopMode.Keep));
+               }
+               else
+               {
+                  // discard a loop that isn't part of the perimeter
+                  extractLoop(
+                        open,
+                        ac_current,
+                        endSpliceMap,
+                        LoopMode.Discard);
+               }
             }
-            else if (prev_crossings == 1 && crossings == 0)
-            {
-               ret.add(extractPositiveLoop(
-                     open,
-                     forward_annotations_map.get(intersection.First),
-                     forward_annotations_map,
-                     endSpliceMap));
-            }
-            else
-            {
-            }
+
+            prev_crossings = crossings;
          }
       }
 
-      return null;
+      if (ret.size() == 0)
+         return null;
+
+      return ret;
    }
 
-   static Loop extractPositiveLoop(
+   enum LoopMode
+   {
+      Discard,    // turn as sharply right as possible at each splice, do not return found loop
+      Keep        // turn as sharply left as possible at each splice, tidy and return found loop
+   }
+
+   static Loop extractLoop(
          HashSet<AnnotatedCurve> open,
          AnnotatedCurve start_ac,
-         HashMap<Curve, AnnotatedCurve> forward_annotations_map,
-         HashMap<Curve, Splice> endSpliceMap)
+         HashMap<Curve, Splice> endSpliceMap,
+         LoopMode loop_mode)
    {
       AnnotatedCurve curr_ac = start_ac;
 
@@ -225,7 +223,7 @@ public class Intersector
          open.remove(curr_ac);
 
          // look for a splice that ends this curve
-         Splice splice = endSpliceMap.get(curr_ac);
+         Splice splice = endSpliceMap.get(c);
 
          // if no splice we just follow the chain of ACs
          if (splice == null)
@@ -263,19 +261,72 @@ public class Intersector
                ang2 = Util.relativeAngle(rev_curr_dir, dir2);
             }
 
-            if (ang1 < ang2)
+            if (loop_mode == LoopMode.Keep)
             {
-               curr_ac = ac1;
+               if (ang1 < ang2)
+               {
+                  curr_ac = ac1;
+               }
+               else
+               {
+                  curr_ac = ac2;
+               }
             }
             else
             {
-               curr_ac = ac2;
+               if (ang1 > ang2)
+               {
+                  curr_ac = ac1;
+               }
+               else
+               {
+                  curr_ac = ac2;
+               }
             }
          }
       }
       while (curr_ac != start_ac);
 
+      if (loop_mode == LoopMode.Discard)
+         return null;
+
+      // because input cyclic curves have a joint at 12 o'clock
+      // and nothing before here removes that, we can have splits we don't need
+      // between otherwise identical curves
+      //
+      // this merges those back together
+      tidyLoop(found_curves);
+
       return new Loop(found_curves);
+   }
+
+   private static void tidyLoop(ArrayList<Curve> curves)
+   {
+      int prev = curves.size() - 1;
+      Curve c_prev = curves.get(prev);
+
+      for(int i = 0; i < curves.size();)
+      {
+         Curve c_here = curves.get(i);
+
+         Curve merged = c_prev.merge(c_here);
+
+         if (merged != null)
+         {
+            curves.set(prev, merged);
+            curves.remove(i);
+
+            // if we've removed curves[i] then we'll look at the new
+            // curves[i] next pass and prev remains the same
+         }
+         else
+         {
+            // move everything on one
+            prev = i;
+            i++;
+            c_prev = c_here;
+         }
+      }
    }
 
 

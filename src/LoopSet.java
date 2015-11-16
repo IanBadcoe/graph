@@ -3,6 +3,20 @@ import java.util.ArrayList;
 class LoopSet extends ArrayList<Loop>
 {
    @Override
+   public int hashCode()
+   {
+      int ret = 0;
+
+      for(Loop l : this)
+      {
+         ret = ret * 3
+               ^ l.hashCode();
+      }
+
+      return ret;
+   }
+
+   @Override
    public boolean equals(Object o)
    {
       if (o == this)

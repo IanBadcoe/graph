@@ -144,8 +144,8 @@ class CircleCurve extends Curve
       //
       // proper solution is to union together startPos, EndPos and whichever of
       // 0, pi/2, pi and 3pi/2 points are within param range
-      return new Box(Position.plus(new XY(Radius, Radius)),
-            Position.minus(new XY(Radius, Radius)));
+      return new Box(Position.minus(new XY(Radius, Radius)),
+            Position.plus(new XY(Radius, Radius)));
    }
 
    @Override
@@ -157,6 +157,29 @@ class CircleCurve extends Curve
       }
 
       return new XY(Math.cos(param), -Math.sin(param));
+   }
+
+   @Override
+   public Curve merge(Curve c_after)
+   {
+      if (!(c_after instanceof CircleCurve))
+         return null;
+
+      CircleCurve c_cc = (CircleCurve)c_after;
+
+      if (Position != c_cc.Position)
+         return null;
+
+      if (Rotation != c_cc.Rotation)
+         return null;
+
+      if (Radius != c_cc.Radius)
+         return null;
+
+      if (Util.clockAwareAngleCompare(endParam(), c_cc.startParam(), 1e-12))
+         return null;
+
+      return new CircleCurve(Position, Radius, startParam(), c_cc.endParam(), Rotation);
    }
 
    @Override
@@ -174,6 +197,6 @@ class CircleCurve extends Curve
 
    boolean isCyclic()
    {
-      return startParam() == 0.0 && endParam() == Math.PI * 2;
+      return Util.clockAwareAngleCompare(startParam(), endParam(), 1e-12);
    }
 }

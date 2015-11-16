@@ -443,6 +443,12 @@ public class UtilTest
       }
 
       @Override
+      public Curve merge(Curve c_after)
+      {
+         return null;
+      }
+
+      @Override
       public double paramCoordinateDist(double p1, double p2)
       {
          return 0;

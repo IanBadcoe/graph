@@ -483,7 +483,7 @@ class Util
       while(a < 0)
          a += Math.PI * 2;
 
-      while(a > Math.PI * 2)
+      while(a >= Math.PI * 2)
          a -= Math.PI * 2;
 
       return a;
@@ -493,7 +493,7 @@ class Util
    {
       double diff = fixupAngle(Math.abs(a1 - a2));
 
-      return diff < tol || diff > Math.PI * 2 - tol;
+      return diff <= tol || diff >= Math.PI * 2 - tol;
    }
 
    // d1 is the unit direction vector for the reference line
