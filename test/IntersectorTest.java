@@ -420,6 +420,21 @@ public class IntersectorTest
       }
    }
 
+   private static void checkLoop(Loop l, int exp_size)
+   {
+      assertEquals(exp_size, l.numCurves());
+
+      XY prev_end = l.getCurves().get(l.numCurves() - 1).endPos();
+
+      for(Curve c : l.getCurves())
+      {
+         assertTrue(prev_end.equals(c.startPos(), 1e-6));
+         prev_end = c.endPos();
+
+         assertTrue(c instanceof CircleCurve);
+      }
+   }
+
    @Test
    public void testUnion() throws Exception
    {
@@ -484,7 +499,7 @@ public class IntersectorTest
          assertEquals(ls1, ret);
       }
 
-      // union of two circles should be one two-part curve
+      // union of two overlapping circles should be one two-part curve
       {
          LoopSet ls1 = new LoopSet();
          LoopSet ls2 = new LoopSet();
@@ -517,8 +532,8 @@ public class IntersectorTest
          assertEquals(CircleCurve.RotationDirection.Forwards, cc2.Rotation);
 
          // joined end-to-end
-         assertEquals(cc1.startParam(), cc2.endParam(), 0);
-         assertEquals(cc2.startParam(), cc1.endParam(), 0);
+         assertTrue(cc1.startPos().equals(cc2.endPos(), 1e-6));
+         assertTrue(cc2.startPos().equals(cc1.endPos(), 1e-6));
 
          CircleCurve left = cc1.Position.X < cc2.Position.X ? cc1 : cc2;
          CircleCurve right = cc1.Position.X > cc2.Position.X ? cc1 : cc2;
@@ -526,8 +541,37 @@ public class IntersectorTest
          assertEquals(new XY(0, 0), left.Position);
          assertEquals(new XY(1, 0), right.Position);
 
-         assertEquals(Math.PI * 2 * 1 / 12, left.endParam(), 1e-6);
          assertEquals(Math.PI * 2 * 5 / 12, left.startParam(), 1e-6);
+         assertEquals(Math.PI * 2 * 13 / 12, left.endParam(), 1e-6);
+
+         assertEquals(Math.PI * 2 * 11 / 12, right.startParam(), 1e-6);
+         assertEquals(Math.PI * 2 * 19 / 12, right.endParam(), 1e-6);
+      }
+
+      // union of two overlapping circles with holes in
+      // should be one two-part curve around outside and two two-part curves in the interior
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1a = new Loop(new CircleCurve(new XY(), 1));
+         Loop l1b = new Loop(new CircleCurve(new XY(), 0.3, CircleCurve.RotationDirection.Reverse));
+         ls1.add(l1a);
+         ls1.add(l1b);
+
+         Loop l2a = new Loop(new CircleCurve(new XY(1, 0), 1));
+         Loop l2b = new Loop(new CircleCurve(new XY(1, 0), 0.3, CircleCurve.RotationDirection.Reverse));
+         ls2.add(l2a);
+         ls2.add(l2b);
+
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(3, ret.size());
+
+         checkLoop(ret.get(0), 2);
+         checkLoop(ret.get(1), 2);
+         checkLoop(ret.get(2), 2);
       }
    }
 }

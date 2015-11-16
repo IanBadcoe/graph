@@ -1,14 +1,14 @@
-class GeomLayoutCircular extends GeomLayout
+class CircularGeomLayout extends GeomLayout
 {
-   GeomLayoutCircular(XY position, double radius)
+   CircularGeomLayout(XY position, double radius)
    {
       m_position = position;
       m_rad = radius;
    }
 
-   static GeomLayoutCircular createFromNode(INode n)
+   static CircularGeomLayout createFromNode(INode n)
    {
-      return new GeomLayoutCircular(n.getPos(), n.getRad() * 0.95);
+      return new CircularGeomLayout(n.getPos(), n.getRad() * 0.95);
    }
 
    @Override

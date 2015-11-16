@@ -12,46 +12,37 @@ class CircleCurve extends Curve
 
    CircleCurve(XY position, double radius)
    {
-      // we'll only represent whole circles like this
-      // so only this exact params will mean completely cyclic
-      super(0.0, 2 * Math.PI);
-
-      Position = position;
-      Radius = radius;
-      Rotation = RotationDirection.Forwards;
+      this(position, radius, 0, Math.PI * 2);
    }
 
    CircleCurve(XY position, double radius,
                double start_angle, double end_angle)
    {
-      // we'll only represent whole circles like this
-      // so only this exact params will mean completely cyclic
-      super(start_angle, end_angle);
-
-      Position = position;
-      Radius = radius;
-      Rotation = RotationDirection.Forwards;
+      this(position, radius, start_angle, end_angle, RotationDirection.Forwards);
    }
 
    CircleCurve(XY position, double radius,
          RotationDirection rotation)
    {
-      // we'll only represent whole circles like this
-      // so only this exact params will mean completely cyclic
-      super(0.0, 2 * Math.PI);
+      this (position, radius, 0, Math.PI * 2, rotation);
+   }
 
-      Position = position;
-      Radius = radius;
-      Rotation = rotation;
+   private static double fixEndAngle(double start_angle, double end_angle)
+   {
+      start_angle = Util.fixupAngle(start_angle);
+      end_angle = Util.fixupAngle(end_angle);
+
+      if (end_angle <= start_angle)
+         end_angle += Math.PI * 2;
+
+      return end_angle;
    }
 
    CircleCurve(XY position, double radius,
          double start_angle, double end_angle,
          RotationDirection rotation)
    {
-      // we'll only represent whole circles like this
-      // so only this exact params will mean completely cyclic
-      super(start_angle, end_angle);
+      super(Util.fixupAngle(start_angle), fixEndAngle(start_angle, end_angle));
 
       Position = position;
       Radius = radius;
@@ -119,11 +110,6 @@ class CircleCurve extends Curve
       // we use 0 -> 2pi
       if (ang < 0.0) ang += 2 * Math.PI;
 
-      if (isCyclic())
-      {
-         return ang;
-      }
-
       if (!withinParams(ang, tol))
          return null;
 
@@ -162,6 +148,9 @@ class CircleCurve extends Curve
    @Override
    public Curve merge(Curve c_after)
    {
+      if (c_after == this)
+         return null;
+
       if (!(c_after instanceof CircleCurve))
          return null;
 
@@ -176,7 +165,7 @@ class CircleCurve extends Curve
       if (Radius != c_cc.Radius)
          return null;
 
-      if (Util.clockAwareAngleCompare(endParam(), c_cc.startParam(), 1e-12))
+      if (!Util.clockAwareAngleCompare(endParam(), c_cc.startParam(), 1e-12))
          return null;
 
       return new CircleCurve(Position, Radius, startParam(), c_cc.endParam(), Rotation);
@@ -185,14 +174,19 @@ class CircleCurve extends Curve
    @Override
    public boolean withinParams(double p, double tol)
    {
-      if (endParam() > startParam())
-         return super.withinParams(p, tol);
+      if (isCyclic())
+         return true;
 
-      // otherwise the end < start because it crosses 12:00
+      // we've fixed start param to lie between 0 and 2pi
+      // and end param to be < 2pi above that
+      // so if we are below start param and we step up one full turn
+      // that either takes us right past end param (because we were too high)
+      // or it takes us past it because we were too low and shouldn't have stepped up
+      // or it leaves us below end param in which case we are in range
+      if (p < startParam())
+         p += Math.PI * 2;
 
-      // so we need to be either between 0:00 and end
-      // or between start and 12:00
-      return p > startParam() - tol || p < endParam() + tol;
+      return p < endParam();
    }
 
    boolean isCyclic()

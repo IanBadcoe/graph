@@ -23,17 +23,22 @@ class Loop
 
       double range = 0.0;
 
+      Curve prev = m_curves.get(m_curves.size() - 1);
+
       for(int i = 0; i < m_curves.size(); i++)
       {
-         range += m_curves.get(i).endParam() - m_curves.get(i).startParam();
+         Curve curr = m_curves.get(i);
+         range += curr.endParam() - m_curves.get(i).startParam();
+
+         XY c_start = curr.startPos();
+         XY p_end = prev.endPos();
+
+         assert c_start.equals(p_end, 1e-6);
+
+         prev = curr;
       }
 
       m_param_range = range;
-
-      XY s = m_curves.get(0).startPos();
-      XY e = m_curves.get(m_curves.size() - 1).endPos();
-
-      assert s.equals(e, 1e-6);
    }
 
    public double paramRange()

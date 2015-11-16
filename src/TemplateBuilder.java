@@ -72,7 +72,7 @@ public class TemplateBuilder
             positionOnName, positionTowardsName, positionAwayFromName,
             codes, radius,
             0xff8c8c8c,
-            GeomLayoutCircular::createFromNode);
+            CircularGeomLayout::createFromNode);
    }
 
    void AddNode(Template.NodeType type, String name, boolean nudge,

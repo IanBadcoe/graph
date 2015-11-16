@@ -158,7 +158,7 @@ class Node implements INode
       return m_gl_creator;
    }
 
-   public final static GeomLayout.IGeomLayoutCreateFromNode DefaultLayourGreator = GeomLayoutCircular::createFromNode;
+   public final static GeomLayout.IGeomLayoutCreateFromNode DefaultLayourGreator = CircularGeomLayout::createFromNode;
 
    int numConnections()
    {

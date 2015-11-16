@@ -4,7 +4,7 @@ class Graph
 {
    INode AddNode(String name, String codes, String template, double rad)
    {
-      return AddNode(name, codes, template, GeomLayoutCircular::createFromNode, rad);
+      return AddNode(name, codes, template, CircularGeomLayout::createFromNode, rad);
    }
 
    INode AddNode(String name, String codes, String template,

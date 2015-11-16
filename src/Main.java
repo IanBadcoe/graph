@@ -133,6 +133,15 @@ public class Main extends processing.core.PApplet
          m_level.generateGeometry();
 
          m_level_generated = true;
+
+         m_go = false;
+      }
+
+      if ((m_step || m_go) && m_level_generated && !m_unions_done)
+      {
+         m_unions_done = !m_level.unionOne(m_union_random);
+
+         m_step = false;
       }
 
       double range = min(width, height);
@@ -271,6 +280,12 @@ public class Main extends processing.core.PApplet
       {
          DrawLoop(l);
       }
+
+      s_app.strokeWeight(2);
+      for(Loop l : level.getLevel())
+      {
+         DrawLoop(l);
+      }
    }
 
    private static void DrawLoop(Loop l)
@@ -313,6 +328,7 @@ public class Main extends processing.core.PApplet
 
    boolean m_lay_out_running = true;
    boolean m_level_generated = false;
+   boolean m_unions_done = false;
 
    // UI data
    boolean m_step = false;
@@ -329,4 +345,6 @@ public class Main extends processing.core.PApplet
    double m_scale = 1.0;
 
    Level m_level;
+
+   Random m_union_random = new Random(1);
 }

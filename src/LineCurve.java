@@ -65,6 +65,9 @@ class LineCurve extends Curve
    @Override
    public Curve merge(Curve c_after)
    {
+      if (c_after == this)
+         return null;
+
       if (!(c_after instanceof LineCurve))
          return null;
 

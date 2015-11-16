@@ -309,6 +309,10 @@ public class Intersector
       {
          Curve c_here = curves.get(i);
 
+         // if we get down to (or start with) only one curve, don't try to merge it with itself
+         if (c_here == c_prev)
+            break;
+
          Curve merged = c_prev.merge(c_here);
 
          if (merged != null)

@@ -15,13 +15,8 @@ class XY
       Y = y;
    }
 
-   public boolean equals(Object o, double tol)
+   public boolean equals(XY xyo, double tol)
    {
-      if (!(o instanceof XY))
-         return false;
-
-      XY xyo = (XY)o;
-
       return this.minus(xyo).length() < tol;
    }
 
