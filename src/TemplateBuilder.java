@@ -1,5 +1,6 @@
 import java.util.*;
 
+@SuppressWarnings("WeakerAccess")
 public class TemplateBuilder
 {
    TemplateBuilder(String name, String codes)
@@ -75,6 +76,7 @@ public class TemplateBuilder
             CircularGeomLayout::createFromNode);
    }
 
+   @SuppressWarnings("WeakerAccess")
    void AddNode(Template.NodeType type, String name, boolean nudge,
                 String positionOnName, String positionTowardsName,
                 String positionAwayFromName,
@@ -157,6 +159,7 @@ public class TemplateBuilder
             0xffb4b4b4);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public void Connect(String from, String to,
                        double min_length, double max_length,
                        double width,
@@ -273,5 +276,5 @@ public class TemplateBuilder
 
    private boolean m_cleared = false;
 
-   private Template.IPostExpand m_post_expand;
+   private final Template.IPostExpand m_post_expand;
 }

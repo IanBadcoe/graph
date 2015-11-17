@@ -54,15 +54,16 @@ class Level
       return Collections.unmodifiableCollection(m_base_loops);
    }
 
-   Graph m_graph;
-
-   HashMap<INode, GeomLayout> m_layouts = new HashMap<>();
-   LoopSet m_base_loops = new LoopSet();
-
-   LoopSet m_level = new LoopSet();
-
    public LoopSet getLevel()
    {
       return m_level;
    }
+
+   private final Graph m_graph;
+
+   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+   private final HashMap<INode, GeomLayout> m_layouts = new HashMap<>();
+   private final LoopSet m_base_loops = new LoopSet();
+
+   private LoopSet m_level = new LoopSet();
 }

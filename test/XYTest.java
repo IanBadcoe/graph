@@ -18,6 +18,7 @@ public class XYTest
       assertFalse(xy1.equals(xy4));
       assertFalse(xy1.equals(xy5));
 
+      //noinspection EqualsBetweenInconvertibleTypes
       assertFalse(xy1.equals("frog"));
    }
 

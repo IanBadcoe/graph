@@ -105,21 +105,6 @@ class Loop
 //      ArrayList<LLIntersect> intersections = intersect(other);
 //   }
 
-   ArrayList<LLIntersect> intersect(Loop other)
-   {
-//      ArrayList<LLIntersect> ret = new ArrayList<>();
-//
-//      for(Curve c : m_curves)
-//      {
-//         for(Curve c_other : other.m_curves)
-//         {
-//            CCIntersect
-//         }
-//      }
-
-      return null;
-   }
-
    @Override
    public int hashCode()
    {

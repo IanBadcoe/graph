@@ -3,9 +3,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertArrayEquals;
 
-/**
- * Created by Nobody on 11/1/2015.
- */
 public class ShortestPathFinderTest
 {
    @Test

@@ -40,6 +40,7 @@ class TryAllTemplatesOnOneNodeStepper implements IExpandStepper
       IExpandStepper child = s_child_factory.MakeChild(
             m_graph, m_node, t, m_random);
 
+      //noinspection ConstantConditions
       return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
             child, "Trying to expand node: " + m_node.getName() + " with template: " + t.GetName());
    }

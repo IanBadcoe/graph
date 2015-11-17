@@ -73,6 +73,7 @@ class Template
       template_to_graph.put(FindNodeRecord("<target>"), target);
 
       // create nodes for each we are adding and map to their NodeRecords
+      //noinspection Convert2streamapi
       for (NodeRecord nr : m_nodes.values())
       {
          if (nr.Type == NodeType.Internal)
@@ -87,6 +88,7 @@ class Template
       {
          Iterator<DirectedEdge> g_it = target_in_connections.iterator();
 
+         //noinspection Convert2streamapi
          for (NodeRecord nr : m_nodes.values())
          {
             if (nr.Type == NodeType.In)
@@ -104,6 +106,7 @@ class Template
       {
          Iterator<DirectedEdge> g_it = target_out_connections.iterator();
 
+         //noinspection Convert2streamapi
          for (NodeRecord nr : m_nodes.values())
          {
             if (nr.Type == NodeType.Out)
@@ -215,6 +218,7 @@ class Template
       if (m_post_expand == null)
          return;
 
+      //noinspection Convert2streamapi
       for(NodeRecord nr : m_nodes.values())
       {
          // could have chance to modify existing (e.g. In/Out nodes?)

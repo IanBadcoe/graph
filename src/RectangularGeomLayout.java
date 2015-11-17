@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 
-/**
- * Created by Nobody on 11/16/2015.
- */
+@SuppressWarnings("WeakerAccess")
 public class RectangularGeomLayout extends GeomLayout
 {
    RectangularGeomLayout(XY start, XY end, double width)

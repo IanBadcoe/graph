@@ -3,8 +3,9 @@ import java.util.ArrayList;
 class RelaxerStepper implements IExpandStepper
 {
    RelaxerStepper(Graph graph,
-                  double max_move,
-                  double force_target, double move_target)
+                  @SuppressWarnings("SameParameterValue") double max_move,
+                  @SuppressWarnings("SameParameterValue") double force_target,
+                  @SuppressWarnings("SameParameterValue") double move_target)
    {
       m_graph = graph;
       m_nodes = m_graph.AllGraphNodes();
@@ -36,10 +37,7 @@ class RelaxerStepper implements IExpandStepper
    {
       double maxf = 0.0;
 
-      for(INode n : m_nodes)
-      {
-         n.resetForce();
-      }
+      m_nodes.forEach(INode::resetForce);
 
       double max_edge_stretch = 1.0;
       double max_edge_squeeze = 1.0;
@@ -248,14 +246,14 @@ class RelaxerStepper implements IExpandStepper
       }
    }
 
-   Graph m_graph;
-   ArrayList<INode> m_nodes;
-   ArrayList<DirectedEdge> m_edges;
+   private final Graph m_graph;
+   private final ArrayList<INode> m_nodes;
+   private final ArrayList<DirectedEdge> m_edges;
 
-   final double m_max_move;
+   private final double m_max_move;
 
-   final double m_force_target;
-   final double m_move_target;
+   private final double m_force_target;
+   private final double m_move_target;
 
    // whichever is smaller out of the summed-radii and the
    // shortest path through the graph between two nodes
@@ -263,9 +261,9 @@ class RelaxerStepper implements IExpandStepper
    // because otherwise a large node can force its second-closest
    // neighbour (and further) so far away that the edge gets split
    // and then the new second-closest neighbour is in the same position
-   double[][] m_node_dists;
+   private final double[][] m_node_dists;
 
-   static final double EDGE_NODE_FORCE_SCALE = 1.0;
-   static final double EDGE_FORCE_SCALE = 0.01;
-   static final double NODE_FORCE_SCALE = 1.0;
+   private static final double EDGE_NODE_FORCE_SCALE = 1.0;
+   private static final double EDGE_FORCE_SCALE = 0.01;
+   private static final double NODE_FORCE_SCALE = 1.0;
 }

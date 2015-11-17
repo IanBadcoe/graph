@@ -4,9 +4,7 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Nobody on 10/25/2015.
- */
+@SuppressWarnings("ConstantConditions")
 public class TemplateTest {
     @Test
     public void testExpand_Positioning() throws Exception
@@ -438,7 +436,7 @@ public class TemplateTest {
     {
         for(INode n : g.AllGraphNodes())
         {
-            if (n.getName() == name)
+            if (n.getName().equals(name))
                 return n;
         }
 

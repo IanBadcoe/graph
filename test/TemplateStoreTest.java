@@ -4,9 +4,6 @@ import java.util.Collection;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by badcoei on 23/10/2015.
- */
 public class TemplateStoreTest
 {
 

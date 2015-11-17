@@ -52,6 +52,7 @@ public class TryAllNodesExpandStepper implements IExpandStepper
       IExpandStepper child = s_child_factory.MakeChild(
             m_graph, node, templates, m_random);
 
+      //noinspection ConstantConditions
       return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
             child, "Trying to expand node: " + node.getName());
    }
@@ -66,5 +67,5 @@ public class TryAllNodesExpandStepper implements IExpandStepper
    private final Collection<INode> m_all_nodes;
    private final Random m_random;
 
-   static IChildFactory s_child_factory;
+   private static IChildFactory s_child_factory;
 }

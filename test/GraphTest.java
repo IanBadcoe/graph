@@ -243,9 +243,9 @@ public class GraphTest
          return true;
       }
 
-      HashSet<INode> m_nodes = new HashSet<>();
-      HashSet<DirectedEdge> m_edges = new HashSet<>();
-      HashMap<INode, XY> m_positions = new HashMap<>();
+      final HashSet<INode> m_nodes = new HashSet<>();
+      final HashSet<DirectedEdge> m_edges = new HashSet<>();
+      final HashMap<INode, XY> m_positions = new HashMap<>();
    }
 
    @Test
@@ -599,13 +599,13 @@ public class GraphTest
 
          IGraphRestore igr1 = g.CreateRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          GraphRecord gr2 = new GraphRecord(g);
 
          IGraphRestore igr2 = g.CreateRestorePoint();
 
-         INode n2 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          igr2.Restore();
 
@@ -617,7 +617,7 @@ public class GraphTest
 
          IGraphRestore igr3 = g.CreateRestorePoint();
 
-         INode n3 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          igr1.Restore();
 
@@ -636,15 +636,15 @@ public class GraphTest
 
          IGraphRestore igr1 = g.CreateRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          IGraphRestore igr2 = g.CreateRestorePoint();
 
-         INode n2 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          IGraphRestore igr3 = g.CreateRestorePoint();
 
-         INode n3 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          GraphRecord gr1 = new GraphRecord(g);
 

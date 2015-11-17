@@ -45,7 +45,7 @@ public class ExpandToSizeStepperTest
                null, "");
       }
 
-      Graph m_graph;
+      final Graph m_graph;
    }
 
    @Test
@@ -87,5 +87,7 @@ public class ExpandToSizeStepperTest
       {
          thrown = true;
       }
+
+      assertTrue(thrown);
    }
 }

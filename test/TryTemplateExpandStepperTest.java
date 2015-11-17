@@ -31,7 +31,7 @@ public class TryTemplateExpandStepperTest
       assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
    }
 
-   int m_fail_count = 0;
+   private int m_fail_count = 0;
 
    @Test
    public void testExpandedTemplateRelaxFail() throws Exception
@@ -68,7 +68,7 @@ public class TryTemplateExpandStepperTest
       assertEquals(1, m_fail_count);
    }
 
-   int m_success_count;
+   private int m_success_count;
 
    @Test
    public void testEdgeAdjustFail()
@@ -131,7 +131,7 @@ public class TryTemplateExpandStepperTest
                null, "");
       }
 
-      DirectedEdge m_e;
+      final DirectedEdge m_e;
    }
 
    boolean m_first = true;
@@ -181,8 +181,8 @@ public class TryTemplateExpandStepperTest
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
       assertEquals(1, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "internal"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
    }
 
    @Test
@@ -234,9 +234,9 @@ public class TryTemplateExpandStepperTest
       // we should have replaced n2
       assertEquals(3, g.NumNodes());
       assertEquals(2, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "internal"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1a"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1a")));
    }
 
    @Test
@@ -282,8 +282,8 @@ public class TryTemplateExpandStepperTest
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
       assertEquals(1, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "internal"));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName() == "n1"));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
+      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
    }
 
    @Test
@@ -315,11 +315,9 @@ public class TryTemplateExpandStepperTest
       IExpandStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1));
       Expander e = new Expander(g, tes);
 
-      Expander.ExpandRet ret;
-
       for(int i = 0; i < 4; i++)
       {
-         ret = e.Step();
+         e.Step();
       }
 
       boolean thrown = false;
@@ -367,11 +365,9 @@ public class TryTemplateExpandStepperTest
       IExpandStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1));
       Expander e = new Expander(g, tes);
 
-      Expander.ExpandRet ret;
-
       for(int i = 0; i < 2; i++)
       {
-         ret = e.Step();
+         e.Step();
       }
 
       boolean thrown = false;

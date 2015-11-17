@@ -2,9 +2,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Nobody on 10/30/2015.
- */
 public class EdgeAdjusterStepperTest
 {
    @Test
@@ -82,5 +79,7 @@ public class EdgeAdjusterStepperTest
       {
          thrown = true;
       }
+
+      assertTrue(thrown);
    }
 }

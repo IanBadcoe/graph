@@ -5,6 +5,7 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("ConstantConditions")
 public class UtilTest
 {
    @Test

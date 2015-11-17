@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Graph
 {
@@ -60,9 +61,6 @@ class Graph
             || !Contains(to)
             || from.connects(to))
          throw new UnsupportedOperationException();
-
-      Node n_from = (Node) from;
-      Node n_to = (Node) to;
 
       DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, width);
 
@@ -133,7 +131,7 @@ class Graph
 
    ArrayList<INode> AllGraphNodes()
    {
-      return new ArrayList<INode>(m_nodes);
+      return new ArrayList<>(m_nodes);
    }
 
    IGraphRestore CreateRestorePoint()
@@ -193,8 +191,8 @@ class Graph
 
    private final static class NodePos
    {
-      public XY Pos;
-      public INode N;
+      public final XY Pos;
+      public final INode N;
 
       NodePos(INode n, XY pos)
       {
@@ -220,10 +218,10 @@ class Graph
             m_chain_from_restore.m_chain_to_restore = this;
          }
 
-         for (INode n : Graph.this.AllGraphNodes())
-         {
-            m_positions.add(new NodePos(n, n.getPos()));
-         }
+         m_positions.addAll(
+               Graph.this.AllGraphNodes()
+                     .stream()
+                     .map(n -> new NodePos(n, n.getPos())).collect(Collectors.toList()));
       }
 
       void AddNode(Node n)
@@ -306,16 +304,10 @@ class Graph
          }
 
          // which means we must be able to remove anything we added
-         for (Node n : m_nodes_added)
-         {
-            Graph.this.RemoveNode_Inner(n);
-         }
+         m_nodes_added.forEach(Graph.this::RemoveNode_Inner);
 
          // put back anything we removed
-         for (Node n : m_nodes_removed)
-         {
-            Graph.this.AddNode_Inner(n);
-         }
+         m_nodes_removed.forEach(Graph.this::AddNode_Inner);
 
          // which means we must be able to restore the original connections
          for (Map.Entry<DirectedEdge, RestoreAction> me : m_connections.entrySet())
@@ -368,14 +360,14 @@ class Graph
          return m_can_be_restored;
       }
 
-      private HashMap<DirectedEdge, RestoreAction> m_connections = new HashMap<>();
+      private final HashMap<DirectedEdge, RestoreAction> m_connections = new HashMap<>();
 
-      private ArrayList<NodePos> m_positions = new ArrayList<>();
+      private final ArrayList<NodePos> m_positions = new ArrayList<>();
 
-      private ArrayList<Node> m_nodes_added = new ArrayList<>();
-      private ArrayList<Node> m_nodes_removed = new ArrayList<>();
+      private final ArrayList<Node> m_nodes_added = new ArrayList<>();
+      private final ArrayList<Node> m_nodes_removed = new ArrayList<>();
 
-      GraphRestore m_chain_from_restore;
+      final GraphRestore m_chain_from_restore;
       GraphRestore m_chain_to_restore;
 
       // because we can only be used for a restored once...
@@ -396,11 +388,12 @@ class Graph
 
    boolean Contains(INode n)
    {
-      return m_nodes.contains(n);
+      //noinspection RedundantCast
+      return m_nodes.contains((Node)n);
    }
 
-   private HashSet<Node> m_nodes = new HashSet<>();
-   private HashSet<DirectedEdge> m_edges = new HashSet<>();
+   private final HashSet<Node> m_nodes = new HashSet<>();
+   private final HashSet<DirectedEdge> m_edges = new HashSet<>();
 
    private GraphRestore m_restore;
 }

@@ -142,7 +142,6 @@ class Util
    static OrderedPair<Double, Double> unitNodeForce(double l, double summed_radii)
    {
       double ratio = l / summed_radii;
-      double force = 0;
 
       // no attractive forces
       if (ratio > 1)
@@ -150,7 +149,7 @@ class Util
          return new OrderedPair<>(0.0, 0.0);
       }
 
-      force = (ratio - 1);
+      double force = (ratio - 1);
 
       // at the moment the relationship between force and overlap is trivial
       // but will keep the two return values in case the force develops a squared term or something...
@@ -503,6 +502,7 @@ class Util
       double rel_y = d1.dot(d2);
       double rel_x = d1.rot90().dot(d2);
 
+      //noinspection SuspiciousNameCombination
       return fixupAngle(Math.atan2(rel_x, rel_y));
    }
 }

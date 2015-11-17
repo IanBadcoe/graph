@@ -2,9 +2,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by badcoei on 26/10/2015.
- */
 public class NodeTest
 {
    @Test
@@ -191,7 +188,8 @@ public class NodeTest
       assertEquals(0x12345678, n1.getColour());
    }
 
-   static GeomLayout dummy(INode n)
+   @SuppressWarnings({"SameReturnValue", "UnusedParameters"})
+   private static GeomLayout dummy(INode n)
    {
       return null;
    }

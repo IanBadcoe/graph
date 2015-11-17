@@ -3,7 +3,7 @@ import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Main extends processing.core.PApplet
+class Main extends processing.core.PApplet
 {
    public static void main(String[] args) {
       processing.core.PApplet.main("Main", args);
@@ -168,14 +168,11 @@ public class Main extends processing.core.PApplet
 
       if (m_show_notes)
       {
-         for(Annotation a : m_notes)
-         {
-            a.Draw();
-         }
+         m_notes.forEach(Annotation::Draw);
       }
    }
 
-   void AutoScale(Graph g, double low, double high)
+   private void AutoScale(Graph g, double low, double high)
    {
       Box b = g.XYBounds();
 
@@ -189,7 +186,7 @@ public class Main extends processing.core.PApplet
       m_scale = smaller_scale;
    }
 
-   Graph MakeSeed()
+   private Graph MakeSeed()
    {
       Graph ret = new Graph();
       INode start = ret.AddNode("Start", "<", "Seed", 55f);
@@ -218,12 +215,9 @@ public class Main extends processing.core.PApplet
       s_app.text(text, (float)pos.X, (float)pos.Y);
    }
 
-   static void DrawGraph(Graph g, boolean show_labels, boolean show_arrows)
+   private static void DrawGraph(Graph g, boolean show_labels, boolean show_arrows)
    {
-      for (INode n : g.AllGraphNodes())
-      {
-         DrawNode(n);
-      }
+      g.AllGraphNodes().forEach(Main::DrawNode);
 
       for (INode n : g.AllGraphNodes())
       {
@@ -232,10 +226,7 @@ public class Main extends processing.core.PApplet
 
       if (show_labels)
       {
-         for (INode n : g.AllGraphNodes())
-         {
-            DrawLabel(n);
-         }
+         g.AllGraphNodes().forEach(Main::DrawLabel);
       }
    }
 
@@ -281,10 +272,7 @@ public class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      for(Loop l : level.getLoops())
-      {
-         DrawLoop(l);
-      }
+      level.getLoops().forEach(Main::DrawLoop);
 
       int[] colours = { 0xffff0000, 0xff00ff00, 0xff0000ff, 0xffffff00, 0xffff00ff };
       s_app.strokeWeight(2);
@@ -325,35 +313,37 @@ public class Main extends processing.core.PApplet
       s_app.fill(red, green, blue);
    }
 
-   static PApplet s_app;
+   private static PApplet s_app;
 
-   Graph m_graph;
+   private Graph m_graph;
 
-   TemplateStore m_templates = new TemplateStore1();
+   private final TemplateStore m_templates = new TemplateStore1();
 
-   int m_reqSize = 30;
+   @SuppressWarnings("FieldCanBeLocal")
+   private final int m_reqSize = 30;
 
-   Expander m_expander;
+   private Expander m_expander;
 
-   boolean m_lay_out_running = true;
-   boolean m_level_generated = false;
-   boolean m_unions_done = false;
+   private boolean m_lay_out_running = true;
+   private boolean m_level_generated = false;
+   private boolean m_unions_done = false;
 
    // UI data
-   boolean m_step = false;
-   boolean m_go = true;
-   boolean m_auto_scale = true;
-   boolean m_labels = true;
-   boolean m_arrows = true;
-   boolean m_show_notes = true;
+   private boolean m_step = false;
+   private boolean m_go = true;
+   private boolean m_auto_scale = true;
+   private boolean m_labels = true;
+   private boolean m_arrows = true;
+   private boolean m_show_notes = true;
 
-   ArrayList<Annotation> m_notes = new ArrayList<>();
+   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+   private final ArrayList<Annotation> m_notes = new ArrayList<>();
 
-   double m_off_x = 0.0;
-   double m_off_y = 0.0;
-   double m_scale = 1.0;
+   private double m_off_x = 0.0;
+   private double m_off_y = 0.0;
+   private double m_scale = 1.0;
 
-   Level m_level;
+   private Level m_level;
 
-   Random m_union_random = new Random(1);
+   private final Random m_union_random = new Random(1);
 }

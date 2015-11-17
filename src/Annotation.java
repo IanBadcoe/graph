@@ -8,6 +8,7 @@ class Annotation
    final public int Blue;
    final public String Text;
 
+   @SuppressWarnings("unused")
    Annotation(XY p1, XY p2, int red, int green, int blue, String text)
    {
       P1 = p1;

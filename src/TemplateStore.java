@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+@SuppressWarnings("WeakerAccess")
 public class TemplateStore
 {
    public boolean AddTemplate(Template t)
@@ -34,5 +35,5 @@ public class TemplateStore
       return m_templates.containsKey(name);
    }
 
-   private HashMap<String, Template> m_templates = new HashMap<>();
+   private final HashMap<String, Template> m_templates = new HashMap<>();
 }

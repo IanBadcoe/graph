@@ -44,8 +44,8 @@ public class Intersector
          Loop2Out = l2out;
       }
 
-      AnnotatedCurve Loop1Out;
-      AnnotatedCurve Loop2Out;
+      final AnnotatedCurve Loop1Out;
+      final AnnotatedCurve Loop2Out;
    }
 
    public static LoopSet union(LoopSet ls1, LoopSet ls2, @SuppressWarnings("SameParameterValue") double tol, Random random)
@@ -57,17 +57,15 @@ public class Intersector
       if (ls1.equals(ls2))
          return ls1;
 
-      ArrayList<ArrayList<Curve>> working_loops1 = new ArrayList<>();
-      for(Loop l : ls1)
-      {
-         working_loops1.add(new ArrayList<>(l.getCurves()));
-      }
+      ArrayList<ArrayList<Curve>> working_loops1 =
+            ls1.stream()
+                  .map(l -> new ArrayList<>(l.getCurves()))
+                  .collect(Collectors.toCollection(ArrayList::new));
 
-      ArrayList<ArrayList<Curve>> working_loops2 = new ArrayList<>();
-      for(Loop l : ls2)
-      {
-         working_loops2.add(new ArrayList<>(l.getCurves()));
-      }
+      ArrayList<ArrayList<Curve>> working_loops2 =
+            ls2.stream()
+                  .map(l -> new ArrayList<>(l.getCurves()))
+                  .collect(Collectors.toCollection(ArrayList::new));
 
       // split all curves that intersect
       for(ArrayList<Curve> alc1 : working_loops1)

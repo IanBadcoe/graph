@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Node implements INode
 {
@@ -82,7 +83,7 @@ class Node implements INode
       m_connections.add(e);
    }
 
-   String tab(int tab)
+   private String tab(int tab)
    {
       String ret = "";
 
@@ -174,29 +175,19 @@ class Node implements INode
    @Override
    public Collection<DirectedEdge> getInConnections()
    {
-      HashSet<DirectedEdge> ret = new HashSet<>();
 
-      for(DirectedEdge e : m_connections)
-      {
-         if (e.End == this)
-            ret.add(e);
-      }
-
-      return ret;
+      return m_connections.stream()
+            .filter(e -> e.End == this)
+            .collect(Collectors.toCollection(HashSet::new));
    }
 
    @Override
    public Collection<DirectedEdge> getOutConnections()
    {
-      HashSet<DirectedEdge> ret = new HashSet<>();
 
-      for(DirectedEdge e : m_connections)
-      {
-         if (e.Start == this)
-            ret.add(e);
-      }
-
-      return ret;
+      return m_connections.stream()
+            .filter(e -> e.Start == this)
+            .collect(Collectors.toCollection(HashSet::new));
    }
 
    @Override
@@ -292,13 +283,13 @@ class Node implements INode
       m_colour = c;
    }
 
-   private HashSet<DirectedEdge> m_connections;
+   private final HashSet<DirectedEdge> m_connections;
 
    // e : Expandable
    // < : Start (always alone?)
    // > : End (always alone?)
    // c : put on dummy connections in templates, possibly never searched for...
-   private String m_codes;
+   private final String m_codes;
 
    private String m_name;
    private final String m_template;
@@ -309,7 +300,7 @@ class Node implements INode
 
    private XY m_force = new XY();
 
-   private double m_rad;
+   private final double m_rad;
 
    private final static Random s_rand = new Random(1);
 

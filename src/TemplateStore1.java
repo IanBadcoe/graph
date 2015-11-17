@@ -1,4 +1,4 @@
-public class TemplateStore1 extends TemplateStore
+class TemplateStore1 extends TemplateStore
 {
    public TemplateStore1()
    {

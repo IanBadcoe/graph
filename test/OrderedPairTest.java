@@ -2,17 +2,14 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by badcoei on 23/10/2015.
- */
 public class OrderedPairTest
 {
 
    @Test
    public void testHashCode() throws Exception
    {
-      Integer one = new Integer(1);
-      Integer two = new Integer(2);
+      Integer one = 1;
+      Integer two = 2;
 
       OrderedPair<Integer, Integer> op1 = new OrderedPair<>(one, two);
       OrderedPair<Integer, Integer> op2 = new OrderedPair<>(one, two);
@@ -25,10 +22,10 @@ public class OrderedPairTest
    @Test
    public void testEquals() throws Exception
    {
-      Integer one = new Integer(1);
-      Integer two = new Integer(2);
-      Integer one_a = new Integer(1);
-      Integer two_a = new Integer(2);
+      Integer one = 1;
+      Integer two = 2;
+      Integer one_a = 1;
+      Integer two_a = 2;
 
       assertEquals(one, one_a);
 
@@ -39,6 +36,7 @@ public class OrderedPairTest
       assertEquals(op1, op2);
       assertNotEquals(op1, op3);
 
-      assertFalse(op1.equals(new Integer(1)));
+      //noinspection EqualsBetweenInconvertibleTypes
+      assertFalse(op1.equals(1));
    }
 }
