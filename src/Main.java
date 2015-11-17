@@ -3,7 +3,8 @@ import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.Random;
 
-class Main extends processing.core.PApplet
+@SuppressWarnings("WeakerAccess")
+public class Main extends processing.core.PApplet
 {
    public static void main(String[] args) {
       processing.core.PApplet.main("Main", args);
@@ -138,7 +139,7 @@ class Main extends processing.core.PApplet
 
          m_level_generated = true;
 
-//         m_go = false;
+         m_go = false;
       }
 
       if ((m_step || m_go) && m_level_generated && !m_unions_done)
@@ -259,8 +260,7 @@ class Main extends processing.core.PApplet
             XY d = e.End.getPos().minus(e.Start.getPos());
             d = d.divide(10);
 
-            @SuppressWarnings("SuspiciousNameCombination")
-            XY rot = new XY(-d.Y, d.X);
+            XY rot = d.rot90();
 
             Line(e.End.getPos(), e.End.getPos().minus(d).minus(rot));
             Line(e.End.getPos(), e.End.getPos().minus(d).plus(rot));
@@ -272,7 +272,7 @@ class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      level.getLoops().forEach(Main::DrawLoop);
+      level.getLoops().forEach(x -> DrawLoop(x, 20));
 
       int[] colours = { 0xffff0000, 0xff00ff00, 0xff0000ff, 0xffffff00, 0xffff00ff };
       s_app.strokeWeight(2);
@@ -281,17 +281,17 @@ class Main extends processing.core.PApplet
       {
          s_app.stroke(colours[i % 5]);
          i++;
-         DrawLoop(l);
+         DrawLoop(l, 1000);
       }
    }
 
-   private static void DrawLoop(Loop l)
+   private static void DrawLoop(Loop l, int steps)
    {
       double r = l.paramRange();
 
       XY prev = l.computePos(0.0);
 
-      for(double p = r / 20; p < r; p += r / 20)
+      for(double p = r / steps; p < r; p += r / steps)
       {
          XY curr = l.computePos(p);
 

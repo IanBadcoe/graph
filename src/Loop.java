@@ -14,7 +14,8 @@ class Loop
       XY s = c.startPos();
       XY e = c.endPos();
 
-      assert s.equals(e, 1e-6);
+      if (!s.equals(e, 1e-6))
+         throw new IllegalArgumentException("Curves do not form a closed loop");
    }
 
    public Loop(ArrayList<Curve> curves)
@@ -32,7 +33,8 @@ class Loop
          XY c_start = curr.startPos();
          XY p_end = prev.endPos();
 
-         assert c_start.equals(p_end, 1e-6);
+         if (!c_start.equals(p_end, 1e-6))
+            throw new IllegalArgumentException("Curves do not form a closed loop");
 
          prev = curr;
       }
@@ -47,6 +49,13 @@ class Loop
 
    public XY computePos(double p)
    {
+      // because we don't use the curves eithinParams call
+      // this routine should give the same behaviour for
+      // multi-part curves and circles, even though the latter
+      // just go round and round for any level of param
+      if (p < 0)
+         return null;
+
       // curve param ranges can be anywhere
       // but the loop param range starts from zero
       for(Curve c : m_curves)
@@ -74,36 +83,6 @@ class Loop
    {
       return Collections.unmodifiableList(m_curves);
    }
-
-   // loop -> loop intersection data
-   // C1 and C2 are two curves within each loop resp.
-   // Param1 and Param2 are parameters around the _loops_ not the individual curves
-   public static class LLIntersect
-   {
-      LLIntersect(Curve c1, Curve c2,
-                  double param1, double param2)
-      {
-         C1 = c1;
-         C2 = c2;
-         Param1 = param1;
-         Param2 = param2;
-      }
-
-      public final Curve C1;
-      public final Curve C2;
-      public final double Param1;
-      public final double Param2;
-   }
-
-//   public Loop union(Loop other)
-//   {
-//      // the union of any two identical objects as the same as either object
-//      if (this.equals(other))
-//         return this;
-//
-//      // find all curve-curve intersections
-//      ArrayList<LLIntersect> intersections = intersect(other);
-//   }
 
    @Override
    public int hashCode()
