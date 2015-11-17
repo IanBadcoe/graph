@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.stream.Collectors;
+import java.util.*;
 
 class Level
 {
@@ -15,30 +11,49 @@ class Level
    {
       for(INode n : m_graph.AllGraphNodes())
       {
-         GeomLayout gl = n.geomLayoutCreator().create(this, n);
-         m_layouts.add(gl);
-         gl.makeBaseGeometry();
+         GeomLayout gl = n.geomLayoutCreator().create(n);
+         m_layouts.put(n, gl);
+         Loop l = gl.makeBaseGeometry();
+         m_base_loops.add(l);
+      }
+
+      for(DirectedEdge de : m_graph.AllGraphEdges())
+      {
+         GeomLayout gl = new RectangularGeomLayout(de.Start.getPos(), de.End.getPos(), de.Width);
+         m_base_loops.add(gl.makeBaseGeometry());
       }
    }
 
-   void addEdge(GeomEdge ge)
+   boolean unionOne(Random r)
    {
-      m_edges.add(ge);
+      if (m_base_loops.size() == 0)
+         return false;
+
+      Loop l = m_base_loops.remove(0);
+
+      LoopSet temp = new LoopSet();
+      temp.add(l);
+
+      m_level = Intersector.union(m_level, temp, 1e-6, r);
+
+      return true;
    }
 
-   void removeEdge(GeomEdge ge)
+   Collection<Loop> getLoops()
    {
-      m_edges.remove(ge);
+      return Collections.unmodifiableCollection(m_base_loops);
    }
 
-   Collection<GeomEdge> getEdges()
+   public LoopSet getLevel()
    {
-      return m_edges.stream().collect(Collectors.toCollection(ArrayList::new));
+      return m_level;
    }
 
-   private final ArrayList<GeomEdge> m_edges = new ArrayList<>();
+   private final Graph m_graph;
 
-   Graph m_graph;
+   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+   private final HashMap<INode, GeomLayout> m_layouts = new HashMap<>();
+   private final LoopSet m_base_loops = new LoopSet();
 
-   HashSet<GeomLayout> m_layouts = new HashSet<>();
+   private LoopSet m_level = new LoopSet();
 }

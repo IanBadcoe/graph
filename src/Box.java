@@ -1,3 +1,4 @@
+@SuppressWarnings("WeakerAccess")
 public class Box
 {
    final public XY Min;
@@ -5,9 +6,11 @@ public class Box
 
    Box()
    {
-      Min = new XY();
-      Max = new XY();
+      // these exact values indicate an empty box with no size and no position
+      Min = new XY(0, 0);
+      Max = new XY(-1, -1);
    }
+
    Box(XY min, XY max)
    {
       Min = min;
@@ -22,17 +25,42 @@ public class Box
 
    XY Center()
    {
-      return Min.Plus(Max).Divide(2);
+      return Min.plus(Max).divide(2);
    }
 
+   // empty box will return -1
    double DX()
    {
       return Max.X - Min.X;
    }
 
+   // empty box will return -1
    double DY()
    {
       return Max.Y - Min.Y;
+   }
+
+   boolean isEmpty()
+   {
+      // shorthand works as at present no other way to make
+      // a box with -ve sizes
+      return DX() == -1;
+   }
+
+   Box union(Box b)
+   {
+      if (isEmpty())
+         return b;
+
+      if (b.isEmpty())
+         return this;
+
+      return new Box(Min.min(b.Min), Max.max(b.Max));
+   }
+
+   public XY diagonal()
+   {
+      return Max.minus(Min);
    }
 
    @Override
@@ -51,4 +79,5 @@ public class Box
    {
       return Min.hashCode() * 31 + Max.hashCode();
    }
+
 }

@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 public class TryAllNodesExpandStepperTest
 {
-   static ArrayList<INode> m_nodes = new ArrayList<>();
+   private static final ArrayList<INode> m_nodes = new ArrayList<>();
 
    class TestStepperLoggingNodes extends TestStepper
    {
@@ -62,9 +62,9 @@ public class TryAllNodesExpandStepperTest
       Graph g = new Graph();
 
       // all nodes must be tagged "e" to be considered expandable
-      INode n1 = g.AddNode("", "e", "", 0);
-      INode n2 = g.AddNode("", "e", "", 0);
-      INode n3 = g.AddNode("", "e", "", 0);
+      g.AddNode("", "e", "", 0);
+      g.AddNode("", "e", "", 0);
+      g.AddNode("", "e", "", 0);
 
       Expander e = new Expander(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new Random(1)));

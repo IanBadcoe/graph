@@ -2,9 +2,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Nobody on 10/30/2015.
- */
 public class EdgeAdjusterStepperTest
 {
    @Test
@@ -54,14 +51,14 @@ public class EdgeAdjusterStepperTest
 
       assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
       assertEquals(3, g.NumNodes());
-      assertFalse(n1.Connects(n2));
-      assertEquals(0, n1.GetInConnections().size());
-      assertEquals(1, n1.GetOutConnections().size());
-      assertEquals(1, n2.GetInConnections().size());
-      assertEquals(0, n2.GetOutConnections().size());
+      assertFalse(n1.connects(n2));
+      assertEquals(0, n1.getInConnections().size());
+      assertEquals(1, n1.getOutConnections().size());
+      assertEquals(1, n2.getInConnections().size());
+      assertEquals(0, n2.getOutConnections().size());
 
-      DirectedEdge n1_out = n1.GetOutConnections().stream().findFirst().get();
-      DirectedEdge n2_in = n2.GetInConnections().stream().findFirst().get();
+      DirectedEdge n1_out = n1.getOutConnections().stream().findFirst().get();
+      DirectedEdge n2_in = n2.getInConnections().stream().findFirst().get();
       assertEquals(n1_out.End, n2_in.Start);
    }
 
@@ -82,5 +79,7 @@ public class EdgeAdjusterStepperTest
       {
          thrown = true;
       }
+
+      assertTrue(thrown);
    }
 }

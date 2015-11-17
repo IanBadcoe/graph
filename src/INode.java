@@ -1,7 +1,6 @@
 import com.sun.istack.internal.NotNull;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 // read/write for position but read-only for connectivity as we want Graph to
 // control that
@@ -11,45 +10,45 @@ interface INode
    void resetForce();
    double getForce();
    double step(double interval);
-   void AddForce(XY force);
+   void addForce(XY force);
 
    // read/write position
-   void SetPos(XY pos);
+   void setPos(XY pos);
    @NotNull
-   XY GetPos();
+   XY getPos();
 
    // read-only connections
-   boolean Connects(INode n);
-   boolean ConnectsForwards(INode to);
-   boolean ConnectsBackwards(INode from);
-   Collection<DirectedEdge> GetConnections();
-   Collection<DirectedEdge> GetInConnections();
-   Collection<DirectedEdge> GetOutConnections();
-   DirectedEdge GetConnectionTo(INode node);
-   DirectedEdge GetConnectionFrom(INode from);
+   boolean connects(INode n);
+   boolean connectsForwards(INode to);
+   boolean connectsBackwards(INode from);
+   Collection<DirectedEdge> getConnections();
+   Collection<DirectedEdge> getInConnections();
+   Collection<DirectedEdge> getOutConnections();
+   DirectedEdge getConnectionTo(INode node);
+   DirectedEdge getConnectionFrom(INode from);
 
    // other read-only properties
-   String LongName();
-   String GetCodes();
-   String GetTemplate();
-   double GetRad();
+   String longName();
+   String getCodes();
+   String getTemplate();
+   double getRad();
 
    // misc
-   public String Print(int tab, boolean full);
+   String print(int tab, boolean full);
 
    // indices created and read-back for handy data access when relaxing
-   void SetIdx(int i);
-   int GetIdx();
+   void setIdx(int i);
+   int getIdx();
 
    // colour for pretty drawing
-   int GetColour();
-   void SetColour(int c);
+   int getColour();
+   void setColour(int c);
 
    // name (currently writable for showing door <-> key relations etc
-   String GetName();
-   void SetName(String s);
+   String getName();
+   void setName(String s);
 
    // access the geometry-layout object for this node...
-   GeomLayout.GeomLayoutCreateFromNode geomLayoutCreator();
+   GeomLayout.IGeomLayoutCreateFromNode geomLayoutCreator();
 
 }

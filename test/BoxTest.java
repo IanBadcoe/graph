@@ -107,7 +107,8 @@ public class BoxTest
          assertNotEquals(b1, b3);
          assertNotEquals(b3, b4);
 
-         assertFalse(b1.equals(new Integer(1)));
+         //noinspection EqualsBetweenInconvertibleTypes
+         assertFalse(b1.equals(1));
       }
    }
 

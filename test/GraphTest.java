@@ -18,10 +18,10 @@ public class GraphTest
       assertEquals(0, g.NumEdges());
       assertTrue(g.Contains(n));
 
-      assertEquals("n", n.GetName());
-      assertEquals("x", n.GetCodes());
-      assertEquals("y", n.GetTemplate());
-      assertEquals(10.0, n.GetRad(), 0);
+      assertEquals("n", n.getName());
+      assertEquals("x", n.getCodes());
+      assertEquals("y", n.getTemplate());
+      assertEquals(10.0, n.getRad(), 0);
 
       INode n2 = g.AddNode("n2", "x2", "y2", 20);
 
@@ -30,10 +30,10 @@ public class GraphTest
       assertTrue(g.Contains(n2));
       assertTrue(g.Contains(n));
 
-      assertEquals("n2", n2.GetName());
-      assertEquals("x2", n2.GetCodes());
-      assertEquals("y2", n2.GetTemplate());
-      assertEquals(20.0, n2.GetRad(), 0);
+      assertEquals("n2", n2.getName());
+      assertEquals("x2", n2.getCodes());
+      assertEquals("y2", n2.getTemplate());
+      assertEquals(20.0, n2.getRad(), 0);
    }
 
    @Test
@@ -85,16 +85,16 @@ public class GraphTest
 
       INode n2 = g.AddNode("n2", "x2", "y2", 20);
 
-      assertFalse(n.Connects(n2));
-      assertFalse(n2.Connects(n));
+      assertFalse(n.connects(n2));
+      assertFalse(n2.connects(n));
       assertEquals(0, g.NumEdges());
 
       assertNotNull(g.Connect(n, n2, 1, 2, 3));
       assertEquals(1, g.NumEdges());
-      assertTrue(n.Connects(n2));
-      assertTrue(n2.Connects(n));
+      assertTrue(n.connects(n2));
+      assertTrue(n2.connects(n));
 
-      DirectedEdge e = n.GetConnectionTo(n2);
+      DirectedEdge e = n.getConnectionTo(n2);
       assertEquals(n, e.Start);
       assertEquals(n2, e.End);
       assertEquals(1, e.MinLength, 0);
@@ -122,11 +122,11 @@ public class GraphTest
       INode n2 = g.AddNode("n2", "x2", "y2", 20);
       g.Connect(n, n2, 0, 0, 0);
       assertEquals(1, g.NumEdges());
-      assertTrue(n.Connects(n2));
+      assertTrue(n.connects(n2));
 
       assertTrue((g.Disconnect(n, n2)));
       assertEquals(0, g.NumEdges());
-      assertFalse(n.Connects(n2));
+      assertFalse(n.connects(n2));
    }
 
    @Test
@@ -197,7 +197,7 @@ public class GraphTest
 
          for(INode n : m_nodes)
          {
-            m_positions.put(n, n.GetPos());
+            m_positions.put(n, n.getPos());
          }
       }
 
@@ -217,10 +217,10 @@ public class GraphTest
 
          for(INode n : g.AllGraphNodes())
          {
-            if (!n.GetPos().equals(m_positions.get(n)))
+            if (!n.getPos().equals(m_positions.get(n)))
                return false;
 
-            for(DirectedEdge e : n.GetConnections())
+            for(DirectedEdge e : n.getConnections())
             {
                if (!m_edges.contains(e))
                   return false;
@@ -233,19 +233,19 @@ public class GraphTest
             Node start = (Node)e.Start;
             Node end = (Node)e.End;
 
-            if (!start.ConnectsForwards(end))
+            if (!start.connectsForwards(end))
                return false;
 
-            if (!end.ConnectsBackwards(start))
+            if (!end.connectsBackwards(start))
                return false;
          }
 
          return true;
       }
 
-      HashSet<INode> m_nodes = new HashSet<>();
-      HashSet<DirectedEdge> m_edges = new HashSet<>();
-      HashMap<INode, XY> m_positions = new HashMap<>();
+      final HashSet<INode> m_nodes = new HashSet<>();
+      final HashSet<DirectedEdge> m_edges = new HashSet<>();
+      final HashMap<INode, XY> m_positions = new HashMap<>();
    }
 
    @Test
@@ -349,7 +349,7 @@ public class GraphTest
 
          GraphRecord gr = new GraphRecord(g);
 
-         n1.SetPos(new XY(1, 0));
+         n1.setPos(new XY(1, 0));
 
          assertFalse(gr.Compare(g));
       }
@@ -599,13 +599,13 @@ public class GraphTest
 
          IGraphRestore igr1 = g.CreateRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          GraphRecord gr2 = new GraphRecord(g);
 
          IGraphRestore igr2 = g.CreateRestorePoint();
 
-         INode n2 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          igr2.Restore();
 
@@ -617,7 +617,7 @@ public class GraphTest
 
          IGraphRestore igr3 = g.CreateRestorePoint();
 
-         INode n3 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          igr1.Restore();
 
@@ -636,15 +636,15 @@ public class GraphTest
 
          IGraphRestore igr1 = g.CreateRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          IGraphRestore igr2 = g.CreateRestorePoint();
 
-         INode n2 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          IGraphRestore igr3 = g.CreateRestorePoint();
 
-         INode n3 = g.AddNode("", "", "", 0);
+         g.AddNode("", "", "", 0);
 
          GraphRecord gr1 = new GraphRecord(g);
 
@@ -674,11 +674,11 @@ public class GraphTest
 
       assertTrue(g.XYBounds().equals(new Box(new XY(-2, -2), new XY(2, 2))));
 
-      n1.SetPos(new XY(-2, 0));
+      n1.setPos(new XY(-2, 0));
 
       assertTrue(g.XYBounds().equals(new Box(new XY(-3, -2), new XY(2, 2))));
 
-      n2.SetPos(new XY(10, 10));
+      n2.setPos(new XY(10, 10));
 
       assertTrue(g.XYBounds().equals(new Box(new XY(-3, -1), new XY(12, 12))));
    }

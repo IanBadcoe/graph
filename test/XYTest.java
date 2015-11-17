@@ -18,6 +18,7 @@ public class XYTest
       assertFalse(xy1.equals(xy4));
       assertFalse(xy1.equals(xy5));
 
+      //noinspection EqualsBetweenInconvertibleTypes
       assertFalse(xy1.equals("frog"));
    }
 
@@ -44,13 +45,13 @@ public class XYTest
       XY xy3 = new XY(0, 1);
       XY xy4 = new XY(1, 1);
 
-      assertEquals(xy1.Plus(xy1), xy1);
-      assertEquals(xy1.Plus(xy2), xy2);
-      assertEquals(xy1.Plus(xy3), xy3);
-      assertEquals(xy1.Plus(xy4), xy4);
+      assertEquals(xy1.plus(xy1), xy1);
+      assertEquals(xy1.plus(xy2), xy2);
+      assertEquals(xy1.plus(xy3), xy3);
+      assertEquals(xy1.plus(xy4), xy4);
 
-      assertEquals(xy2.Plus(xy3), xy4);
-      assertEquals(xy2.Plus(xy4), new XY(2, 1));
+      assertEquals(xy2.plus(xy3), xy4);
+      assertEquals(xy2.plus(xy4), new XY(2, 1));
    }
 
    @Test
@@ -61,13 +62,13 @@ public class XYTest
       XY xy3 = new XY(0, 1);
       XY xy4 = new XY(1, 1);
 
-      assertEquals(xy1, xy1.Minus(xy1));
-      assertEquals(new XY(-1, 0) , xy1.Minus(xy2));
-      assertEquals(new XY(0, -1) , xy1.Minus(xy3));
-      assertEquals(new XY(-1, -1), xy1.Minus(xy4));
+      assertEquals(xy1, xy1.minus(xy1));
+      assertEquals(new XY(-1, 0) , xy1.minus(xy2));
+      assertEquals(new XY(0, -1) , xy1.minus(xy3));
+      assertEquals(new XY(-1, -1), xy1.minus(xy4));
 
-      assertEquals(new XY(1, -1) , xy2.Minus(xy3));
-      assertEquals(new XY(0, -1) , xy2.Minus(xy4));
+      assertEquals(new XY(1, -1) , xy2.minus(xy3));
+      assertEquals(new XY(0, -1) , xy2.minus(xy4));
    }
 
    @Test
@@ -78,10 +79,10 @@ public class XYTest
       XY xy3 = new XY(23, 11);
       XY xy4 = new XY(-23, -11);
 
-      assertEquals(xy1, xy2.Negate());
-      assertEquals(xy2, xy1.Negate());
-      assertEquals(xy3, xy4.Negate());
-      assertEquals(xy4, xy3.Negate());
+      assertEquals(xy1, xy2.negate());
+      assertEquals(xy2, xy1.negate());
+      assertEquals(xy3, xy4.negate());
+      assertEquals(xy4, xy3.negate());
    }
 
    @Test
@@ -89,12 +90,12 @@ public class XYTest
    {
       XY xy1 = new XY(12, 24);
 
-      assertEquals(new XY(1, 2), xy1.Divide(12));
-      assertEquals(new XY(2, 4), xy1.Divide(6));
-      assertEquals(new XY(3, 6), xy1.Divide(4));
-      assertEquals(new XY(4, 8), xy1.Divide(3));
-      assertEquals(new XY(6, 12), xy1.Divide(2));
-      assertEquals(new XY(12, 24), xy1.Divide(1));
+      assertEquals(new XY(1, 2), xy1.divide(12));
+      assertEquals(new XY(2, 4), xy1.divide(6));
+      assertEquals(new XY(3, 6), xy1.divide(4));
+      assertEquals(new XY(4, 8), xy1.divide(3));
+      assertEquals(new XY(6, 12), xy1.divide(2));
+      assertEquals(new XY(12, 24), xy1.divide(1));
    }
 
    @Test
@@ -102,12 +103,12 @@ public class XYTest
    {
       XY xy1 = new XY(1, 2);
 
-      assertEquals(new XY(1, 2), xy1.Multiply(1));
-      assertEquals(new XY(2, 4), xy1.Multiply(2));
-      assertEquals(new XY(3, 6), xy1.Multiply(3));
-      assertEquals(new XY(4, 8), xy1.Multiply(4));
-      assertEquals(new XY(6, 12), xy1.Multiply(6));
-      assertEquals(new XY(12, 24), xy1.Multiply(12));
+      assertEquals(new XY(1, 2), xy1.multiply(1));
+      assertEquals(new XY(2, 4), xy1.multiply(2));
+      assertEquals(new XY(3, 6), xy1.multiply(3));
+      assertEquals(new XY(4, 8), xy1.multiply(4));
+      assertEquals(new XY(6, 12), xy1.multiply(6));
+      assertEquals(new XY(12, 24), xy1.multiply(12));
 
    }
 
@@ -119,10 +120,10 @@ public class XYTest
       XY xy3 = new XY(4, -1);
       XY xy4 = new XY(-5, -1);
 
-      assertEquals(Math.sqrt(5), xy1.Length(), 1e-6);
-      assertEquals(Math.sqrt(10), xy2.Length(), 1e-6);
-      assertEquals(Math.sqrt(17), xy3.Length(), 1e-6);
-      assertEquals(Math.sqrt(26), xy4.Length(), 1e-6);
+      assertEquals(Math.sqrt(5), xy1.length(), 1e-6);
+      assertEquals(Math.sqrt(10), xy2.length(), 1e-6);
+      assertEquals(Math.sqrt(17), xy3.length(), 1e-6);
+      assertEquals(Math.sqrt(26), xy4.length(), 1e-6);
    }
 
    @Test
@@ -133,9 +134,9 @@ public class XYTest
       XY xy3 = new XY(4, -1);
       XY xy4 = new XY(-5, -1);
 
-      assertEquals(new XY(-1, 2), xy1.Min(xy2));
-      assertEquals(new XY(1, -1), xy1.Min(xy3));
-      assertEquals(new XY(-5, -1), xy1.Min(xy4));
+      assertEquals(new XY(-1, 2), xy1.min(xy2));
+      assertEquals(new XY(1, -1), xy1.min(xy3));
+      assertEquals(new XY(-5, -1), xy1.min(xy4));
    }
 
    @Test
@@ -146,9 +147,9 @@ public class XYTest
       XY xy3 = new XY(4, -1);
       XY xy4 = new XY(-5, -1);
 
-      assertEquals(new XY(1, 3), xy1.Max(xy2));
-      assertEquals(new XY(4, 2), xy1.Max(xy3));
-      assertEquals(new XY(1, 2), xy1.Max(xy4));
+      assertEquals(new XY(1, 3), xy1.max(xy2));
+      assertEquals(new XY(4, 2), xy1.max(xy3));
+      assertEquals(new XY(1, 2), xy1.max(xy4));
    }
 
    @Test
@@ -159,10 +160,10 @@ public class XYTest
       XY xy3 = new XY(4, -1);
       XY xy4 = new XY(-5, -1);
 
-      assertTrue(xy1.IsZero());
-      assertFalse(xy2.IsZero());
-      assertFalse(xy3.IsZero());
-      assertFalse(xy4.IsZero());
+      assertTrue(xy1.isZero());
+      assertFalse(xy2.isZero());
+      assertFalse(xy3.isZero());
+      assertFalse(xy4.isZero());
    }
 
    @Test
@@ -173,14 +174,14 @@ public class XYTest
       XY xy3 = new XY(0, 0.5);
       XY xy4 = new XY(-0.5, 0);
 
-      assertEquals(0, xy1.Dot(xy2), 1e-6);
-      assertEquals(1, xy1.Dot(xy1), 1e-6);
-      assertEquals(0.5, xy1.Dot(xy3), 1e-6);
-      assertEquals(0, xy1.Dot(xy4), 1e-6);
+      assertEquals(0, xy1.dot(xy2), 1e-6);
+      assertEquals(1, xy1.dot(xy1), 1e-6);
+      assertEquals(0.5, xy1.dot(xy3), 1e-6);
+      assertEquals(0, xy1.dot(xy4), 1e-6);
 
-      assertEquals(1, xy2.Dot(xy2), 1e-6);
-      assertEquals(0, xy2.Dot(xy1), 1e-6);
-      assertEquals(0, xy2.Dot(xy3), 1e-6);
-      assertEquals(-0.5, xy2.Dot(xy4), 1e-6);
+      assertEquals(1, xy2.dot(xy2), 1e-6);
+      assertEquals(0, xy2.dot(xy1), 1e-6);
+      assertEquals(0, xy2.dot(xy3), 1e-6);
+      assertEquals(-0.5, xy2.dot(xy4), 1e-6);
    }
 }

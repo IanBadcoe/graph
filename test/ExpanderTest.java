@@ -2,9 +2,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by badcoei on 29/10/2015.
- */
 public class ExpanderTest
 {
    class StepDepthStepper implements IExpandStepper
@@ -308,7 +305,6 @@ public class ExpanderTest
          assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
          // we failed at outer stepper-level, so whole graph should have been restored
          assertEquals(g.NumNodes(), 0);
-         assertTrue(ret.Complete);
 
          boolean thrown = false;
          try
@@ -341,7 +337,6 @@ public class ExpanderTest
          assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
          // we failed one stepper-level down, so one node should still he here
          assertEquals(g.NumNodes(), 1);
-         assertTrue(ret.Complete);
 
          boolean thrown = false;
          try
@@ -374,7 +369,6 @@ public class ExpanderTest
          assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
          // we failed two stepper-levels down, so two nodes should still he here
          assertEquals(g.NumNodes(), 2);
-         assertTrue(ret.Complete);
 
          boolean thrown = false;
          try
@@ -407,7 +401,6 @@ public class ExpanderTest
          assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
          // we failed three stepper-levels down, so three nodes should still he here
          assertEquals(g.NumNodes(), 3);
-         assertTrue(ret.Complete);
 
          boolean thrown = false;
          try
@@ -440,7 +433,6 @@ public class ExpanderTest
          assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
          // did not fail, so all four nodes should still he here
          assertEquals(g.NumNodes(), 4);
-         assertTrue(ret.Complete);
 
          boolean thrown = false;
          try

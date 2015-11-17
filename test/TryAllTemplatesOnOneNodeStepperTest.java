@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 public class TryAllTemplatesOnOneNodeStepperTest
 {
-   ArrayList<Template> m_templates = new ArrayList<>();
+   private final ArrayList<Template> m_templates = new ArrayList<>();
 
    class FaiStepperLoggingTemplates extends TestStepper
    {

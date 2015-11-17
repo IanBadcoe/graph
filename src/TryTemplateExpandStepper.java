@@ -5,7 +5,7 @@ class TryTemplateExpandStepper implements IExpandStepper
 {
    interface IRelaxerFactory
    {
-      IExpandStepper MakeRelaxer(Graph g, double max_step, double target_force, double target_move);
+      IExpandStepper MakeRelaxer(Graph g, @SuppressWarnings("SameParameterValue") double max_step, @SuppressWarnings("SameParameterValue") double target_force, @SuppressWarnings("SameParameterValue") double target_move);
    }
 
    interface IAdjusterFactory

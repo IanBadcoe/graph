@@ -103,8 +103,8 @@ public class Expander
       }
    }
 
-   private Stack<OrderedPair<IExpandStepper, IGraphRestore>>
+   private final Stack<OrderedPair<IExpandStepper, IGraphRestore>>
          m_stack = new Stack<>();
-   private Graph m_graph;
+   private final Graph m_graph;
    private ExpandStatus m_last_step_status;
 }

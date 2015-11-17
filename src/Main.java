@@ -3,6 +3,7 @@ import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.Random;
 
+@SuppressWarnings("WeakerAccess")
 public class Main extends processing.core.PApplet
 {
    public static void main(String[] args) {
@@ -23,17 +24,17 @@ public class Main extends processing.core.PApplet
 
       // configure our crude IoC system
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new TryAllTemplatesOnOneNodeStepper(a, b, c, d));
+            TryAllTemplatesOnOneNodeStepper::new);
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new TryTemplateExpandStepper(a, b, c, d));
+            TryTemplateExpandStepper::new);
       ExpandToSizeStepper.SetChildFactory(
-            (a, b, c) -> new TryAllNodesExpandStepper(a, b, c));
+            TryAllNodesExpandStepper::new);
       EdgeAdjusterStepper.SetChildFactory(
-            (a, b, c, d) -> new RelaxerStepper(a, b, c, d));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new RelaxerStepper(a, b, c, d));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b) -> new EdgeAdjusterStepper(a, b));
+            EdgeAdjusterStepper::new);
    }
 
    @Override
@@ -110,9 +111,9 @@ public class Main extends processing.core.PApplet
       strokeWeight(0.0f);
 //      textSize(0.01f);
 
-      Expander.ExpandRet ret = null;
+      Expander.ExpandRet ret;
 
-      for(int i = 0; i < 1000; i++)
+      for(int i = 0; i < 100000; i++)
       {
          if ((m_step || m_go) && m_lay_out_running)
          {
@@ -124,6 +125,10 @@ public class Main extends processing.core.PApplet
 
 //            print(ret.Log, "\n");
          }
+         else
+         {
+            break;
+         }
       }
 
       if (!m_lay_out_running && !m_level_generated)
@@ -133,6 +138,15 @@ public class Main extends processing.core.PApplet
          m_level.generateGeometry();
 
          m_level_generated = true;
+
+         m_go = false;
+      }
+
+      if ((m_step || m_go) && m_level_generated && !m_unions_done)
+      {
+         m_unions_done = !m_level.unionOne(m_union_random);
+
+         m_step = false;
       }
 
       double range = min(width, height);
@@ -155,14 +169,11 @@ public class Main extends processing.core.PApplet
 
       if (m_show_notes)
       {
-         for(Annotation a : m_notes)
-         {
-            a.Draw();
-         }
+         m_notes.forEach(Annotation::Draw);
       }
    }
 
-   void AutoScale(Graph g, double low, double high)
+   private void AutoScale(Graph g, double low, double high)
    {
       Box b = g.XYBounds();
 
@@ -176,16 +187,16 @@ public class Main extends processing.core.PApplet
       m_scale = smaller_scale;
    }
 
-   Graph MakeSeed()
+   private Graph MakeSeed()
    {
       Graph ret = new Graph();
       INode start = ret.AddNode("Start", "<", "Seed", 55f);
       INode expander = ret.AddNode("Expander", "e", "Seed", 55f);
       INode end = ret.AddNode("End", ">", "Seed", 55f);
 
-      start.SetPos(new XY(-100, 0));
-      expander.SetPos(new XY(0, 0));
-      end.SetPos(new XY(0, 100));
+      start.setPos(new XY(-100, 0));
+      expander.setPos(new XY(0, 0));
+      end.setPos(new XY(0, 100));
 
       ret.Connect(start, expander, 90, 110, 10);
       ret.Connect(expander, end, 90, 110, 10);
@@ -205,12 +216,9 @@ public class Main extends processing.core.PApplet
       s_app.text(text, (float)pos.X, (float)pos.Y);
    }
 
-   static void DrawGraph(Graph g, boolean show_labels, boolean show_arrows)
+   private static void DrawGraph(Graph g, boolean show_labels, boolean show_arrows)
    {
-      for (INode n : g.AllGraphNodes())
-      {
-         DrawNode(n);
-      }
+      g.AllGraphNodes().forEach(Main::DrawNode);
 
       for (INode n : g.AllGraphNodes())
       {
@@ -219,46 +227,43 @@ public class Main extends processing.core.PApplet
 
       if (show_labels)
       {
-         for (INode n : g.AllGraphNodes())
-         {
-            DrawLabel(n);
-         }
+         g.AllGraphNodes().forEach(Main::DrawLabel);
       }
    }
 
    private static void DrawNode(INode n)
    {
       s_app.noStroke();
-      s_app.fill(n.GetColour());
-      s_app.ellipse((float) n.GetPos().X, (float) n.GetPos().Y,
-            (float) n.GetRad(), (float) n.GetRad());
+      s_app.fill(n.getColour());
+      s_app.ellipse((float) n.getPos().X, (float) n.getPos().Y,
+            (float) n.getRad(), (float) n.getRad());
    }
 
    private static void DrawLabel(INode n)
    {
       s_app.fill(255, 255, 255);
-      s_app.text(n.GetName(),
-            (float) n.GetPos().X, (float) n.GetPos().Y);
+      s_app.text(n.getName(),
+            (float) n.getPos().X, (float) n.getPos().Y);
    }
 
    private static void DrawConnections(INode n, boolean show_arrows)
    {
       // in connections are drawn by the other node...
-      for(DirectedEdge e : n.GetOutConnections())
+      for(DirectedEdge e : n.getOutConnections())
       {
          s_app.stroke(e.GetColour());
          s_app.strokeWeight((float)(e.Width * 1.75));
-         Line(e.Start.GetPos(), e.End.GetPos());
+         Line(e.Start.getPos(), e.End.getPos());
 
          if (show_arrows)
          {
-            XY d = e.End.GetPos().Minus(e.Start.GetPos());
-            d = d.Divide(10);
+            XY d = e.End.getPos().minus(e.Start.getPos());
+            d = d.divide(10);
 
-            XY rot = new XY(-d.Y, d.X);
+            XY rot = d.rot90();
 
-            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Minus(rot));
-            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Plus(rot));
+            Line(e.End.getPos(), e.End.getPos().minus(d).minus(rot));
+            Line(e.End.getPos(), e.End.getPos().minus(d).plus(rot));
          }
       }
    }
@@ -267,10 +272,35 @@ public class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      for(GeomEdge ge : level.getEdges())
+      level.getLoops().forEach(x -> DrawLoop(x, 20));
+
+      int[] colours = { 0xffff0000, 0xff00ff00, 0xff0000ff, 0xffffff00, 0xffff00ff };
+      s_app.strokeWeight(2);
+      int i = 0;
+      for(Loop l : level.getLevel())
       {
-         Line(ge.Start, ge.End);
+         s_app.stroke(colours[i % 5]);
+         i++;
+         DrawLoop(l, 1000);
       }
+   }
+
+   private static void DrawLoop(Loop l, int steps)
+   {
+      double r = l.paramRange();
+
+      XY prev = l.computePos(0.0);
+
+      for(double p = r / steps; p < r; p += r / steps)
+      {
+         XY curr = l.computePos(p);
+
+         Line(prev, curr);
+
+         prev = curr;
+      }
+
+      Line(prev, l.computePos(0));
    }
 
    static void Stroke(int red, int green, int blue)
@@ -283,32 +313,37 @@ public class Main extends processing.core.PApplet
       s_app.fill(red, green, blue);
    }
 
-   static PApplet s_app;
+   private static PApplet s_app;
 
-   Graph m_graph;
+   private Graph m_graph;
 
-   TemplateStore m_templates = new TemplateStore1();
+   private final TemplateStore m_templates = new TemplateStore1();
 
-   int m_reqSize = 30;
+   @SuppressWarnings("FieldCanBeLocal")
+   private final int m_reqSize = 30;
 
-   Expander m_expander;
+   private Expander m_expander;
 
-   boolean m_lay_out_running = true;
-   boolean m_level_generated = false;
+   private boolean m_lay_out_running = true;
+   private boolean m_level_generated = false;
+   private boolean m_unions_done = false;
 
    // UI data
-   boolean m_step = false;
-   boolean m_go = false;
-   boolean m_auto_scale = true;
-   boolean m_labels = true;
-   boolean m_arrows = true;
-   boolean m_show_notes = true;
+   private boolean m_step = false;
+   private boolean m_go = true;
+   private boolean m_auto_scale = true;
+   private boolean m_labels = true;
+   private boolean m_arrows = true;
+   private boolean m_show_notes = true;
 
-   ArrayList<Annotation> m_notes = new ArrayList<>();
+   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+   private final ArrayList<Annotation> m_notes = new ArrayList<>();
 
-   double m_off_x = 0.0;
-   double m_off_y = 0.0;
-   double m_scale = 1.0;
+   private double m_off_x = 0.0;
+   private double m_off_y = 0.0;
+   private double m_scale = 1.0;
 
-   Level m_level;
+   private Level m_level;
+
+   private final Random m_union_random = new Random(1);
 }

@@ -4,9 +4,7 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Nobody on 10/25/2015.
- */
+@SuppressWarnings("ConstantConditions")
 public class TemplateTest {
     @Test
     public void testExpand_Positioning() throws Exception
@@ -23,13 +21,13 @@ public class TemplateTest {
             Graph g = new Graph();
 
             INode a = g.AddNode("x", "", "", 0);
-            a.SetPos(new XY(-4, 3));
+            a.setPos(new XY(-4, 3));
 
             assertTrue(t.Expand(g, a, new Random(1)));
             assertEquals(1, g.NumNodes());
             INode new_n = g.AllGraphNodes().get(0);
-            assertEquals("a", new_n.GetName());
-            assertEquals(new XY(-4, 3), new_n.GetPos());
+            assertEquals("a", new_n.getName());
+            assertEquals(new XY(-4, 3), new_n.getPos());
         }
 
         // no ins, outs or connections, just swapping one disconnected node for another...
@@ -46,15 +44,15 @@ public class TemplateTest {
             Graph g = new Graph();
 
             INode n = g.AddNode("x", "", "", 0);
-            n.SetPos(new XY(-4, 3));
+            n.setPos(new XY(-4, 3));
 
             assertTrue(t.Expand(g, n, new Random(1)));
             assertEquals(1, g.NumNodes());
             INode new_n = g.AllGraphNodes().get(0);
-            assertEquals("a", new_n.GetName());
+            assertEquals("a", new_n.getName());
 
             // we offset by 5 in a random direction
-            double dist = new XY(-4, 3).Minus(new_n.GetPos()).Length();
+            double dist = new XY(-4, 3).minus(new_n.getPos()).length();
             assertEquals(5, dist, 1e-6);
         }
 
@@ -75,9 +73,9 @@ public class TemplateTest {
             Graph g = new Graph();
 
             INode a = g.AddNode("x", "", "", 0);
-            a.SetPos(new XY(-4, 3));
+            a.setPos(new XY(-4, 3));
             INode in = g.AddNode("in", "", "", 0);
-            in.SetPos(new XY(10, 9));
+            in.setPos(new XY(10, 9));
 
             g.Connect(in, a, 0, 0, 0);
 
@@ -86,7 +84,7 @@ public class TemplateTest {
             assertNotNull(FindNode(g, "in"));
             INode new_n = FindNode(g, "a");
             assertNotNull(new_n != null);
-            assertEquals(new XY(10, 9), new_n.GetPos());
+            assertEquals(new XY(10, 9), new_n.getPos());
         }
 
         // an "in" and a replaced node,
@@ -105,9 +103,9 @@ public class TemplateTest {
             Graph g = new Graph();
 
             INode a = g.AddNode("x", "", "", 0);
-            a.SetPos(new XY(-4, 3));
+            a.setPos(new XY(-4, 3));
             INode in = g.AddNode("in", "", "", 0);
-            in.SetPos(new XY(10, 9));
+            in.setPos(new XY(10, 9));
 
             g.Connect(in, a, 0, 0, 0);
 
@@ -118,7 +116,7 @@ public class TemplateTest {
             assertNotNull(new_n != null);
 
             // we offset by 5 in a random direction
-            double dist = new XY(10, 9).Minus(new_n.GetPos()).Length();
+            double dist = new XY(10, 9).minus(new_n.getPos()).length();
             assertEquals(5, dist, 1e-6);
         }
 
@@ -138,9 +136,9 @@ public class TemplateTest {
             Graph g = new Graph();
 
             INode a = g.AddNode("x", "", "", 0);
-            a.SetPos(new XY(-4, 3));
+            a.setPos(new XY(-4, 3));
             INode in = g.AddNode("in", "", "", 0);
-            in.SetPos(new XY(-14, -7));
+            in.setPos(new XY(-14, -7));
 
             g.Connect(in, a, 0, 0, 0);
 
@@ -151,7 +149,7 @@ public class TemplateTest {
             assertNotNull(new_n != null);
 
             // position on replaced node but 10% of the way towards "in"
-            assertEquals(new XY(-5, 2), new_n.GetPos());
+            assertEquals(new XY(-5, 2), new_n.getPos());
         }
 
         // an "in" and a replaced node,
@@ -170,9 +168,9 @@ public class TemplateTest {
             Graph g = new Graph();
 
             INode a = g.AddNode("x", "", "", 0);
-            a.SetPos(new XY(-4, 3));
+            a.setPos(new XY(-4, 3));
             INode in = g.AddNode("in", "", "", 0);
-            in.SetPos(new XY(-14, -7));
+            in.setPos(new XY(-14, -7));
 
             g.Connect(in, a, 0, 0, 0);
 
@@ -183,7 +181,7 @@ public class TemplateTest {
             assertNotNull(new_n != null);
 
             // position on replaced node but 10% of the way towards "in"
-            assertEquals(new XY(-3, 4), new_n.GetPos());
+            assertEquals(new XY(-3, 4), new_n.getPos());
         }
 
         // an "in", an "out", and a replaced node,
@@ -204,11 +202,11 @@ public class TemplateTest {
             Graph g = new Graph();
 
             INode a = g.AddNode("x", "", "", 0);
-            a.SetPos(new XY(10, 10));
+            a.setPos(new XY(10, 10));
             INode in = g.AddNode("in", "", "", 0);
-            in.SetPos(new XY(20, 10));
+            in.setPos(new XY(20, 10));
             INode out = g.AddNode("out", "", "", 0);
-            out.SetPos(new XY(10, 20));
+            out.setPos(new XY(10, 20));
 
             g.Connect(in, a, 0, 0, 0);
             g.Connect(a, out, 0, 0, 0);
@@ -221,7 +219,7 @@ public class TemplateTest {
 
             // position on replaced node but 10% of the way away from "in"
             // and 10% (rel to original position) towards out
-            assertEquals(new XY(9, 11), new_n.GetPos());
+            assertEquals(new XY(9, 11), new_n.getPos());
         }
     }
 
@@ -248,10 +246,10 @@ public class TemplateTest {
             INode c = g.AddNode("c", "", "", 0);
             INode d = g.AddNode("d", "", "", 0);
 
-            a.SetPos(new XY(10, 0));
-            b.SetPos(new XY(-10, 0));
-            c.SetPos(new XY(0, 10));
-            d.SetPos(new XY(0, -10));
+            a.setPos(new XY(10, 0));
+            b.setPos(new XY(-10, 0));
+            c.setPos(new XY(0, 10));
+            d.setPos(new XY(0, -10));
 
             g.Connect(a, b, 0, 0, 0);
             g.Connect(c, d, 0, 0, 0);
@@ -438,7 +436,7 @@ public class TemplateTest {
     {
         for(INode n : g.AllGraphNodes())
         {
-            if (n.GetName() == name)
+            if (n.getName().equals(name))
                 return n;
         }
 

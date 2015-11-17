@@ -2,7 +2,7 @@ import java.util.*;
 
 class Util
 {
-   public static HashSet<DirectedEdgePair> FindCrossingEdges(Collection<DirectedEdge> edges)
+   public static HashSet<DirectedEdgePair> findCrossingEdges(Collection<DirectedEdge> edges)
    {
       HashSet<DirectedEdgePair> ret = new HashSet<>();
 
@@ -13,7 +13,7 @@ class Util
             if (e1 == e2)
                break;
 
-            DirectedEdgePair dep = EdgeIntersect(e1, e2);
+            DirectedEdgePair dep = edgeIntersect(e1, e2);
 
             if (dep != null)
             {
@@ -25,13 +25,13 @@ class Util
       return ret;
    }
 
-   public static DirectedEdgePair EdgeIntersect(DirectedEdge edge1,
+   public static DirectedEdgePair edgeIntersect(DirectedEdge edge1,
                                                 DirectedEdge edge2)
    {
       assert edge1 != null;
       assert edge2 != null;
 
-      OrderedPair<Double, Double> params = EdgeIntersect(edge1.Start, edge1.End, edge2.Start, edge2.End);
+      OrderedPair<Double, Double> params = edgeIntersect(edge1.Start, edge1.End, edge2.Start, edge2.End);
 
       if (params == null)
          return null;
@@ -39,8 +39,8 @@ class Util
       return new DirectedEdgePair(edge1, edge2, params.First, params.Second);
    }
 
-   public static OrderedPair<Double, Double> EdgeIntersect(INode edge1Start, INode edge1End,
-                                                         INode edge2Start, INode edge2End)
+   public static OrderedPair<Double, Double> edgeIntersect(INode edge1Start, INode edge1End,
+                                                           INode edge2Start, INode edge2End)
    {
       assert edge1Start != null;
       assert edge1End != null;
@@ -56,11 +56,21 @@ class Util
          return null;
       }
 
-      return EdgeIntersect(edge1Start.GetPos(), edge1End.GetPos(),
-            edge2Start.GetPos(), edge2End.GetPos());
+      return edgeIntersect(edge1Start.getPos(), edge1End.getPos(),
+            edge2Start.getPos(), edge2End.getPos());
    }
 
-   private static OrderedPair<Double, Double> EdgeIntersect(double edge1StartX, double edge1StartY,
+   public static OrderedPair<Double, Double> edgeIntersect(XY edge1Start, XY edge1End, XY edge2Start, XY edge2End)
+   {
+      return edgeIntersect(
+            edge1Start.X, edge1Start.Y,
+            edge1End.X, edge1End.Y,
+            edge2Start.X, edge2Start.Y,
+            edge2End.X, edge2End.Y
+      );
+   }
+
+   private static OrderedPair<Double, Double> edgeIntersect(double edge1StartX, double edge1StartY,
                                                             double edge1EndX, double edge1EndY,
                                                             double edge2StartX, double edge2StartY,
                                                             double edge2EndX, double edge2EndY)
@@ -98,7 +108,7 @@ class Util
     * The second double is the force.  The sign of the force is that -ve is repulsive (happens when too close)
     * and vice versa.
     */
-   static OrderedPair<Double, Double> UnitEdgeForce(double l, double dmin, double dmax)
+   static OrderedPair<Double, Double> unitEdgeForce(double l, double dmin, double dmax)
    {
       double ratio;
 
@@ -119,16 +129,6 @@ class Util
       return new OrderedPair<>(ratio, force);
    }
 
-   public static OrderedPair<Double, Double> EdgeIntersect(XY edge1Start, XY edge1End, XY edge2Start, XY edge2End)
-   {
-      return EdgeIntersect(
-            edge1Start.X, edge1Start.Y,
-            edge1End.X, edge1End.Y,
-            edge2Start.X, edge2Start.Y,
-            edge2End.X, edge2End.Y
-      );
-   }
-
    /**
     * Calculate force and distance ratio of two circular nodes
     * @param l node separation
@@ -139,10 +139,9 @@ class Util
     * The second double is the force.  The sign of the force is that -ve is repulsive (happens when too close)
     * the are no attractive forces for nodes so the force is never > 0.
     */
-   static OrderedPair<Double, Double> UnitNodeForce(double l, double summed_radii)
+   static OrderedPair<Double, Double> unitNodeForce(double l, double summed_radii)
    {
       double ratio = l / summed_radii;
-      double force = 0;
 
       // no attractive forces
       if (ratio > 1)
@@ -150,11 +149,241 @@ class Util
          return new OrderedPair<>(0.0, 0.0);
       }
 
-      force = (ratio - 1);
+      double force = (ratio - 1);
 
       // at the moment the relationship between force and overlap is trivial
       // but will keep the two return values in case the force develops a squared term or something...
       return new OrderedPair<>(-force, force);
+   }
+
+   public static ArrayList<OrderedPair<Double,Double>> curveCurveIntersect(Curve c1, Curve c2)
+   {
+      if (c1.equals(c2))
+         return null;
+
+      OrderedPair<XY, XY> pts;
+
+      if (c1 instanceof CircleCurve)
+      {
+         pts = circleCurveIntersect((CircleCurve)c1, c2);
+      }
+      else if (c1 instanceof LineCurve)
+      {
+         pts = lineCurveIntersect((LineCurve)c1, c2);
+      }
+      else
+      {
+         throw new UnsupportedOperationException("Unknown type of curve");
+      }
+
+      if (pts == null)
+         return null;
+
+      ArrayList<OrderedPair<Double,Double>> ret = new ArrayList<>();
+
+      {
+         Double pc1 = c1.findParamForPoint(pts.First, 1e-6);
+         Double pc2 = c2.findParamForPoint(pts.First, 1e-6);
+
+         if (pc1 != null && pc2 != null)
+         {
+            ret.add(new OrderedPair<>(pc1, pc2));
+         }
+      }
+
+      if (pts.Second != null)
+      {
+         Double pc1 = c1.findParamForPoint(pts.Second, 1e-6);
+         Double pc2 = c2.findParamForPoint(pts.Second, 1e-6);
+
+         if (pc1 != null && pc2 != null)
+         {
+            ret.add(new OrderedPair<>(pc1, pc2));
+         }
+      }
+
+      if (ret.size() > 0)
+         return ret;
+
+      return null;
+   }
+
+   private static OrderedPair<XY, XY> circleCurveIntersect(CircleCurve c1, Curve c2)
+   {
+      if (c2 instanceof CircleCurve)
+      {
+         return circleCircleIntersect(c1, (CircleCurve)c2);
+      }
+      else if (c2 instanceof LineCurve)
+      {
+         return circleLineIntersect(c1, (LineCurve)c2);
+      }
+
+      throw new UnsupportedOperationException("Unknown type of curve");
+   }
+
+   private static OrderedPair<XY, XY> circleCircleIntersect(CircleCurve c1, CircleCurve c2)
+   {
+      return circleCircleIntersect(c1.Position, c1.Radius, c2.Position, c2.Radius);
+   }
+
+   private static OrderedPair<XY, XY> lineCurveIntersect(LineCurve c1, Curve c2)
+   {
+      if (c2 instanceof CircleCurve)
+      {
+         return lineCircleIntersect(c1, (CircleCurve)c2);
+      }
+      else if (c2 instanceof LineCurve)
+      {
+         return lineLineIntersect(c1, (LineCurve)c2);
+      }
+
+
+      throw new UnsupportedOperationException("Unknown type of curve");
+   }
+
+   private static OrderedPair<XY, XY> lineLineIntersect(LineCurve l1, LineCurve l2)
+   {
+      OrderedPair<Double, Double> ret = edgeIntersect(
+            l1.startPos(), l1.endPos(),
+            l2.startPos(), l2.endPos());
+
+      if (ret == null)
+         return null;
+
+      // inefficient, am going to calculate a position here, just so that I can
+      // back-calculate params from it above, however line-line is the only intersection that gives
+      // direct params so it would be a pain to change the approach for this one case
+
+      return new OrderedPair<>(
+            l1.computePos(l1.startParam() + (l1.endParam() - l1.startParam()) * ret.First),
+            null);
+   }
+
+   private static OrderedPair<XY, XY> lineCircleIntersect(LineCurve l1, CircleCurve c2)
+   {
+      return circleLineIntersect(c2, l1);
+   }
+
+   // algorithm stolen with thanks from:
+   // http://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+   private static OrderedPair<XY, XY> circleLineIntersect(CircleCurve c1, LineCurve l2)
+   {
+      XY d = l2.endPos().minus(l2.startPos());
+      XY f = l2.startPos().minus(c1.Position);
+
+      double a = d.length2();
+      double b = 2 * f.dot(d);
+      double c = f.length2() - c1.Radius * c1.Radius;
+
+      double discriminant_2 = b * b - 4 * a * c;
+
+      if( discriminant_2 < 0 )
+      {
+         return null;
+      }
+
+      XY hit1 = null;
+      XY hit2 = null;
+
+      // ray didn't totally miss sphere,
+      // so there is a solution to
+      // the equation.
+
+      double discriminant = Math.sqrt(discriminant_2);
+
+      // either solution may be on or off the ray so need to test both
+      // t1 is always the smaller value, because BOTH discriminant and
+      // a are nonnegative.
+      double t1 = (-b - discriminant) / (2 * a);
+      double t2 = (-b + discriminant) / (2 * a);
+
+      // 3x HIT cases:
+      //          -o->             --|-->  |            |  --|->
+      // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
+
+      // 3x MISS cases:
+      //       ->  o                     o ->              | -> |
+      // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
+
+      if( t1 >= 0 && t1 <= 1 )
+      {
+         hit1 = l2.computePos(l2.startParam() + (l2.endParam() - l2.startParam()) * t1);
+      }
+
+      if( t2 >= 0 && t2 <= 1 )
+      {
+         hit2 = l2.computePos(l2.startParam() + (l2.endParam() - l2.startParam()) * t2);
+      }
+
+      if (hit1 == null)
+      {
+         hit1 = hit2;
+         hit2 = null;
+      }
+
+      if (hit1 == null)
+         return null;
+
+      return new OrderedPair<>(hit1, hit2);
+   }
+
+   private static OrderedPair<XY, XY> circleCircleIntersect(XY c1, double r1, XY c2, double r2)
+   {
+      double dist_2 = c1.minus(c2).length2();
+      double dist = Math.sqrt(dist_2);
+
+      // too far apart
+      if (dist > r1 + r2)
+         return null;
+
+      // too close together
+      if (dist < Math.abs(r1 - r2))
+         return null;
+
+      double a = c1.X;
+      double b = c1.Y;
+      double c = c2.X;
+      double d = c2.Y;
+
+      double delta_2 = (dist + r1 + r2)
+            * (dist + r1 - r2)
+            * (dist - r1 + r2)
+            * (-dist + r1 + r2);
+
+      // should have assured delta_2 +ve with the ifs above...
+      // but rounding can give v. small negative numbers
+      assert delta_2 > -1e-6;
+
+      if (delta_2 < 0)
+         delta_2 = 0;
+
+      double delta = 0.25 * Math.sqrt(delta_2);
+
+      double xi1 = (a + c) / 2
+            + (c - a) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            + 2 * (b - d) * delta / dist_2;
+      double xi2 = (a + c) / 2
+            + (c - a) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            - 2 * (b - d) * delta / dist_2;
+
+      double yi1 = (b + d) / 2
+            + (d - b) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            - 2 * (a - c) * delta / dist_2;
+      double yi2 = (b + d) / 2
+            + (d - b) * (r1 * r1 - r2 * r2) / (2 * dist_2)
+            + 2 * (a - c) * delta / dist_2;
+
+      XY p1 = new XY(xi1, yi1);
+
+      XY p2 = null;
+
+      if (delta > 1e-6)
+      {
+         p2 = new XY(xi2, yi2);
+      }
+
+      return new OrderedPair<>(p1, p2);
    }
 
    static class NEDRet
@@ -173,25 +402,25 @@ class Util
       }
    }
 
-   static NEDRet NodeEdgeDist(XY n,
+   static NEDRet nodeEdgeDist(XY n,
                               XY es,
                               XY ee)
    {
       // direction and length of edge
-      XY de = ee.Minus(es);
+      XY de = ee.minus(es);
 
       // don't expect to see and hope other forces will pull the ends apart
-      if (de.IsZero())
+      if (de.isZero())
          return null;
 
-      double le = de.Length();
-      de = de.Divide(le);
+      double le = de.length();
+      de = de.divide(le);
 
       // line from n to edge start
-      XY dnes = n.Minus(es);
+      XY dnes = n.minus(es);
 
       // project that line onto the edge direction
-      double proj = de.Dot(dnes);
+      double proj = de.dot(dnes);
 
       XY t;
       if (proj < 0)
@@ -202,7 +431,7 @@ class Util
       else if (proj < le)
       {
          // closest approach between edges
-         t = es.Plus(de.Multiply(proj));
+         t = es.plus(de.multiply(proj));
       }
       else
       {
@@ -210,19 +439,19 @@ class Util
          t = ee;
       }
 
-      XY d = t.Minus(n);
+      XY d = t.minus(n);
 
       // don't expect to see and hope other forces will pull the edge and node apart
-      if (d.IsZero())
+      if (d.isZero())
          return null;
 
-      double l = d.Length();
-      d = d.Divide(l);
+      double l = d.length();
+      d = d.divide(l);
 
       return new NEDRet(l, t, d);
    }
 
-   static <T> T RemoveRandom(Random random, Collection<T> col)
+   static <T> T removeRandom(Random random, Collection<T> col)
    {
       int which = (int)(random.nextDouble() * col.size());
 
@@ -244,5 +473,36 @@ class Util
 
       // shouldn't happen
       return null;
+   }
+
+   // removes any positive or negative whole turns to leave a number
+   // between 0.0 and 2 PI
+   static double fixupAngle(double a)
+   {
+      while(a < 0)
+         a += Math.PI * 2;
+
+      while(a >= Math.PI * 2)
+         a -= Math.PI * 2;
+
+      return a;
+   }
+
+   static boolean clockAwareAngleCompare(double a1, double a2, double tol)
+   {
+      double diff = fixupAngle(Math.abs(a1 - a2));
+
+      return diff <= tol || diff >= Math.PI * 2 - tol;
+   }
+
+   // d1 is the unit direction vector for the reference line
+   // d2 is the unit direction vector for the line whose angle we're measuring
+   static double relativeAngle(XY d1, XY d2)
+   {
+      double rel_y = d1.dot(d2);
+      double rel_x = d1.rot90().dot(d2);
+
+      //noinspection SuspiciousNameCombination
+      return fixupAngle(Math.atan2(rel_x, rel_y));
    }
 }
