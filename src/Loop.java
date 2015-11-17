@@ -9,7 +9,7 @@ class Loop
    {
       m_curves.add(c);
 
-      m_param_range = c.endParam() - c.startParam();
+      m_param_range = c.EndParam - c.StartParam;
 
       XY s = c.startPos();
       XY e = c.endPos();
@@ -28,7 +28,7 @@ class Loop
 
       for(Curve curr : m_curves)
       {
-         range += curr.endParam() - curr.startParam();
+         range += curr.EndParam - curr.StartParam;
 
          XY c_start = curr.startPos();
          XY p_end = prev.endPos();
@@ -67,7 +67,7 @@ class Loop
          else
          {
             // shift the param range where the curve wants it...
-            return c.computePos(p + c.startParam());
+            return c.computePos(p + c.StartParam);
          }
       }
 
@@ -122,6 +122,30 @@ class Loop
       }
 
       return true;
+   }
+
+   ArrayList<XY> facet(double max_length)
+   {
+      ArrayList<XY> ret = new ArrayList<>();
+
+      for(Curve c : m_curves)
+      {
+         double param_step = c.paramRange()
+               * (max_length / c.length());
+
+         double p = 0;
+
+         double start_p = c.StartParam;
+
+         while(p < c.paramRange())
+         {
+            ret.add(c.computePos(start_p + p));
+
+            p += param_step;
+         }
+      }
+
+      return ret;
    }
 
    private final ArrayList<Curve> m_curves = new ArrayList<>();

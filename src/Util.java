@@ -256,7 +256,7 @@ class Util
       // direct params so it would be a pain to change the approach for this one case
 
       return new OrderedPair<>(
-            l1.computePos(l1.startParam() + (l1.endParam() - l1.startParam()) * ret.First),
+            l1.computePos(l1.StartParam + (l1.EndParam - l1.StartParam) * ret.First),
             null);
    }
 
@@ -308,12 +308,12 @@ class Util
 
       if( t1 >= 0 && t1 <= 1 )
       {
-         hit1 = l2.computePos(l2.startParam() + (l2.endParam() - l2.startParam()) * t1);
+         hit1 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * t1);
       }
 
       if( t2 >= 0 && t2 <= 1 )
       {
-         hit2 = l2.computePos(l2.startParam() + (l2.endParam() - l2.startParam()) * t2);
+         hit2 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * t2);
       }
 
       if (hit1 == null)

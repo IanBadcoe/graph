@@ -450,6 +450,12 @@ public class UtilTest
       }
 
       @Override
+      public double length()
+      {
+         return 0;
+      }
+
+      @Override
       public double paramCoordinateDist(double p1, double p2)
       {
          return 0;

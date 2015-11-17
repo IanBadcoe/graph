@@ -2,8 +2,8 @@ abstract class Curve
 {
    Curve(double start_param, double end_param)
    {
-      m_start_param = start_param;
-      m_end_param = end_param;
+      StartParam = start_param;
+      EndParam = end_param;
    }
 
    // exquisite abstractions
@@ -20,20 +20,22 @@ abstract class Curve
 
    public abstract Curve merge(Curve c_after);
 
+   public abstract double length();
+
    // overridden for cyclic curves
 
    @SuppressWarnings("WeakerAccess")
    public boolean withinParams(double p, double tol)
    {
-      return p > m_start_param - tol
-            && p < m_end_param + tol;
+      return p > StartParam - tol
+            && p < EndParam + tol;
    }
 
    // overridden but overrides need to call these base implementations
    public abstract int hashCode();
    int hashCode_inner()
    {
-      return Double.hashCode(m_start_param) + Double.hashCode(m_end_param) * 31;
+      return Double.hashCode(StartParam) + Double.hashCode(EndParam) * 31;
    }
 
    public abstract boolean equals(Object o);
@@ -48,41 +50,32 @@ abstract class Curve
 
       Curve co = (Curve)o;
 
-      return co.startParam() == startParam() && co.endParam() == endParam();
+      return co.StartParam == StartParam && co.EndParam == EndParam;
    }
 
    // concrete methods
 
    public XY startPos()
    {
-      return computePos(m_start_param);
+      return computePos(StartParam);
    }
 
    public XY endPos()
    {
-      return computePos(m_end_param);
+      return computePos(EndParam);
    }
 
-   public double startParam()
-   {
-      return m_start_param;
-   }
+   public final double StartParam;
 
-   public double endParam()
-   {
-      return m_end_param;
-   }
+   public final double EndParam;
 
    public double paramRange()
    {
-      return m_end_param - m_start_param;
+      return EndParam - StartParam;
    }
 
    public double paramCoordinateDist(double p1, double p2)
    {
       return computePos(p1).minus(computePos(p2)).length();
    }
-
-   final private double m_start_param;
-   final private double m_end_param;
 }

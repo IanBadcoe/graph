@@ -9,9 +9,9 @@ class TemplateStore1 extends TemplateStore
          tb.AddNode(Template.NodeType.Internal, "e1", false, "<target>", "i", null, "e", 55f);
          tb.AddNode(Template.NodeType.Internal, "e2", false, "<target>", "o", null, "e", 55f);
 
-         tb.Connect("i", "e1", 150, 400, 10);
-         tb.Connect("e1", "e2", 150, 400, 10);
-         tb.Connect("e2", "o", 150, 400, 10);
+         tb.Connect("i", "e1", 150, 200, 10);
+         tb.Connect("e1", "e2", 150, 200, 10);
+         tb.Connect("e2", "o", 150, 200, 10);
 
          AddTemplate(tb.Build());
       }
@@ -23,10 +23,10 @@ class TemplateStore1 extends TemplateStore
          tb.AddNode(Template.NodeType.Internal, "j", false, "<target>", null, null, "", 55f);
          tb.AddNode(Template.NodeType.Internal, "side", true, "<target>", null, null, "e", 55f);
 
-         tb.Connect("i", "j", 150, 400, 10);
-         tb.Connect("j", "o", 150, 400, 10);
+         tb.Connect("i", "j", 150, 200, 10);
+         tb.Connect("j", "o", 150, 200, 10);
          // just try a different distance
-         tb.Connect("j", "side", 150, 400, 10);
+         tb.Connect("j", "side", 150, 200, 10);
 
          AddTemplate(tb.Build());
       }
@@ -97,13 +97,13 @@ class TemplateStore1 extends TemplateStore
          tb.AddNode(Template.NodeType.Internal, "e", true, "<target>", null, null, "e", 55f);
          tb.AddNode(Template.NodeType.Internal, "obstacle", true, "e", null, null, "", 55f);
          tb.AddNode(Template.NodeType.Internal, "key", true, "obstacle", null, null, "", 30f);
-         tb.AddNode(Template.NodeType.Internal, "door", false, "<target>", "o", null, "", 55f);
+         tb.AddNode(Template.NodeType.Internal, "door", false, "<target>", "o", null, "", 30f);
 
-         tb.Connect("i", "j", 150, 400, 10);
-         tb.Connect("j", "e", 150, 400, 10);
-         tb.Connect("e", "obstacle", 150, 400, 10);
+         tb.Connect("i", "j", 150, 200, 10);
+         tb.Connect("j", "e", 150, 200, 10);
+         tb.Connect("e", "obstacle", 150, 200, 10);
          tb.Connect("obstacle", "key", 70, 90, 10);
-         tb.Connect("j", "door", 150, 400, 10);
+         tb.Connect("j", "door", 150, 200, 10);
          tb.Connect("door", "o", 70, 90, 10);
 
          AddTemplate(tb.Build());

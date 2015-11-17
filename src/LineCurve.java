@@ -81,10 +81,16 @@ class LineCurve extends Curve
       if (Direction != c_lc.Direction)
          return null;
 
-      if (endParam() != c_lc.startParam())
+      if (EndParam != c_lc.StartParam)
          return null;
 
-      return new LineCurve(Position, Direction, startParam(), c_lc.endParam());
+      return new LineCurve(Position, Direction, StartParam, c_lc.EndParam);
+   }
+
+   @Override
+   public double length()
+   {
+      return EndParam - StartParam;
    }
 
    @Override

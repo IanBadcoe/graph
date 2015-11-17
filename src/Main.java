@@ -113,7 +113,7 @@ public class Main extends processing.core.PApplet
 
       Expander.ExpandRet ret;
 
-      for(int i = 0; i < 100000; i++)
+      for(int i = 0; i < 1000; i++)
       {
          if ((m_step || m_go) && m_lay_out_running)
          {
@@ -139,7 +139,7 @@ public class Main extends processing.core.PApplet
 
          m_level_generated = true;
 
-         m_go = false;
+//         m_go = false;
       }
 
       if ((m_step || m_go) && m_level_generated && !m_unions_done)
@@ -160,7 +160,7 @@ public class Main extends processing.core.PApplet
 
       translate((float)m_off_x, (float)m_off_y);
 
-      DrawGraph(m_graph, m_labels, m_arrows);
+      DrawGraph(m_graph, m_labels, !m_unions_done, !m_unions_done, m_arrows);
 
       if (m_level != null)
       {
@@ -171,6 +171,8 @@ public class Main extends processing.core.PApplet
       {
          m_notes.forEach(Annotation::Draw);
       }
+
+      saveFrame("Frame####.jpg");
    }
 
    private void AutoScale(Graph g, double low, double high)
@@ -216,13 +218,21 @@ public class Main extends processing.core.PApplet
       s_app.text(text, (float)pos.X, (float)pos.Y);
    }
 
-   private static void DrawGraph(Graph g, boolean show_labels, boolean show_arrows)
+   private static void DrawGraph(Graph g, boolean show_labels, boolean show_connections,
+         boolean show_circles, boolean show_arrows)
    {
-      g.AllGraphNodes().forEach(Main::DrawNode);
-
-      for (INode n : g.AllGraphNodes())
+      if (show_circles)
       {
-         DrawConnections(n, show_arrows);
+         g.AllGraphNodes().forEach(Main::DrawNode);
+      }
+
+
+      if (show_connections)
+      {
+         for (INode n : g.AllGraphNodes())
+         {
+            DrawConnections(n, show_arrows);
+         }
       }
 
       if (show_labels)
@@ -272,7 +282,7 @@ public class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      level.getLoops().forEach(x -> DrawLoop(x, 20));
+      level.getLoops().forEach(Main::DrawLoop);
 
       int[] colours = { 0xffff0000, 0xff00ff00, 0xff0000ff, 0xffffff00, 0xffff00ff };
       s_app.strokeWeight(2);
@@ -281,26 +291,22 @@ public class Main extends processing.core.PApplet
       {
          s_app.stroke(colours[i % 5]);
          i++;
-         DrawLoop(l, 1000);
+         DrawLoop(l);
       }
    }
 
-   private static void DrawLoop(Loop l, int steps)
+   private static void DrawLoop(Loop l)
    {
-      double r = l.paramRange();
+      ArrayList<XY> pnts = l.facet(10);
 
-      XY prev = l.computePos(0.0);
+      XY prev = pnts.get(pnts.size() - 1);
 
-      for(double p = r / steps; p < r; p += r / steps)
+      for(XY curr : pnts)
       {
-         XY curr = l.computePos(p);
-
          Line(prev, curr);
 
          prev = curr;
       }
-
-      Line(prev, l.computePos(0));
    }
 
    static void Stroke(int red, int green, int blue)
@@ -320,7 +326,7 @@ public class Main extends processing.core.PApplet
    private final TemplateStore m_templates = new TemplateStore1();
 
    @SuppressWarnings("FieldCanBeLocal")
-   private final int m_reqSize = 30;
+   private final int m_reqSize = 60;
 
    private Expander m_expander;
 

@@ -154,7 +154,7 @@ public class Intersector
             // get any curve to help pick an intersection line
             Curve c = open.stream().skip(random.nextInt(open.size())).findFirst().get().Curve;
 
-            XY mid_point = c.computePos((c.startParam() + c.endParam()) / 2);
+            XY mid_point = c.computePos((c.StartParam + c.EndParam) / 2);
 
             intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random);
 
@@ -251,9 +251,9 @@ public class Intersector
             // we want the sharpest left corner we can find
             // which we do by taking the direction backwards on the incoming edge and looking for the smallest angle
             // relative to that (because we normalise angles between 0 and 2pi, any right turns will be > pi)
-            XY rev_curr_dir = c.tangent(c.endParam()).negate();
-            XY dir1 = c1.tangent(c1.startParam());
-            XY dir2 = c2.tangent(c2.startParam());
+            XY rev_curr_dir = c.tangent(c.EndParam).negate();
+            XY dir1 = c1.tangent(c1.StartParam);
+            XY dir2 = c2.tangent(c2.StartParam);
 
             double ang1 = Util.relativeAngle(rev_curr_dir, dir1);
             double ang2 = Util.relativeAngle(rev_curr_dir, dir2);
@@ -265,8 +265,8 @@ public class Intersector
                // just going to guess that .1 is a good distance here (not a total guess, for lines makes no
                // difference and for circles is .1 rad = 6 degrees which should be enough
 
-               dir1 = c1.tangent(c1.startParam());
-               dir2 = c2.tangent(c2.startParam());
+               dir1 = c1.tangent(c1.StartParam);
+               dir2 = c2.tangent(c2.StartParam);
 
                ang1 = Util.relativeAngle(rev_curr_dir, dir1);
                ang2 = Util.relativeAngle(rev_curr_dir, dir2);
@@ -518,13 +518,13 @@ public class Intersector
                   OrderedPair<Double, Double> split_points = ret.get(k);
 
                   // if we are far enough from existing splits
-                  if (c1.paramCoordinateDist(c1.startParam(), split_points.First) > tol
-                        && c1.paramCoordinateDist(c1.endParam(), split_points.First) > tol)
+                  if (c1.paramCoordinateDist(c1.StartParam, split_points.First) > tol
+                        && c1.paramCoordinateDist(c1.EndParam, split_points.First) > tol)
                   {
                      any_splits = true;
 
-                     Curve c1split1 = c1.cloneWithChangedParams(c1.startParam(), split_points.First);
-                     Curve c1split2 = c1.cloneWithChangedParams(split_points.First, c1.endParam());
+                     Curve c1split1 = c1.cloneWithChangedParams(c1.StartParam, split_points.First);
+                     Curve c1split2 = c1.cloneWithChangedParams(split_points.First, c1.EndParam);
 
                      working_loop1.set(i, c1split1);
                      working_loop1.add(i + 1, c1split2);
@@ -542,13 +542,13 @@ public class Intersector
                   }
 
                   // if we are far enough from existing splits
-                  if (c2.paramCoordinateDist(c2.startParam(), split_points.Second) > tol
-                        && c2.paramCoordinateDist(c2.endParam(), split_points.Second) > tol)
+                  if (c2.paramCoordinateDist(c2.StartParam, split_points.Second) > tol
+                        && c2.paramCoordinateDist(c2.EndParam, split_points.Second) > tol)
                   {
                      any_splits = true;
 
-                     Curve c2split1 = c2.cloneWithChangedParams(c2.startParam(), split_points.Second);
-                     Curve c2split2 = c2.cloneWithChangedParams(split_points.Second, c2.endParam());
+                     Curve c2split1 = c2.cloneWithChangedParams(c2.StartParam, split_points.Second);
+                     Curve c2split2 = c2.cloneWithChangedParams(split_points.Second, c2.EndParam);
 
                      working_loop2.set(j, c2split1);
                      working_loop2.add(j + 1, c2split2);

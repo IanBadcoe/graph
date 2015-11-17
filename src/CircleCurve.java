@@ -167,10 +167,16 @@ class CircleCurve extends Curve
       if (Radius != c_cc.Radius)
          return null;
 
-      if (!Util.clockAwareAngleCompare(endParam(), c_cc.startParam(), 1e-12))
+      if (!Util.clockAwareAngleCompare(EndParam, c_cc.StartParam, 1e-12))
          return null;
 
-      return new CircleCurve(Position, Radius, startParam(), c_cc.endParam(), Rotation);
+      return new CircleCurve(Position, Radius, StartParam, c_cc.EndParam, Rotation);
+   }
+
+   @Override
+   public double length()
+   {
+      return Radius * (EndParam - StartParam);
    }
 
    @Override
@@ -185,14 +191,14 @@ class CircleCurve extends Curve
       // that either takes us right past end param (because we were too high)
       // or it takes us past it because we were too low and shouldn't have stepped up
       // or it leaves us below end param in which case we are in range
-      if (p < startParam())
+      if (p < StartParam)
          p += Math.PI * 2;
 
-      return p < endParam();
+      return p < EndParam;
    }
 
    boolean isCyclic()
    {
-      return Util.clockAwareAngleCompare(startParam(), endParam(), 1e-12);
+      return Util.clockAwareAngleCompare(StartParam, EndParam, 1e-12);
    }
 }

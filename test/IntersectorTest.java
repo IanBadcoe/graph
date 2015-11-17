@@ -69,6 +69,12 @@ public class IntersectorTest
       }
 
       @Override
+      public double length()
+      {
+         return 0;
+      }
+
+      @Override
       public double paramCoordinateDist(double p1, double p2)
       {
          return 0;
@@ -136,12 +142,12 @@ public class IntersectorTest
       assertTrue(curves2.get(1).endPos().equals(curves2.get(2).startPos(), 1e-6));
       assertTrue(curves2.get(2).endPos().equals(curves2.get(0).startPos(), 1e-6));
 
-      assertTrue(Util.clockAwareAngleCompare(curves1.get(0).endParam(), curves1.get(1).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves1.get(1).endParam(), curves1.get(2).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves1.get(2).endParam(), curves1.get(0).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves2.get(0).endParam(), curves2.get(1).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves2.get(1).endParam(), curves2.get(2).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves2.get(2).endParam(), curves2.get(0).startParam(), 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves1.get(0).EndParam, curves1.get(1).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves1.get(1).EndParam, curves1.get(2).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves1.get(2).EndParam, curves1.get(0).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves2.get(0).EndParam, curves2.get(1).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves2.get(1).EndParam, curves2.get(2).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves2.get(2).EndParam, curves2.get(0).StartParam, 1e-6));
    }
 
    @Test
@@ -167,10 +173,10 @@ public class IntersectorTest
       assertTrue(curves2.get(0).endPos().equals(curves2.get(1).startPos(), 1e-6));
       assertTrue(curves2.get(1).endPos().equals(curves2.get(0).startPos(), 1e-6));
 
-      assertTrue(Util.clockAwareAngleCompare(curves1.get(0).endParam(), curves1.get(1).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves1.get(1).endParam(), curves1.get(0).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves2.get(0).endParam(), curves2.get(1).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves2.get(1).endParam(), curves2.get(0).startParam(), 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves1.get(0).EndParam, curves1.get(1).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves1.get(1).EndParam, curves1.get(0).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves2.get(0).EndParam, curves2.get(1).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves2.get(1).EndParam, curves2.get(0).StartParam, 1e-6));
    }
 
    @Test
@@ -194,8 +200,8 @@ public class IntersectorTest
       assertTrue(curves1.get(0).endPos().equals(curves1.get(0).startPos(), 1e-6));
       assertTrue(curves2.get(0).endPos().equals(curves2.get(0).startPos(), 1e-6));
 
-      assertTrue(Util.clockAwareAngleCompare(curves1.get(0).endParam(), curves1.get(0).startParam(), 1e-6));
-      assertTrue(Util.clockAwareAngleCompare(curves2.get(0).endParam(), curves2.get(0).startParam(), 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves1.get(0).EndParam, curves1.get(0).StartParam, 1e-6));
+      assertTrue(Util.clockAwareAngleCompare(curves2.get(0).EndParam, curves2.get(0).StartParam, 1e-6));
    }
 
    @Test
@@ -221,7 +227,7 @@ public class IntersectorTest
       for(int i = 0; i < curves1.size(); i++)
       {
          int next_i = (i + 1) % curves1.size();
-         assertTrue(Util.clockAwareAngleCompare(curves1.get(i).endParam(), curves1.get(next_i).startParam(), 1e-6));
+         assertTrue(Util.clockAwareAngleCompare(curves1.get(i).EndParam, curves1.get(next_i).StartParam, 1e-6));
          assertTrue(curves1.get(i).endPos().equals(curves1.get(next_i).startPos(), 1e-6));
       }
    }
@@ -538,11 +544,11 @@ public class IntersectorTest
          assertEquals(new XY(0, 0), left.Position);
          assertEquals(new XY(1, 0), right.Position);
 
-         assertEquals(Math.PI * 2 * 5 / 12, left.startParam(), 1e-6);
-         assertEquals(Math.PI * 2 * 13 / 12, left.endParam(), 1e-6);
+         assertEquals(Math.PI * 2 * 5 / 12, left.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 13 / 12, left.EndParam, 1e-6);
 
-         assertEquals(Math.PI * 2 * 11 / 12, right.startParam(), 1e-6);
-         assertEquals(Math.PI * 2 * 19 / 12, right.endParam(), 1e-6);
+         assertEquals(Math.PI * 2 * 11 / 12, right.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 19 / 12, right.EndParam, 1e-6);
       }
 
       // union of two overlapping circles with holes in
