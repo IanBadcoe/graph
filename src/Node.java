@@ -11,7 +11,7 @@ class Node implements INode
         GeomLayout.IGeomLayoutCreateFromNode gl_creator, double rad)
    {
       m_name = name;
-      m_connections = new HashSet<DirectedEdge>();
+      m_connections = new HashSet<>();
       m_codes = codes;
       m_template = template;
 
@@ -168,13 +168,13 @@ class Node implements INode
    @Override
    public Collection<DirectedEdge> getConnections()
    {
-      return new HashSet<DirectedEdge>(m_connections);
+      return new HashSet<>(m_connections);
    }
 
    @Override
    public Collection<DirectedEdge> getInConnections()
    {
-      HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
+      HashSet<DirectedEdge> ret = new HashSet<>();
 
       for(DirectedEdge e : m_connections)
       {
@@ -188,7 +188,7 @@ class Node implements INode
    @Override
    public Collection<DirectedEdge> getOutConnections()
    {
-      HashSet<DirectedEdge> ret = new HashSet<DirectedEdge>();
+      HashSet<DirectedEdge> ret = new HashSet<>();
 
       for(DirectedEdge e : m_connections)
       {
@@ -307,7 +307,7 @@ class Node implements INode
 
    private XY m_pos = new XY();
 
-   private XY m_force = new XY();;
+   private XY m_force = new XY();
 
    private double m_rad;
 

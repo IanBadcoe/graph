@@ -76,11 +76,11 @@ public class TemplateBuilder
    }
 
    void AddNode(Template.NodeType type, String name, boolean nudge,
-         String positionOnName, String positionTowardsName,
-         String positionAwayFromName,
-         String codes, double radius,
-         int colour,
-         GeomLayout.IGeomLayoutCreateFromNode geomCreator) throws TemplateException
+                String positionOnName, String positionTowardsName,
+                String positionAwayFromName,
+                String codes, double radius,
+                @SuppressWarnings("SameParameterValue") int colour,
+                GeomLayout.IGeomLayoutCreateFromNode geomCreator) throws TemplateException
    {
       if (name.contains("->"))
          throw new IllegalArgumentException("Node name: '" + name + "' cannot contain '->'.");
@@ -158,9 +158,9 @@ public class TemplateBuilder
    }
 
    public void Connect(String from, String to,
-         double min_length, double max_length,
-         double width,
-         int colour) throws IllegalArgumentException
+                       double min_length, double max_length,
+                       double width,
+                       @SuppressWarnings("SameParameterValue") int colour) throws IllegalArgumentException
    {
       if (from == null)
          throw new NullPointerException("Null node name: 'from'.");

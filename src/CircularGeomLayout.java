@@ -1,3 +1,4 @@
+@SuppressWarnings("WeakerAccess")
 class CircularGeomLayout extends GeomLayout
 {
    CircularGeomLayout(XY position, double radius)

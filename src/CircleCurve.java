@@ -1,3 +1,4 @@
+@SuppressWarnings("WeakerAccess")
 class CircleCurve extends Curve
 {
    enum RotationDirection
@@ -22,7 +23,7 @@ class CircleCurve extends Curve
    }
 
    CircleCurve(XY position, double radius,
-         RotationDirection rotation)
+               @SuppressWarnings("SameParameterValue") RotationDirection rotation)
    {
       this (position, radius, 0, Math.PI * 2, rotation);
    }
@@ -66,10 +67,10 @@ class CircleCurve extends Curve
    @Override
    public int hashCode()
    {
-      return super.hashCode() * 17
+      return super.hashCode_inner() * 17
             ^ Position.hashCode() * 31
             ^ Double.hashCode(Radius) * 11
-            ^ Rotation.hashCode();
+            ^ (Rotation == RotationDirection.Forwards ? 1 : 0);
    }
 
    @Override
@@ -81,7 +82,7 @@ class CircleCurve extends Curve
       if (!(o instanceof CircleCurve))
          return false;
 
-      if (!super.equals(o))
+      if (!super.equals_inner(o))
          return false;
 
       CircleCurve cc_o = (CircleCurve)o;
@@ -99,6 +100,7 @@ class CircleCurve extends Curve
       if (Math.abs(relative.length() - Radius) > tol)
          return null;
 
+      @SuppressWarnings("SuspiciousNameCombination")
       double ang = Math.atan2(relative.X, relative.Y);
 
       if (Rotation == RotationDirection.Reverse)

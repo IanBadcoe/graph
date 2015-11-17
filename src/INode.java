@@ -34,7 +34,7 @@ interface INode
    double getRad();
 
    // misc
-   public String print(int tab, boolean full);
+   String print(int tab, boolean full);
 
    // indices created and read-back for handy data access when relaxing
    void setIdx(int i);

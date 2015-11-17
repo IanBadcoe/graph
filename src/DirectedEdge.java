@@ -23,10 +23,10 @@ class DirectedEdge {
    {
       int x = Start.hashCode();
       int y = End.hashCode();
-      int z = x * 31 + y;
+
       // we don't intend to ever have two edges between the same
       // pair of nodes, so no need to look at lengths
-      return z;
+      return x * 31 + y;
    }
 
    @Override

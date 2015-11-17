@@ -2,7 +2,7 @@ class EdgeAdjusterStepper implements IExpandStepper
 {
    public interface IChildFactory
    {
-      IExpandStepper MakeChild(Graph g, double max_move, double force_target, double move_target);
+      IExpandStepper MakeChild(Graph g, @SuppressWarnings("SameParameterValue") double max_move, @SuppressWarnings("SameParameterValue") double force_target, @SuppressWarnings("SameParameterValue") double move_target);
    }
 
    EdgeAdjusterStepper(Graph graph, DirectedEdge edge)

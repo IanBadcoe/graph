@@ -23,17 +23,17 @@ public class Main extends processing.core.PApplet
 
       // configure our crude IoC system
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new TryAllTemplatesOnOneNodeStepper(a, b, c, d));
+            TryAllTemplatesOnOneNodeStepper::new);
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new TryTemplateExpandStepper(a, b, c, d));
+            TryTemplateExpandStepper::new);
       ExpandToSizeStepper.SetChildFactory(
-            (a, b, c) -> new TryAllNodesExpandStepper(a, b, c));
+            TryAllNodesExpandStepper::new);
       EdgeAdjusterStepper.SetChildFactory(
-            (a, b, c, d) -> new RelaxerStepper(a, b, c, d));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new RelaxerStepper(a, b, c, d));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b) -> new EdgeAdjusterStepper(a, b));
+            EdgeAdjusterStepper::new);
    }
 
    @Override
@@ -110,9 +110,9 @@ public class Main extends processing.core.PApplet
       strokeWeight(0.0f);
 //      textSize(0.01f);
 
-      Expander.ExpandRet ret = null;
+      Expander.ExpandRet ret;
 
-      for(int i = 0; i < 1000; i++)
+      for(int i = 0; i < 100000; i++)
       {
          if ((m_step || m_go) && m_lay_out_running)
          {
@@ -124,6 +124,10 @@ public class Main extends processing.core.PApplet
 
 //            print(ret.Log, "\n");
          }
+         else
+         {
+            break;
+         }
       }
 
       if (!m_lay_out_running && !m_level_generated)
@@ -134,7 +138,7 @@ public class Main extends processing.core.PApplet
 
          m_level_generated = true;
 
-         m_go = false;
+//         m_go = false;
       }
 
       if ((m_step || m_go) && m_level_generated && !m_unions_done)
@@ -264,6 +268,7 @@ public class Main extends processing.core.PApplet
             XY d = e.End.getPos().minus(e.Start.getPos());
             d = d.divide(10);
 
+            @SuppressWarnings("SuspiciousNameCombination")
             XY rot = new XY(-d.Y, d.X);
 
             Line(e.End.getPos(), e.End.getPos().minus(d).minus(rot));
@@ -281,9 +286,13 @@ public class Main extends processing.core.PApplet
          DrawLoop(l);
       }
 
+      int[] colours = { 0xffff0000, 0xff00ff00, 0xff0000ff, 0xffffff00, 0xffff00ff };
       s_app.strokeWeight(2);
+      int i = 0;
       for(Loop l : level.getLevel())
       {
+         s_app.stroke(colours[i % 5]);
+         i++;
          DrawLoop(l);
       }
    }
@@ -303,7 +312,7 @@ public class Main extends processing.core.PApplet
          prev = curr;
       }
 
-      Line(prev, l.computePos(r));
+      Line(prev, l.computePos(0));
    }
 
    static void Stroke(int red, int green, int blue)
@@ -332,7 +341,7 @@ public class Main extends processing.core.PApplet
 
    // UI data
    boolean m_step = false;
-   boolean m_go = false;
+   boolean m_go = true;
    boolean m_auto_scale = true;
    boolean m_labels = true;
    boolean m_arrows = true;

@@ -39,7 +39,7 @@ class Template
       return from + "->" + to;
    }
 
-   private NodeRecord FindNodeRecord(String name)
+   private NodeRecord FindNodeRecord(@SuppressWarnings("SameParameterValue") String name)
    {
       return m_nodes.get(name);
    }
@@ -188,12 +188,7 @@ class Template
          }
       }
 
-      if (Util.findCrossingEdges(graph.AllGraphEdges()).size() > 0)
-      {
-         return false;
-      }
-
-      return true;
+      return Util.findCrossingEdges(graph.AllGraphEdges()).size() == 0;
    }
 
    private void ApplyConnections(INode node_replacing, HashMap<NodeRecord, INode> template_to_graph,

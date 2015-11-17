@@ -5,9 +5,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by badcoei on 12/11/2015.
- */
 public class IntersectorTest
 {
 
@@ -420,7 +417,7 @@ public class IntersectorTest
       }
    }
 
-   private static void checkLoop(Loop l, int exp_size)
+   private static void checkLoop(Loop l, @SuppressWarnings("SameParameterValue") int exp_size)
    {
       assertEquals(exp_size, l.numCurves());
 

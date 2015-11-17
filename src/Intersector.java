@@ -4,23 +4,35 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-/**
- * Created by badcoei on 11/11/2015.
- */
 public class Intersector
 {
    // only non-private for unit-testing
    static class AnnotatedCurve
    {
+      final Curve Curve;
+      AnnotatedCurve Next;
+
       AnnotatedCurve(Curve curve)
       {
          Curve = curve;
       }
 
-      final Curve Curve;
-      boolean Used;
+      @Override
+      public boolean equals(Object o)
+      {
+         if (!(o instanceof AnnotatedCurve))
+            return false;
 
-      AnnotatedCurve Next;
+         AnnotatedCurve aco = (AnnotatedCurve)o;
+
+         return Curve == aco.Curve;
+      }
+
+      @Override
+      public int hashCode()
+      {
+         return Curve.hashCode();
+      }
    }
 
    // only non-private for unit-testing
@@ -36,7 +48,7 @@ public class Intersector
       AnnotatedCurve Loop2Out;
    }
 
-   public static LoopSet union(LoopSet ls1, LoopSet ls2, double tol, Random random)
+   public static LoopSet union(LoopSet ls1, LoopSet ls2, @SuppressWarnings("SameParameterValue") double tol, Random random)
    {
       if (ls1.size() == 0 && ls2.size() == 0)
          return null;
@@ -117,19 +129,19 @@ public class Intersector
 
       HashSet<Curve> all_curves = new HashSet<>();
 
-      working_loops1.forEach(x -> all_curves.addAll(x));
-      working_loops2.forEach(x -> all_curves.addAll(x));
+      working_loops1.forEach(all_curves::addAll);
+      working_loops2.forEach(all_curves::addAll);
 
       HashSet<AnnotatedCurve> open = new HashSet<>();
 
       open.addAll(forward_annotations_map.values());
 
       HashSet<XY> curve_joints = all_curves.stream()
-            .map(x -> x.startPos())
+            .map(Curve::startPos)
             .collect(Collectors.toCollection(HashSet::new));
 
       // bounding box allows us to create cutting lines that definitely exceed all loop boundaries
-      Box bounds = all_curves.stream().map(x -> x.boundingBox()).reduce(new Box(), (b, a) -> a.union(b));
+      Box bounds = all_curves.stream().map(Curve::boundingBox).reduce(new Box(), (b, a) -> a.union(b));
 
       // but all we need from that is the max length in the box
       Double diameter = bounds.diagonal().length();
@@ -206,6 +218,7 @@ public class Intersector
       Keep        // turn as sharply left as possible at each splice, tidy and return found loop
    }
 
+   @SuppressWarnings("WeakerAccess")
    static Loop extractLoop(
          HashSet<AnnotatedCurve> open,
          AnnotatedCurve start_ac,
@@ -319,6 +332,7 @@ public class Intersector
          {
             curves.set(prev, merged);
             curves.remove(i);
+            c_prev = merged;
 
             // if we've removed curves[i] then we'll look at the new
             // curves[i] next pass and prev remains the same
@@ -449,17 +463,15 @@ public class Intersector
    {
       Curve l1prev = working_loop1.get(working_loop1.size() - 1);
 
-      for(int i = 0; i < working_loop1.size(); i++)
+      for(Curve l1curr : working_loop1)
       {
-         Curve l1curr = working_loop1.get(i);
          XY l1_cur_start_pos = l1curr.startPos();
          assert l1prev.endPos().equals(l1_cur_start_pos, 1e-6);
 
          Curve l2prev = working_loop2.get(working_loop2.size() - 1);
 
-         for(int j = 0; j < working_loop2.size(); j++)
+         for(Curve l2curr : working_loop2)
          {
-            Curve l2curr = working_loop2.get(j);
             XY l2_cur_start_pos = l2curr.startPos();
             assert l2prev.endPos().equals(l2_cur_start_pos, 1e-6);
 

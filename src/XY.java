@@ -34,7 +34,7 @@ class XY
    @Override
    public int hashCode()
    {
-      return ((Double)X).hashCode() * 31 + ((Double)Y).hashCode();
+      return Double.hashCode(X) * 31 + Double.hashCode(Y);
    }
 
    XY plus(XY rhs)
@@ -96,11 +96,13 @@ class XY
 
    public XY rot90()
    {
+      //noinspection SuspiciousNameCombination
       return new XY(Y, -X);
    }
 
    public XY rot270()
    {
+      //noinspection SuspiciousNameCombination
       return new XY(-Y, X);
    }
 

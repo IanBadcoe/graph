@@ -29,6 +29,16 @@ class Level
       if (m_base_loops.size() == 0)
          return false;
 
+      if (m_level.size() == 5)
+      {
+         m_level.remove(0);
+         m_level.remove(0);
+         m_level.remove(0);
+         m_level.remove(1);
+
+         return true;
+      }
+
       Loop l = m_base_loops.remove(0);
 
       LoopSet temp = new LoopSet();

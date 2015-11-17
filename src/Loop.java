@@ -25,10 +25,9 @@ class Loop
 
       Curve prev = m_curves.get(m_curves.size() - 1);
 
-      for(int i = 0; i < m_curves.size(); i++)
+      for(Curve curr : m_curves)
       {
-         Curve curr = m_curves.get(i);
-         range += curr.endParam() - m_curves.get(i).startParam();
+         range += curr.endParam() - curr.startParam();
 
          XY c_start = curr.startPos();
          XY p_end = prev.endPos();
@@ -59,7 +58,7 @@ class Loop
          else
          {
             // shift the param range where the curve wants it...
-            return c.computePos(p - c.startParam());
+            return c.computePos(p + c.startParam());
          }
       }
 

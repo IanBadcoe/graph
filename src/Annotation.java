@@ -1,3 +1,4 @@
+@SuppressWarnings("WeakerAccess")
 class Annotation
 {
    final public XY P1;

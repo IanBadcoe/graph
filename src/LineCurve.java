@@ -90,7 +90,7 @@ class LineCurve extends Curve
    @Override
    public int hashCode()
    {
-      return super.hashCode() * 17 + Position.hashCode() * 31 ^ Direction.hashCode();
+      return super.hashCode_inner() * 17 + Position.hashCode() * 31 ^ Direction.hashCode();
    }
 
    @Override
@@ -102,7 +102,7 @@ class LineCurve extends Curve
       if (!(o instanceof LineCurve))
          return false;
 
-      if (!super.equals(o))
+      if (!super.equals_inner(o))
          return false;
 
       LineCurve lc_o = (LineCurve)o;

@@ -19,9 +19,8 @@ class DirectedEdgePair
    {
       int x = m_e1.hashCode();
       int y = m_e2.hashCode();
-      int z = x ^ y;
 
-      return z;
+      return x ^ y;
    }
 
    @Override

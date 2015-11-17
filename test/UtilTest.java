@@ -1196,7 +1196,7 @@ public class UtilTest
       return makeRadiusNodeAt(x, y, 0.0);
    }
 
-   private Node makeRadiusNodeAt(double x, double y, double radius)
+   private Node makeRadiusNodeAt(double x, double y, @SuppressWarnings("SameParameterValue") double radius)
    {
       Node ret = new Node("", "", "", radius);
 

@@ -10,7 +10,7 @@ abstract class Curve
 
    public abstract XY computePos(double param);
 
-   public abstract Double findParamForPoint(XY pnt, double tol);
+   public abstract Double findParamForPoint(XY pnt, @SuppressWarnings("SameParameterValue") double tol);
 
    public abstract Curve cloneWithChangedParams(double start, double end);
 
@@ -22,6 +22,7 @@ abstract class Curve
 
    // overridden for cyclic curves
 
+   @SuppressWarnings("WeakerAccess")
    public boolean withinParams(double p, double tol)
    {
       return p > m_start_param - tol
@@ -29,12 +30,15 @@ abstract class Curve
    }
 
    // overridden but overrides need to call these base implementations
-   public int hashCode()
+   public abstract int hashCode();
+   int hashCode_inner()
    {
       return Double.hashCode(m_start_param) + Double.hashCode(m_end_param) * 31;
    }
 
-   public boolean equals(Object o)
+   public abstract boolean equals(Object o);
+   @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+   boolean equals_inner(Object o)
    {
       if (o == this)
          return true;

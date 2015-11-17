@@ -1,3 +1,4 @@
+@SuppressWarnings("WeakerAccess")
 public class Box
 {
    final public XY Min;
