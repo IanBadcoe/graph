@@ -40,7 +40,7 @@ class EdgeAdjusterStepper implements IExpandStepper
 
    private void SplitEdge()
    {
-      INode c = m_graph.AddNode("c", "", "EdgeExtend", m_edge.Width);
+      INode c = m_graph.AddNode("c", "", "EdgeExtend", m_edge.HalfWidth);
 
       XY mid = m_edge.Start.getPos().plus(m_edge.End.getPos()).divide(2);
 
@@ -49,8 +49,8 @@ class EdgeAdjusterStepper implements IExpandStepper
       m_graph.Disconnect(m_edge.Start, m_edge.End);
       // idea of lengths is to force no more length but allow
       // a longer corridor if required
-      DirectedEdge de1 =  m_graph.Connect(m_edge.Start, c, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.Width);
-      DirectedEdge de2 =  m_graph.Connect(c, m_edge.End, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.Width);
+      DirectedEdge de1 =  m_graph.Connect(m_edge.Start, c, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.HalfWidth);
+      DirectedEdge de2 =  m_graph.Connect(c, m_edge.End, m_edge.MinLength / 2, m_edge.MaxLength, m_edge.HalfWidth);
 
       de1.SetColour(m_edge.GetColour());
       de2.SetColour(m_edge.GetColour());

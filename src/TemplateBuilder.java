@@ -162,7 +162,7 @@ public class TemplateBuilder
    @SuppressWarnings("WeakerAccess")
    public void Connect(String from, String to,
                        double min_length, double max_length,
-                       double width,
+                       double half_width,
                        @SuppressWarnings("SameParameterValue") int colour) throws IllegalArgumentException
    {
       if (from == null)
@@ -196,7 +196,7 @@ public class TemplateBuilder
 
       m_connections.put(
             Template.MakeConnectionName(from, to),
-            new Template.ConnectionRecord(nrf, nrt, min_length, max_length, width, colour));
+            new Template.ConnectionRecord(nrf, nrt, min_length, max_length, half_width, colour));
    }
 
    public Template.NodeRecord FindNodeRecord(String name)

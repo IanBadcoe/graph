@@ -3,11 +3,11 @@ class DirectedEdge {
    public final INode End;
    public final double MinLength;
    public final double MaxLength;
-   public final double Width;
+   public final double HalfWidth;
 
    public DirectedEdge(INode start, INode end,
                        double min_length, double max_length,
-                       double width) {
+                       double half_width) {
       assert start != null;
       assert end != null;
 
@@ -15,7 +15,7 @@ class DirectedEdge {
       End = end;
       MinLength = min_length;
       MaxLength = max_length;
-      Width = width;
+      HalfWidth = half_width;
    }
 
    @Override

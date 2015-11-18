@@ -1,11 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Debug Tests" type="JUnit" factoryName="JUnit">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-      <pattern>
-        <option name="PATTERN" value="*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
+  <configuration default="false" name="Parallel Tests" type="JUnit" factoryName="JUnit">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <module name="graph" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
@@ -19,10 +14,11 @@
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
     <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="singleModule" />
+      <value defaultName="wholeProject" />
     </option>
     <envs />
     <dir value="$PROJECT_DIR$/test" />
+    <fork_mode value="class" />
     <patterns />
     <method />
   </configuration>

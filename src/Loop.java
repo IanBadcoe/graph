@@ -124,7 +124,7 @@ class Loop
       return true;
    }
 
-   ArrayList<XY> facet(double max_length)
+   ArrayList<XY> facet(@SuppressWarnings("SameParameterValue") double max_length)
    {
       ArrayList<XY> ret = new ArrayList<>();
 

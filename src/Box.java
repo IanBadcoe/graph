@@ -80,4 +80,11 @@ public class Box
       return Min.hashCode() * 31 + Max.hashCode();
    }
 
+   public boolean disjoint(Box box)
+   {
+      return Min.X > box.Max.X
+            || Min.Y > box.Max.Y
+            || Max.X < box.Min.X
+            || Max.Y < box.Min.Y;
+   }
 }

@@ -113,7 +113,7 @@ public class Main extends processing.core.PApplet
 
       Expander.ExpandRet ret;
 
-      for(int i = 0; i < 1000; i++)
+      for(int i = 0; i < 10000; i++)
       {
          if ((m_step || m_go) && m_lay_out_running)
          {
@@ -144,6 +144,19 @@ public class Main extends processing.core.PApplet
 
       if ((m_step || m_go) && m_level_generated && !m_unions_done)
       {
+         if (m_union_count == 30)
+         {
+            m_union_count = 30;
+
+//            m_level.visualise(m_union_random);
+//
+//            return;
+         }
+
+         m_union_count++;
+
+         print(m_union_count, "\n");
+
          m_unions_done = !m_level.unionOne(m_union_random);
 
          m_step = false;
@@ -152,7 +165,7 @@ public class Main extends processing.core.PApplet
       double range = min(width, height);
 
       if (m_auto_scale)
-         AutoScale(m_graph, range * 0.05, range * 0.95);
+         autoScale(m_graph, range * 0.05, range * 0.95);
 
       translate((float)(range * 0.05), (float)(range * 0.05));
 
@@ -160,11 +173,11 @@ public class Main extends processing.core.PApplet
 
       translate((float)m_off_x, (float)m_off_y);
 
-      DrawGraph(m_graph, m_labels, !m_unions_done, !m_unions_done, m_arrows);
+      drawGraph(m_graph, m_labels, !m_unions_done, true, m_arrows);
 
       if (m_level != null)
       {
-         DrawLevel(m_level);
+         drawLevel(m_level);
       }
 
       if (m_show_notes)
@@ -175,7 +188,7 @@ public class Main extends processing.core.PApplet
       saveFrame("Frame####.jpg");
    }
 
-   private void AutoScale(Graph g, double low, double high)
+   private void autoScale(Graph g, double low, double high)
    {
       Box b = g.XYBounds();
 
@@ -208,22 +221,22 @@ public class Main extends processing.core.PApplet
    }
 
 
-   static void Line(XY from, XY to)
+   static void line(XY from, XY to)
    {
       s_app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
    }
 
-   static void Text(String text, XY pos)
+   static void text(String text, XY pos)
    {
       s_app.text(text, (float)pos.X, (float)pos.Y);
    }
 
-   private static void DrawGraph(Graph g, boolean show_labels, boolean show_connections,
-         boolean show_circles, boolean show_arrows)
+   static void drawGraph(Graph g, boolean show_labels, boolean show_connections,
+                         @SuppressWarnings("SameParameterValue") boolean show_circles, boolean show_arrows)
    {
       if (show_circles)
       {
-         g.AllGraphNodes().forEach(Main::DrawNode);
+         g.AllGraphNodes().forEach(Main::drawNode);
       }
 
 
@@ -231,17 +244,17 @@ public class Main extends processing.core.PApplet
       {
          for (INode n : g.AllGraphNodes())
          {
-            DrawConnections(n, show_arrows);
+            drawConnections(n, show_arrows);
          }
       }
 
       if (show_labels)
       {
-         g.AllGraphNodes().forEach(Main::DrawLabel);
+         g.AllGraphNodes().forEach(Main::drawLabel);
       }
    }
 
-   private static void DrawNode(INode n)
+   static void drawNode(INode n)
    {
       s_app.noStroke();
       s_app.fill(n.getColour());
@@ -249,21 +262,21 @@ public class Main extends processing.core.PApplet
             (float) n.getRad(), (float) n.getRad());
    }
 
-   private static void DrawLabel(INode n)
+   static void drawLabel(INode n)
    {
       s_app.fill(255, 255, 255);
       s_app.text(n.getName(),
             (float) n.getPos().X, (float) n.getPos().Y);
    }
 
-   private static void DrawConnections(INode n, boolean show_arrows)
+   static void drawConnections(INode n, boolean show_arrows)
    {
       // in connections are drawn by the other node...
       for(DirectedEdge e : n.getOutConnections())
       {
          s_app.stroke(e.GetColour());
-         s_app.strokeWeight((float)(e.Width * 1.75));
-         Line(e.Start.getPos(), e.End.getPos());
+         s_app.strokeWeight((float)(e.HalfWidth * 1.9));
+         line(e.Start.getPos(), e.End.getPos());
 
          if (show_arrows)
          {
@@ -272,17 +285,17 @@ public class Main extends processing.core.PApplet
 
             XY rot = d.rot90();
 
-            Line(e.End.getPos(), e.End.getPos().minus(d).minus(rot));
-            Line(e.End.getPos(), e.End.getPos().minus(d).plus(rot));
+            line(e.End.getPos(), e.End.getPos().minus(d).minus(rot));
+            line(e.End.getPos(), e.End.getPos().minus(d).plus(rot));
          }
       }
    }
 
-   private static void DrawLevel(Level level)
+   static void drawLevel(Level level)
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      level.getLoops().forEach(Main::DrawLoop);
+      level.getLoops().forEach(Main::drawLoop);
 
       int[] colours = { 0xffff0000, 0xff00ff00, 0xff0000ff, 0xffffff00, 0xffff00ff };
       s_app.strokeWeight(2);
@@ -291,32 +304,63 @@ public class Main extends processing.core.PApplet
       {
          s_app.stroke(colours[i % 5]);
          i++;
-         DrawLoop(l);
+         drawLoop(l);
       }
    }
 
-   private static void DrawLoop(Loop l)
+   static void drawLoop(Loop l)
    {
       ArrayList<XY> pnts = l.facet(10);
 
+      drawLoopPoints(pnts);
+   }
+
+   static void drawLoopPoints(ArrayList<XY> pnts)
+   {
       XY prev = pnts.get(pnts.size() - 1);
 
       for(XY curr : pnts)
       {
-         Line(prev, curr);
+         line(prev, curr);
 
          prev = curr;
       }
    }
 
-   static void Stroke(int red, int green, int blue)
+   static void stroke(int red, int green, int blue)
    {
       s_app.stroke(red, green, blue);
    }
 
-   static void Fill(int red, int green, int blue)
+   static void fill(int red, int green, int blue)
    {
       s_app.fill(red, green, blue);
+   }
+
+   static void circle(double x, double y, double rad)
+   {
+      s_app.ellipse((float)x, (float)y, (float)rad, (float)rad);
+   }
+
+   static void scaleTo(Box b)
+   {
+      double shorter_display = Math.min(s_app.width, s_app.height);
+
+      double larger_box = Math.max(b.DX(), b.DY());
+
+      s_app.scale((float)(shorter_display / larger_box));
+
+      s_app.translate((float)-b.Min.X,(float)-b.Min.Y);
+   }
+
+   static void clear(int c)
+   {
+      s_app.background(c);
+   }
+
+   public static void strokeWidth(double d)
+   {
+      s_app.strokeWeight((float)d);
    }
 
    private static PApplet s_app;
@@ -326,7 +370,7 @@ public class Main extends processing.core.PApplet
    private final TemplateStore m_templates = new TemplateStore1();
 
    @SuppressWarnings("FieldCanBeLocal")
-   private final int m_reqSize = 60;
+   private final int m_reqSize = 30;
 
    private Expander m_expander;
 
@@ -352,4 +396,6 @@ public class Main extends processing.core.PApplet
    private Level m_level;
 
    private final Random m_union_random = new Random(1);
+
+   private int m_union_count = 0;
 }

@@ -21,13 +21,13 @@ class Annotation
 
    void Draw()
    {
-      Main.Stroke(Red, Green, Blue);
-      Main.Fill(Red, Green, Blue);
+      Main.stroke(Red, Green, Blue);
+      Main.fill(Red, Green, Blue);
 
-      Main.Line(P1, P2);
+      Main.line(P1, P2);
 
       XY mid = P1.plus(P2).divide(2);
 
-      Main.Text(Text, mid);
+      Main.text(Text, mid);
    }
 }

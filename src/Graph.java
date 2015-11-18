@@ -54,7 +54,7 @@ class Graph
    }
 
    DirectedEdge Connect(INode from, INode to,
-         double min_length, double max_length, double width)
+         double min_length, double max_length, double half_width)
    {
       if (from == to
             || !Contains(from)
@@ -62,7 +62,7 @@ class Graph
             || from.connects(to))
          throw new UnsupportedOperationException();
 
-      DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, width);
+      DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, half_width);
 
       if (m_restore != null)
       {
@@ -76,7 +76,7 @@ class Graph
    {
       assert !m_edges.contains(e);
 
-      DirectedEdge real_edge = ((Node)e.Start).connect((Node)e.End, e.MinLength, e.MaxLength, e.Width);
+      DirectedEdge real_edge = ((Node)e.Start).connect((Node)e.End, e.MinLength, e.MaxLength, e.HalfWidth);
 
       m_edges.add(real_edge);
 

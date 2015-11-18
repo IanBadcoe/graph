@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Intersector
@@ -48,7 +45,9 @@ public class Intersector
       final AnnotatedCurve Loop2Out;
    }
 
-   public static LoopSet union(LoopSet ls1, LoopSet ls2, @SuppressWarnings("SameParameterValue") double tol, Random random)
+   public static LoopSet union(LoopSet ls1, LoopSet ls2, @SuppressWarnings("SameParameterValue") double tol,
+                               Random random,
+                               boolean visualise)
    {
       if (ls1.size() == 0 && ls2.size() == 0)
          return null;
@@ -67,12 +66,47 @@ public class Intersector
                   .map(l -> new ArrayList<>(l.getCurves()))
                   .collect(Collectors.toCollection(ArrayList::new));
 
+      LoopSet ret = new LoopSet();
+
+      // first, an easy bit, any loops from either set whos bounding boxes are disjunct from all loops in the
+      // other set, they have no influence on any other loops and can be simply copied inchanged into
+      // the output
+
+      HashMap <ArrayList<Curve>, Box> bound_map1 = new HashMap<>();
+
+      for(ArrayList<Curve> alc1 : working_loops1)
+      {
+         Box bound = alc1.stream()
+               .map(Curve::boundingBox)
+               .reduce(new Box(), Box::union);
+
+         bound_map1.put(alc1, bound);
+      }
+
+      HashMap <ArrayList<Curve>, Box> bound_map2 = new HashMap<>();
+
+      for(ArrayList<Curve> alc2 : working_loops2)
+      {
+         Box bound = alc2.stream()
+               .map(Curve::boundingBox)
+               .reduce(new Box(), Box::union);
+
+         bound_map2.put(alc2, bound);
+      }
+
+      removeEasyLoops(working_loops1, ret, bound_map2.values(), bound_map1);
+      removeEasyLoops(working_loops2, ret, bound_map1.values(), bound_map2);
+
       // split all curves that intersect
       for(ArrayList<Curve> alc1 : working_loops1)
       {
          for (ArrayList<Curve> alc2 : working_loops2)
          {
             splitCurvesAtIntersections(alc1, alc2, tol);
+
+            // has a side effect of checking that the loops are still loops
+//            new Loop(alc1);
+//            new Loop(alc2);
          }
       }
 
@@ -141,10 +175,42 @@ public class Intersector
       // bounding box allows us to create cutting lines that definitely exceed all loop boundaries
       Box bounds = all_curves.stream().map(Curve::boundingBox).reduce(new Box(), (b, a) -> a.union(b));
 
+      if (visualise)
+      {
+         Random r = new Random(1);
+
+         Main.clear(255);
+         XY b = working_loops2.get(0).get(2).endPos();
+         Box size = new Box(b.minus(new XY(.01, .01)),
+               b.plus(new XY(.01, .01)));
+         Main.scaleTo(size);
+
+         for(Splice s : endSpliceMap.values())
+         {
+            Main.fill(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+            Main.circle(s.Loop1Out.Curve.startPos().X,
+                  s.Loop1Out.Curve.startPos().Y,
+                  size.DX() * 0.002);
+         }
+
+         for(ArrayList<Curve> alc1 : working_loops1)
+         {
+            Main.strokeWidth(size.DX() * 0.001);
+            Main.stroke(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+            Loop l = new Loop(alc1);
+            Main.drawLoopPoints(l.facet(.3));
+         }
+
+         for (ArrayList<Curve> alc2 : working_loops2)
+         {
+            Main.stroke(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+            Loop l = new Loop(alc2);
+            Main.drawLoopPoints(l.facet(.3));
+         }
+      }
+
       // but all we need from that is the max length in the box
       Double diameter = bounds.diagonal().length();
-
-      LoopSet ret = new LoopSet();
 
       while(open.size() > 0)
       {
@@ -156,7 +222,7 @@ public class Intersector
 
             XY mid_point = c.computePos((c.StartParam + c.EndParam) / 2);
 
-            intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random);
+            intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random, visualise);
 
             if (intervals != null)
                break;
@@ -208,6 +274,43 @@ public class Intersector
          return null;
 
       return ret;
+   }
+
+   // non-private only for testing
+   static void removeEasyLoops(ArrayList<ArrayList<Curve>> working_loops,
+                               LoopSet ret,
+                               Collection<Box> other_bounds,
+                               HashMap<ArrayList<Curve>, Box> bound_map)
+   {
+      for(int i = 0; i < working_loops.size();)
+      {
+         ArrayList<Curve> alc1 = working_loops.get(i);
+
+         Box bound = bound_map.get(alc1);
+
+         boolean hits = false;
+
+         for (Box b : other_bounds)
+         {
+            if (!bound.disjoint(b))
+            {
+               hits = true;
+               break;
+            }
+         }
+
+         if (!hits)
+         {
+            ret.add(new Loop(alc1));
+            working_loops.remove(i);
+            // won't need the bounds of this again, either
+            bound_map.remove(alc1);
+         }
+         else
+         {
+            i++;
+         }
+      }
    }
 
    enum LoopMode
@@ -265,8 +368,8 @@ public class Intersector
                // just going to guess that .1 is a good distance here (not a total guess, for lines makes no
                // difference and for circles is .1 rad = 6 degrees which should be enough
 
-               dir1 = c1.tangent(c1.StartParam);
-               dir2 = c2.tangent(c2.StartParam);
+               dir1 = c1.tangent(c1.StartParam + .1);
+               dir2 = c2.tangent(c2.StartParam + .1);
 
                ang1 = Util.relativeAngle(rev_curr_dir, dir1);
                ang2 = Util.relativeAngle(rev_curr_dir, dir2);
@@ -353,8 +456,18 @@ public class Intersector
          HashSet<Curve> all_curves,
          HashSet<XY> curve_joints,
          double diameter, double tol,
-         Random random)
+         Random random,
+         boolean visualise)
    {
+      // don't keep eating random numbers if we're visualising the same frame over and over
+      if (visualise && m_visualisation_line != null)
+      {
+         Main.stroke(0, 0, 0);
+         Main.line(m_visualisation_line.startPos(), m_visualisation_line.endPos());
+
+         return null;
+      }
+
       for(int i = 0; i < 5; i++)
       {
          double rand_ang = random.nextDouble() * Math.PI * 2;
@@ -374,7 +487,17 @@ public class Intersector
                tryFindCurveIntersections(lc, all_curves);
 
          if (ret != null)
+         {
+            if (visualise)
+            {
+               m_visualisation_line = lc;
+               Main.stroke(0, 0, 0);
+               Main.line(m_visualisation_line.startPos(), m_visualisation_line.endPos());
+               return null;
+            }
+
             return ret;
+         }
       }
 
       return null;
@@ -513,6 +636,8 @@ public class Intersector
 
                // we only count up in case the earlier entries fall close to existing splits and
                // are ignored, otherwise if the first intersection causes a split
+               // we exit this loop immediately and look at the first pair from the newly inserted curve(s)
+               // instead
                for (int k = 0; k < ret.size() && !any_splits; k++)
                {
                   OrderedPair<Double, Double> split_points = ret.get(k);
@@ -591,4 +716,6 @@ public class Intersector
 
       ac_forward_last.Next = ac_forward_first;
    }
+
+   private static LineCurve m_visualisation_line;
 }

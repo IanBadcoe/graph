@@ -306,12 +306,14 @@ class Util
       //       ->  o                     o ->              | -> |
       // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
 
-      if( t1 >= 0 && t1 <= 1 )
+      double tol = 1e-12;
+
+      if( t1 >= -tol && t1 <= 1 + tol )
       {
          hit1 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * t1);
       }
 
-      if( t2 >= 0 && t2 <= 1 )
+      if( t2 >= -tol && t2 <= 1 + tol )
       {
          hit2 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * t2);
       }

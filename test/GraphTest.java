@@ -99,7 +99,7 @@ public class GraphTest
       assertEquals(n2, e.End);
       assertEquals(1, e.MinLength, 0);
       assertEquals(2, e.MaxLength, 0);
-      assertEquals(3, e.Width, 0);
+      assertEquals(3, e.HalfWidth, 0);
    }
 
    @Test

@@ -19,7 +19,7 @@ class Level
 
       for(DirectedEdge de : m_graph.AllGraphEdges())
       {
-         GeomLayout gl = new RectangularGeomLayout(de.Start.getPos(), de.End.getPos(), de.Width);
+         GeomLayout gl = new RectangularGeomLayout(de.Start.getPos(), de.End.getPos(), de.HalfWidth);
          m_base_loops.add(gl.makeBaseGeometry());
       }
    }
@@ -34,9 +34,19 @@ class Level
       LoopSet temp = new LoopSet();
       temp.add(l);
 
-      m_level = Intersector.union(m_level, temp, 1e-6, r);
+      m_level = Intersector.union(m_level, temp, 1e-6, r, false);
+
+      assert m_level != null;
 
       return true;
+   }
+
+   public void visualise(Random m_union_random)
+   {
+      LoopSet temp = new LoopSet();
+      temp.add(m_base_loops.stream().findFirst().get());
+
+      Intersector.union(m_level, temp, 1e-6, m_union_random, true);
    }
 
    Collection<Loop> getLoops()

@@ -208,7 +208,7 @@ class Template
          INode nf = template_to_graph.get(cr.From);
          INode nt = template_to_graph.get(cr.To);
 
-         DirectedEdge de = graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.Width);
+         DirectedEdge de = graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.HalfWidth);
          de.SetColour(cr.Colour);
       }
    }
@@ -268,19 +268,19 @@ class Template
       final public NodeRecord To;
       final public double MinLength;
       final public double MaxLength;
-      final public double Width;
+      final public double HalfWidth;
       final public int Colour;
 
       ConnectionRecord(NodeRecord from, NodeRecord to,
                        double min_length, double max_length,
-                       double width,
+                       double half_width,
             int colour)
       {
          From = from;
          To = to;
          MinLength = min_length;
          MaxLength = max_length;
-         Width = width;
+         HalfWidth = half_width;
          Colour = colour;
       }
    }

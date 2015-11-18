@@ -209,7 +209,7 @@ class RelaxerStepper implements IExpandStepper
 
       double summed_radii = Math.min(m_node_dists[e.Start.getIdx()][n.getIdx()],
             Math.min(m_node_dists[e.End.getIdx()][n.getIdx()],
-            n.getRad() + e.Width));
+            n.getRad() + e.HalfWidth));
 
       if (vals.Dist > summed_radii)
       {
