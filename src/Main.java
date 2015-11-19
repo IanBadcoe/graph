@@ -113,7 +113,7 @@ public class Main extends processing.core.PApplet
 
       Expander.ExpandRet ret;
 
-      for(int i = 0; i < 10000; i++)
+      for(int i = 0; i < 1000; i++)
       {
          if ((m_step || m_go) && m_lay_out_running)
          {
@@ -144,19 +144,6 @@ public class Main extends processing.core.PApplet
 
       if ((m_step || m_go) && m_level_generated && !m_unions_done)
       {
-         if (m_union_count == 30)
-         {
-            m_union_count = 30;
-
-//            m_level.visualise(m_union_random);
-//
-//            return;
-         }
-
-         m_union_count++;
-
-         print(m_union_count, "\n");
-
          m_unions_done = !m_level.unionOne(m_union_random);
 
          m_step = false;
@@ -297,13 +284,9 @@ public class Main extends processing.core.PApplet
       s_app.strokeWeight(1);
       level.getLoops().forEach(Main::drawLoop);
 
-      int[] colours = { 0xffff0000, 0xff00ff00, 0xff0000ff, 0xffffff00, 0xffff00ff };
-      s_app.strokeWeight(2);
-      int i = 0;
       for(Loop l : level.getLevel())
       {
-         s_app.stroke(colours[i % 5]);
-         i++;
+         s_app.stroke(240);
          drawLoop(l);
       }
    }
@@ -383,7 +366,7 @@ public class Main extends processing.core.PApplet
    private boolean m_go = true;
    private boolean m_auto_scale = true;
    private boolean m_labels = true;
-   private boolean m_arrows = true;
+   private boolean m_arrows = false;
    private boolean m_show_notes = true;
 
    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -396,6 +379,4 @@ public class Main extends processing.core.PApplet
    private Level m_level;
 
    private final Random m_union_random = new Random(1);
-
-   private int m_union_count = 0;
 }

@@ -40,7 +40,9 @@ class EdgeAdjusterStepper implements IExpandStepper
 
    private void SplitEdge()
    {
-      INode c = m_graph.AddNode("c", "", "EdgeExtend", m_edge.HalfWidth);
+      INode c = m_graph.AddNode("c", "", "EdgeExtend",
+            n -> new CircularGeomLayout(n.getPos(), n.getRad() / 2),
+            m_edge.HalfWidth * 2);
 
       XY mid = m_edge.Start.getPos().plus(m_edge.End.getPos()).divide(2);
 

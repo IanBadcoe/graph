@@ -20,7 +20,8 @@ class TemplateStore1 extends TemplateStore
          TemplateBuilder tb = new TemplateBuilder("Tee", "e");
          tb.AddNode(Template.NodeType.In, "i");
          tb.AddNode(Template.NodeType.Out, "o");
-         tb.AddNode(Template.NodeType.Internal, "j", false, "<target>", null, null, "", 10f);
+         tb.AddNode(Template.NodeType.Internal, "j", false, "<target>", null, null, "", 20f,
+               0xff808040, a -> new CircularGeomLayout(a.getPos(), 10));
          tb.AddNode(Template.NodeType.Internal, "side", true, "<target>", null, null, "e", 55f);
 
          tb.Connect("i", "j", 120, 120, 10);
@@ -93,7 +94,8 @@ class TemplateStore1 extends TemplateStore
          TemplateBuilder tb = new TemplateBuilder("Door", "e", dh);
          tb.AddNode(Template.NodeType.In, "i");
          tb.AddNode(Template.NodeType.Out, "o");
-         tb.AddNode(Template.NodeType.Internal, "j", false, "<target>", null, null, "e", 10f);
+         tb.AddNode(Template.NodeType.Internal, "j", false, "<target>", null, null, "e",  20f,
+               0xff808040, a -> new CircularGeomLayout(a.getPos(), 10));
          tb.AddNode(Template.NodeType.Internal, "e", true, "<target>", null, null, "e", 55f);
          tb.AddNode(Template.NodeType.Internal, "obstacle", true, "e", null, null, "", 55f);
          tb.AddNode(Template.NodeType.Internal, "key", true, "obstacle", null, null, "", 30f);
