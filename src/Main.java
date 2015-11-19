@@ -282,13 +282,18 @@ public class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      level.getLoops().forEach(Main::drawLoop);
+      level.getLoops().forEach(Main::drawLoopSet);
 
       for(Loop l : level.getLevel())
       {
          s_app.stroke(240);
          drawLoop(l);
       }
+   }
+
+   static void drawLoopSet(LoopSet loops)
+   {
+      loops.forEach(Main::drawLoop);
    }
 
    static void drawLoop(Loop l)

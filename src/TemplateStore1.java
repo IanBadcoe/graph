@@ -143,5 +143,20 @@ class TemplateStore1 extends TemplateStore
 //
 //         AddTemplate(tb.Build());
 //      }
+
+
+      {
+         DoorPostExpand dh = new DoorPostExpand();
+
+         TemplateBuilder tb = new TemplateBuilder("Rotunda", "", dh);
+         tb.AddNode(Template.NodeType.In, "i");
+         tb.AddNode(Template.NodeType.Internal, "rotunda", false, "<target>",
+               null, null, "e", 70f, 0xff802080,
+               CircularPillarGeomLayout::createFromNode);
+
+         tb.Connect("i", "rotunda", 120, 120, 10);
+
+         AddTemplate(tb.Build());
+      }
    }
 }

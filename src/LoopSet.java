@@ -2,6 +2,16 @@ import java.util.ArrayList;
 
 class LoopSet extends ArrayList<Loop>
 {
+   LoopSet()
+   {
+   }
+
+   // convenience ctor
+   LoopSet(Loop loop)
+   {
+      add(loop);
+   }
+
    @Override
    public int hashCode()
    {

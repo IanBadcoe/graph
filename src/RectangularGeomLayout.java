@@ -11,7 +11,7 @@ public class RectangularGeomLayout extends GeomLayout
    }
 
    @Override
-   Loop makeBaseGeometry()
+   LoopSet makeBaseGeometry()
    {
       XY dir = m_end.minus(m_start);
       double length = dir.length();
@@ -36,7 +36,7 @@ public class RectangularGeomLayout extends GeomLayout
       assert  curves.get(2).endPos().equals(curves.get(3).startPos(), 1e-6);
       assert  curves.get(3).endPos().equals(curves.get(0).startPos(), 1e-6);
 
-      return new Loop(curves);
+      return new LoopSet(new Loop(curves));
    }
 
    private final XY m_start;

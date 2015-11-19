@@ -9,7 +9,7 @@ abstract class GeomLayout
    {
    }
 
-   abstract Loop makeBaseGeometry();
+   abstract LoopSet makeBaseGeometry();
 
    // we cut all edges up into fragments shorter than this
    // is this a good idea?

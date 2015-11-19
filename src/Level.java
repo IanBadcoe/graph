@@ -13,7 +13,7 @@ class Level
       {
          GeomLayout gl = n.geomLayoutCreator().create(n);
          m_layouts.put(n, gl);
-         Loop l = gl.makeBaseGeometry();
+         LoopSet l = gl.makeBaseGeometry();
          m_base_loops.add(l);
       }
 
@@ -29,12 +29,9 @@ class Level
       if (m_base_loops.size() == 0)
          return false;
 
-      Loop l = m_base_loops.remove(0);
+      LoopSet ls = m_base_loops.remove(0);
 
-      LoopSet temp = new LoopSet();
-      temp.add(l);
-
-      m_level = Intersector.union(m_level, temp, 1e-6, r, false);
+      m_level = Intersector.union(m_level, ls, 1e-6, r, false);
 
       assert m_level != null;
 
@@ -43,13 +40,13 @@ class Level
 
    public void visualise(Random m_union_random)
    {
-      LoopSet temp = new LoopSet();
-      temp.add(m_base_loops.stream().findFirst().get());
+      LoopSet temp =
+            m_base_loops.stream().findFirst().get();
 
       Intersector.union(m_level, temp, 1e-6, m_union_random, true);
    }
 
-   Collection<Loop> getLoops()
+   Collection<LoopSet> getLoops()
    {
       return Collections.unmodifiableCollection(m_base_loops);
    }
@@ -63,7 +60,7 @@ class Level
 
    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
    private final HashMap<INode, GeomLayout> m_layouts = new HashMap<>();
-   private final LoopSet m_base_loops = new LoopSet();
+   private final ArrayList<LoopSet> m_base_loops = new ArrayList<>();
 
    private LoopSet m_level = new LoopSet();
 }
