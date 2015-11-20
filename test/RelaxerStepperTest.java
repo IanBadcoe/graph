@@ -29,7 +29,7 @@ public class RelaxerStepperTest
       g.Connect(n1, n5, 40, 40, 0);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -91,7 +91,7 @@ public class RelaxerStepperTest
       g.Connect(n3, n1, 40, 40, 0);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -134,7 +134,7 @@ public class RelaxerStepperTest
       n2.setPos(new XY(-100, 0));
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -168,7 +168,7 @@ public class RelaxerStepperTest
       n2.setPos(new XY(  -1,    0));
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -210,7 +210,7 @@ public class RelaxerStepperTest
       g.Connect(n3, n4, 20, 20, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -256,7 +256,7 @@ public class RelaxerStepperTest
       g.Connect(n3, n4, 20, 20, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -300,7 +300,7 @@ public class RelaxerStepperTest
       g.Connect(n1, n2, 100, 100, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -345,7 +345,7 @@ public class RelaxerStepperTest
       g.Connect(n3, n4, 100, 100, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -388,7 +388,7 @@ public class RelaxerStepperTest
          g.Connect(n2, n3, 100, 100, 10);
 
          // run it to a tighter convergence than usual
-         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
          Expander.ExpandRetInner ret;
          int count = 0;
@@ -426,7 +426,7 @@ public class RelaxerStepperTest
          g.Connect(n1, n2, 100, 100, 10);
 
          // run it to a tighter convergence than usual
-         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
          Expander.ExpandRetInner ret;
          int count = 0;
@@ -464,7 +464,7 @@ public class RelaxerStepperTest
       g.Connect(n1, n2, 100, 100, 0);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -511,7 +511,7 @@ public class RelaxerStepperTest
       g.Connect(n4, n5, 2, 2, 0);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4);
+      RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 0);
 
       Expander.ExpandRetInner ret;
       int count = 0;
@@ -542,5 +542,86 @@ public class RelaxerStepperTest
       // n4 and n5 hve enough edge length to get far enough from n1 and should do so
       assertTrue(n1.getPos().minus(n4.getPos()).length() >= 6);
       assertTrue(n1.getPos().minus(n5.getPos()).length() >= 6);
+   }
+
+   @Test
+   public void testMinimumSeparation()
+   {
+      {
+         Graph g = new Graph();
+         INode n1 = g.AddNode("n1", "", "", 10.0);
+         INode n2 = g.AddNode("n2", "", "", 10.0);
+
+         n1.setPos(new XY(   0,    0));
+         n2.setPos(new XY(  -1,    0));
+
+         // run it to a tighter convergence than usual
+         // add 1 unit of extra separation
+         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 1);
+
+         Expander.ExpandRetInner ret;
+         int count = 0;
+         do
+         {
+            count++;
+            // RelaxerStepper doesn't use previous status
+            ret = rs.Step(Expander.ExpandStatus.Iterate);
+         }
+         while(ret.Status == Expander.ExpandStatus.Iterate);
+
+         // simple case should succeed
+         assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+
+         // shouldn't take many cycle to bring them close to the target separation
+         assertTrue(count < 100);
+
+         double dist = n2.getPos().minus(n1.getPos()).length();
+
+         // should get rad+rad+separation
+         assertEquals(21.0, dist, 0.1);
+      }
+
+      {
+         Graph g = new Graph();
+
+         INode n1 = g.AddNode("edge1start", "", "", 10.0);
+         INode n2 = g.AddNode("edge1end", "", "", 10.0);
+         INode n3 = g.AddNode("node", "", "", 10.0);
+
+         // edge long enough that there is no n1->n3 or n2->n3 interaction
+         n1.setPos(new XY(0, 0));
+         n2.setPos(new XY(0, 100));
+         n3.setPos(new XY(1, 50));
+
+         g.Connect(n1, n2, 100, 100, 10);
+
+         // run it to a tighter convergence than usual
+         // add an extra separation of 1 unit
+         RelaxerStepper rs = new RelaxerStepper(g, 1.0, 1e-3, 1e-4, 1);
+
+         Expander.ExpandRetInner ret;
+         int count = 0;
+         do
+         {
+            count++;
+            // RelaxerStepper doesn't use previous status
+            ret = rs.Step(Expander.ExpandStatus.Iterate);
+         }
+         while(ret.Status == Expander.ExpandStatus.Iterate);
+
+         // simple case should succeed
+         assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+
+         // takes a little time to push the edge and node apart
+         assertTrue(count < 130);
+         // should have just slid sideways along X
+         // to a total dist of node radius + edge half-width +
+         // separation
+         assertEquals(21, n3.getPos().X - n1.getPos().X, 0.1);
+
+         assertEquals(0, n1.getPos().Y, 0);
+         assertEquals(100, n2.getPos().Y, 0);
+         assertEquals(50, n3.getPos().Y, 0);
+      }
    }
 }

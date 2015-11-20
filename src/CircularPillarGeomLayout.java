@@ -13,10 +13,15 @@ class CircularPillarGeomLayout extends GeomLayout
    }
 
    @Override
-   LoopSet makeBaseGeometry()
+   Loop makeBaseGeometry()
+   {
+      return new Loop(new CircleCurve(m_position, m_rad));
+   }
+
+   @Override
+   LoopSet makeDetailGeometry()
    {
       LoopSet ret = new LoopSet();
-      ret.add(new Loop(new CircleCurve(m_position, m_rad)));
       ret.add(new Loop(new CircleCurve(m_position, m_rad / 2, CircleCurve.RotationDirection.Reverse)));
 
       return ret;

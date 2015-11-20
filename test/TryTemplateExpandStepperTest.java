@@ -37,7 +37,7 @@ public class TryTemplateExpandStepperTest
    public void testExpandedTemplateRelaxFail() throws Exception
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new TestStepper(false, () -> m_fail_count++));
+            (a) -> new TestStepper(false, () -> m_fail_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -74,7 +74,7 @@ public class TryTemplateExpandStepperTest
    public void testEdgeAdjustFail()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepper(true, () -> m_success_count++));
       TryTemplateExpandStepper.SetAdjusterFactory(
             (a, b) -> new TestStepper(false, () -> m_fail_count++));
 
@@ -140,7 +140,7 @@ public class TryTemplateExpandStepperTest
    public void testEdgeAdjustSucceed()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepper(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -189,7 +189,7 @@ public class TryTemplateExpandStepperTest
    public void testEdgeTwoAdjustsSucceed()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepper(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -243,7 +243,7 @@ public class TryTemplateExpandStepperTest
    public void testNoEdgeAdjustRequired()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepper(true, () -> m_success_count++));
       // won't be called
       TryTemplateExpandStepper.SetAdjusterFactory(
             (a, b) -> new TestStepper(false, () -> assertTrue(false)));
@@ -290,7 +290,7 @@ public class TryTemplateExpandStepperTest
    public void testCrazyPrevStatus_1()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepper(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -340,7 +340,7 @@ public class TryTemplateExpandStepperTest
    public void testCrazyPrevStatus_2()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepper(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");

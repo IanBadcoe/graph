@@ -2,7 +2,7 @@ class EdgeAdjusterStepper implements IExpandStepper
 {
    public interface IChildFactory
    {
-      IExpandStepper MakeChild(Graph g, @SuppressWarnings("SameParameterValue") double max_move, @SuppressWarnings("SameParameterValue") double force_target, @SuppressWarnings("SameParameterValue") double move_target);
+      IExpandStepper MakeChild(Graph g);
    }
 
    EdgeAdjusterStepper(Graph graph, DirectedEdge edge)
@@ -19,7 +19,7 @@ class EdgeAdjusterStepper implements IExpandStepper
          case StepIn:
             SplitEdge();
 
-            IExpandStepper child = m_child_factory.MakeChild(m_graph, 1.0, 0.001, 0.01);
+            IExpandStepper child = m_child_factory.MakeChild(m_graph);
 
             return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
                   child, "Relaxing split edge.");

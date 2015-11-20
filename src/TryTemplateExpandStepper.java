@@ -5,7 +5,7 @@ class TryTemplateExpandStepper implements IExpandStepper
 {
    interface IRelaxerFactory
    {
-      IExpandStepper MakeRelaxer(Graph g, @SuppressWarnings("SameParameterValue") double max_step, @SuppressWarnings("SameParameterValue") double target_force, @SuppressWarnings("SameParameterValue") double target_move);
+      IExpandStepper MakeRelaxer(Graph g);
    }
 
    interface IAdjusterFactory
@@ -30,7 +30,7 @@ class TryTemplateExpandStepper implements IExpandStepper
       {
          if (m_template.Expand(m_graph, m_node, m_random))
          {
-            IExpandStepper child = m_relaxer_factory.MakeRelaxer(m_graph, 1.0, 0.001, 0.01);
+            IExpandStepper child = m_relaxer_factory.MakeRelaxer(m_graph);
 
             return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
                   child, "Relaxing successful expansion.");

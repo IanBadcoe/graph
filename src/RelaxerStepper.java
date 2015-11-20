@@ -2,17 +2,18 @@ import java.util.ArrayList;
 
 class RelaxerStepper implements IExpandStepper
 {
-   RelaxerStepper(Graph graph,
-                  @SuppressWarnings("SameParameterValue") double max_move,
-                  @SuppressWarnings("SameParameterValue") double force_target,
-                  @SuppressWarnings("SameParameterValue") double move_target)
+   RelaxerStepper(Graph graph, double max_move,
+                  double force_target, double move_target,
+                  double minimum_separation)
    {
       m_graph = graph;
       m_nodes = m_graph.AllGraphNodes();
       m_edges = m_graph.AllGraphEdges();
+
       m_max_move = max_move;
       m_force_target = force_target;
       m_move_target = move_target;
+      m_minimum_separation = minimum_separation;
 
       // these are shortest path lengths through the graph
       //
@@ -28,12 +29,12 @@ class RelaxerStepper implements IExpandStepper
    @Override
    public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
    {
-      return RelaxStep(m_max_move, m_force_target, m_move_target);
+      return RelaxStep();
    }
 
    // step is scaled so that the max force we see causes a movement of max_move
    // until that means a step of > 1, then we start letting the system slow down :-)
-   private Expander.ExpandRetInner RelaxStep(double max_move, double force_target, double move_target)
+   private Expander.ExpandRetInner RelaxStep()
    {
       double maxf = 0.0;
 
@@ -93,14 +94,14 @@ class RelaxerStepper implements IExpandStepper
 
       if (maxf > 0)
       {
-         step = Math.min(max_move / maxf, max_move);
+         step = Math.min(m_max_move / maxf, m_max_move);
 
          for (INode n : m_nodes)
          {
             maxd = Math.max(n.step(step), maxd);
          }
 
-         ended = maxd < move_target && maxf < force_target;
+         ended = maxd < m_move_target && maxf < m_force_target;
       }
 
       int crossings = Util.findCrossingEdges(m_edges).size();
@@ -148,7 +149,7 @@ class RelaxerStepper implements IExpandStepper
       OrderedPair<Double, Double> fd = Util.unitEdgeForce(l, dmin, dmax);
 
       double ratio = fd.First;
-      double force = fd.Second * EDGE_FORCE_SCALE;
+      double force = fd.Second * Configuration.EdgeLengthForceScale;
 
       XY f = d.multiply(force);
       nStart.addForce(f);
@@ -168,7 +169,7 @@ class RelaxerStepper implements IExpandStepper
    {
       XY d = node2.getPos().minus(node1.getPos());
       double adjusted_radius = Math.min(m_node_dists[node1.getIdx()][node2.getIdx()],
-            node1.getRad() + node2.getRad());
+            node1.getRad() + node2.getRad() + m_minimum_separation);
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
@@ -184,7 +185,7 @@ class RelaxerStepper implements IExpandStepper
 
       if (ratio != 0)
       {
-         double force = fd.Second * NODE_FORCE_SCALE;
+         double force = fd.Second * Configuration.NodeToNodeForceScale;
 
          XY f = d.multiply(force);
          node1.addForce(f);
@@ -209,7 +210,7 @@ class RelaxerStepper implements IExpandStepper
 
       double summed_radii = Math.min(m_node_dists[e.Start.getIdx()][n.getIdx()],
             Math.min(m_node_dists[e.End.getIdx()][n.getIdx()],
-            n.getRad() + e.HalfWidth));
+                  n.getRad() + e.HalfWidth) + m_minimum_separation);
 
       if (vals.Dist > summed_radii)
       {
@@ -218,7 +219,7 @@ class RelaxerStepper implements IExpandStepper
 
       double ratio = vals.Dist / summed_radii;
 
-      double force = (ratio - 1) * EDGE_NODE_FORCE_SCALE;
+      double force = (ratio - 1) * Configuration.EdgeToNodeForceScale;
 
       XY f = vals.Direction.multiply(force);
 
@@ -250,11 +251,6 @@ class RelaxerStepper implements IExpandStepper
    private final ArrayList<INode> m_nodes;
    private final ArrayList<DirectedEdge> m_edges;
 
-   private final double m_max_move;
-
-   private final double m_force_target;
-   private final double m_move_target;
-
    // whichever is smaller out of the summed-radii and the
    // shortest path through the graph between two nodes
    // we use this as d0 in the node <-> node force function
@@ -263,7 +259,8 @@ class RelaxerStepper implements IExpandStepper
    // and then the new second-closest neighbour is in the same position
    private final double[][] m_node_dists;
 
-   private static final double EDGE_NODE_FORCE_SCALE = 1.0;
-   private static final double EDGE_FORCE_SCALE = 0.01;
-   private static final double NODE_FORCE_SCALE = 1.0;
+   private final double m_max_move;
+   private final double m_force_target;
+   private final double m_move_target;
+   private final double m_minimum_separation;
 }

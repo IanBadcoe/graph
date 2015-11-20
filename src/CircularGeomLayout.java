@@ -13,9 +13,15 @@ class CircularGeomLayout extends GeomLayout
    }
 
    @Override
-   LoopSet makeBaseGeometry()
+   Loop makeBaseGeometry()
    {
-      return new LoopSet(new Loop(new CircleCurve(m_position, m_rad)));
+      return new Loop(new CircleCurve(m_position, m_rad));
+   }
+
+   @Override
+   LoopSet makeDetailGeometry()
+   {
+      return null;
    }
 
    private final XY m_position;

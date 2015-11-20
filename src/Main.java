@@ -30,9 +30,17 @@ public class Main extends processing.core.PApplet
       ExpandToSizeStepper.SetChildFactory(
             TryAllNodesExpandStepper::new);
       EdgeAdjusterStepper.SetChildFactory(
-            RelaxerStepper::new);
+            a -> new RelaxerStepper(a,
+                  Configuration.RelaxationMaxMove,
+                  Configuration.RelaxationForceTarget,
+                  Configuration.RelaxationMoveTarget,
+                  Configuration.RelaxationMinimumSeparation));
       TryTemplateExpandStepper.SetRelaxerFactory(
-            RelaxerStepper::new);
+            a -> new RelaxerStepper(a,
+                  Configuration.RelaxationMaxMove,
+                  Configuration.RelaxationForceTarget,
+                  Configuration.RelaxationMoveTarget,
+                  Configuration.RelaxationMinimumSeparation ));
       TryTemplateExpandStepper.SetAdjusterFactory(
             EdgeAdjusterStepper::new);
    }
@@ -282,7 +290,8 @@ public class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      level.getLoops().forEach(Main::drawLoopSet);
+      level.getLoops().forEach(Main::drawLoop);
+      level.getDetailLoopSets().forEach(Main::drawLoopSet);
 
       for(Loop l : level.getLevel())
       {
@@ -298,7 +307,7 @@ public class Main extends processing.core.PApplet
 
    static void drawLoop(Loop l)
    {
-      ArrayList<XY> pnts = l.facet(10);
+      ArrayList<XY> pnts = l.facet(5);
 
       drawLoopPoints(pnts);
    }
