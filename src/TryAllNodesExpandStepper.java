@@ -1,44 +1,43 @@
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
 import java.util.stream.Collectors;
 
-public class TryAllNodesExpandStepper implements IExpandStepper
+public class TryAllNodesExpandStepper implements IStepper
 {
    public interface IChildFactory
    {
-      IExpandStepper MakeChild(Graph g, INode n, Collection<Template> templates,
-                               Random r);
+      IStepper MakeChild(Graph g, INode n, Collection<Template> templates,
+                               LevelGeneratorConfiguration c);
    }
 
    TryAllNodesExpandStepper(Graph graph, TemplateStore templates,
-                            Random random)
+                            LevelGeneratorConfiguration c)
    {
       m_graph = graph;
       m_templates = templates;
-      m_all_nodes = graph.AllGraphNodes().stream().filter(n -> n.GetCodes().contains("e"))
+      m_all_nodes = graph.AllGraphNodes().stream().filter(n -> n.getCodes().contains("e"))
             .collect(Collectors.toCollection(ArrayList::new));
-      m_random = random;
+      m_config = c;
    }
 
    @Override
-   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
       // if our child succeeds, we succeed
-      if (status == Expander.ExpandStatus.StepOutSuccess)
+      if (status == StepperController.ExpandStatus.StepOutSuccess)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
-               null, "Graph Expand Step Succeeded");
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+               null, "Graph Expand step Succeeded");
       }
 
       // no matter what other previous status, if we run out of nodes we're a fail
       if (m_all_nodes.size() == 0)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                null, "All nodes failed to expand");
       }
 
-      INode node = Util.RemoveRandom(m_random, m_all_nodes);
+      INode node = Util.removeRandom(m_config.Rand, m_all_nodes);
 
       Collection<Template> templates = m_templates.GetTemplatesCopy();
 
@@ -49,11 +48,12 @@ public class TryAllNodesExpandStepper implements IExpandStepper
          templates = templates.stream().filter(t -> t.GetCodes().contains("e"))
                .collect(Collectors.toCollection(ArrayList::new));
 
-      IExpandStepper child = s_child_factory.MakeChild(
-            m_graph, node, templates, m_random);
+      IStepper child = s_child_factory.MakeChild(
+            m_graph, node, templates, m_config);
 
-      return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
-            child, "Trying to expand node: " + node.GetName());
+      //noinspection ConstantConditions
+      return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+            child, "Trying to expand node: " + node.getName());
    }
 
    public static void SetChildFactory(IChildFactory factory)
@@ -64,7 +64,7 @@ public class TryAllNodesExpandStepper implements IExpandStepper
    private final Graph m_graph;
    private final TemplateStore m_templates;
    private final Collection<INode> m_all_nodes;
-   private final Random m_random;
+   private final LevelGeneratorConfiguration m_config;
 
-   static IChildFactory s_child_factory;
+   private static IChildFactory s_child_factory;
 }

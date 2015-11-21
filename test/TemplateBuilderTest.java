@@ -1,7 +1,5 @@
 import org.junit.Test;
 
-import java.util.Random;
-
 import static org.junit.Assert.*;
 
 public class TemplateBuilderTest
@@ -504,7 +502,7 @@ public class TemplateBuilderTest
          assertEquals(nrb, cr.To);
          assertEquals(1, cr.MinLength, 0.0);
          assertEquals(2, cr.MaxLength, 0.0);
-         assertEquals(3, cr.Width, 0.0);
+         assertEquals(3, cr.HalfWidth, 0.0);
       }
    }
 }

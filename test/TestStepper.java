@@ -1,4 +1,4 @@
-class TestStepper implements IExpandStepper
+class TestStepper implements IStepper
 {
    TestStepper(boolean succeed, Runnable action)
    {
@@ -7,7 +7,7 @@ class TestStepper implements IExpandStepper
    }
 
    @Override
-   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
       if (m_action != null)
       {
@@ -16,12 +16,12 @@ class TestStepper implements IExpandStepper
 
       if (m_succeed)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                null, "");
       }
       else
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                null, "");
       }
    }

@@ -1,3 +1,4 @@
+@SuppressWarnings("WeakerAccess")
 class Annotation
 {
    final public XY P1;
@@ -7,6 +8,7 @@ class Annotation
    final public int Blue;
    final public String Text;
 
+   @SuppressWarnings("unused")
    Annotation(XY p1, XY p2, int red, int green, int blue, String text)
    {
       P1 = p1;
@@ -19,13 +21,13 @@ class Annotation
 
    void Draw()
    {
-      Main.Stroke(Red, Green, Blue);
-      Main.Fill(Red, Green, Blue);
+      Main.stroke(Red, Green, Blue);
+      Main.fill(Red, Green, Blue);
 
-      Main.Line(P1, P2);
+      Main.line(P1, P2);
 
-      XY mid = P1.Plus(P2).Divide(2);
+      XY mid = P1.plus(P2).divide(2);
 
-      Main.Text(Text, mid);
+      Main.text(Text, mid);
    }
 }

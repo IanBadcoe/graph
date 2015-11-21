@@ -85,6 +85,7 @@ public class DirectedEdgePairTest
       assertFalse(dep1.equals(dep4));
       assertFalse(dep1.equals(dep5));
 
-      assertFalse(dep1.equals(new Integer(1)));
+      //noinspection EqualsBetweenInconvertibleTypes
+      assertFalse(dep1.equals(1));
    }
 }

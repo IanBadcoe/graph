@@ -3,6 +3,7 @@ import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.Random;
 
+@SuppressWarnings("WeakerAccess")
 public class Main extends processing.core.PApplet
 {
    public static void main(String[] args) {
@@ -23,17 +24,17 @@ public class Main extends processing.core.PApplet
 
       // configure our crude IoC system
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new TryAllTemplatesOnOneNodeStepper(a, b, c, d));
+            TryAllTemplatesOnOneNodeStepper::new);
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new TryTemplateExpandStepper(a, b, c, d));
+            TryTemplateExpandStepper::new);
       ExpandToSizeStepper.SetChildFactory(
-            (a, b, c) -> new TryAllNodesExpandStepper(a, b, c));
+            TryAllNodesExpandStepper::new);
       EdgeAdjusterStepper.SetChildFactory(
-            (a, b, c, d) -> new RelaxerStepper(a, b, c, d));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b, c, d) -> new RelaxerStepper(a, b, c, d));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b) -> new EdgeAdjusterStepper(a, b));
+            EdgeAdjusterStepper::new);
    }
 
    @Override
@@ -41,10 +42,18 @@ public class Main extends processing.core.PApplet
    {
       ellipseMode(RADIUS);
 
+      m_expand_config = new LevelGeneratorConfiguration(85);
+
       m_graph = MakeSeed();
-      m_expander = new Expander(m_graph,
+      m_expander = new StepperController(m_graph,
             new ExpandToSizeStepper(m_graph, m_reqSize, m_templates,
-                  new Random(86)));
+                  m_expand_config));
+
+      LevelGeneratorConfiguration temp = new LevelGeneratorConfiguration(m_expand_config);
+      temp.RelaxationForceTarget /= 5;
+      temp.RelaxationMoveTarget /= 5;
+      m_final_relaxer = new StepperController(m_graph,
+            new RelaxerStepper(m_graph, temp));
    }
 
    @Override
@@ -110,26 +119,69 @@ public class Main extends processing.core.PApplet
       strokeWeight(0.0f);
 //      textSize(0.01f);
 
-      Expander.ExpandRet ret = null;
+      StepperController.ExpandRet ret;
 
-      for(int i = 0; i < 1000; i++)
+      if (m_lay_out_running)
       {
-         if ((m_step || m_go) && m_lay_out_running)
+         for (int i = 0; i < 1000; i++)
          {
-            m_step = false;
+            if ((m_step || m_go) && m_lay_out_running)
+            {
+               m_step = false;
 
-            ret = m_expander.Step();
+               ret = m_expander.Step();
 
-            m_lay_out_running = !ret.Complete;
+               m_lay_out_running = !ret.Complete;
 
-//            print(ret.Log, "\n");
+               //            print(ret.Log, "\n");
+            }
+            else
+            {
+               break;
+            }
          }
+      }
+      else if (!m_final_relaxation)
+      {
+         for (int i = 0; i < 1000; i++)
+         {
+            if ((m_step || m_go) && !m_final_relaxation)
+            {
+               m_step = false;
+
+               ret = m_final_relaxer.Step();
+
+               m_final_relaxation = ret.Complete;
+
+               //            print(ret.Log, "\n");
+            }
+            else
+            {
+               break;
+            }
+         }
+      }
+      else if (!m_level_generated)
+      {
+         m_level = new Level(m_graph);
+
+         m_level.generateGeometry();
+
+         m_level_generated = true;
+
+//         m_go = false;
+      }
+      else if ((m_step || m_go) && !m_unions_done)
+      {
+         m_unions_done = !m_level.unionOne(m_union_random);
+
+         m_step = false;
       }
 
       double range = min(width, height);
 
       if (m_auto_scale)
-         AutoScale(m_graph, range * 0.05, range * 0.95);
+         autoScale(m_graph, range * 0.05, range * 0.95);
 
       translate((float)(range * 0.05), (float)(range * 0.05));
 
@@ -137,18 +189,22 @@ public class Main extends processing.core.PApplet
 
       translate((float)m_off_x, (float)m_off_y);
 
-      DrawGraph(m_graph, m_labels, m_arrows);
+      drawGraph(m_graph, m_labels, !m_unions_done, true, m_arrows);
+
+      if (m_level != null)
+      {
+         drawLevel(m_level);
+      }
 
       if (m_show_notes)
       {
-         for(Annotation a : m_notes)
-         {
-            a.Draw();
-         }
+         m_notes.forEach(Annotation::Draw);
       }
+
+//      saveFrame("..\\graph non-git\\Frame####.jpg");
    }
 
-   void AutoScale(Graph g, double low, double high)
+   private void autoScale(Graph g, double low, double high)
    {
       Box b = g.XYBounds();
 
@@ -162,16 +218,16 @@ public class Main extends processing.core.PApplet
       m_scale = smaller_scale;
    }
 
-   Graph MakeSeed()
+   private Graph MakeSeed()
    {
       Graph ret = new Graph();
       INode start = ret.AddNode("Start", "<", "Seed", 55f);
-      INode expander = ret.AddNode("Expander", "e", "Seed", 55f);
+      INode expander = ret.AddNode("StepperController", "e", "Seed", 55f);
       INode end = ret.AddNode("End", ">", "Seed", 55f);
 
-      start.SetPos(new XY(-100, 0));
-      expander.SetPos(new XY(0, 0));
-      end.SetPos(new XY(0, 100));
+      start.setPos(new XY(-100, 0));
+      expander.setPos(new XY(0, 0));
+      end.setPos(new XY(0, 100));
 
       ret.Connect(start, expander, 90, 110, 10);
       ret.Connect(expander, end, 90, 110, 10);
@@ -181,107 +237,185 @@ public class Main extends processing.core.PApplet
    }
 
 
-   static void Line(XY from, XY to)
+   static void line(XY from, XY to)
    {
       s_app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
    }
 
-   static void Text(String text, XY pos)
+   static void text(String text, XY pos)
    {
       s_app.text(text, (float)pos.X, (float)pos.Y);
    }
 
-   static void DrawGraph(Graph g, boolean show_labels, boolean show_arrows)
+   static void drawGraph(Graph g, boolean show_labels, boolean show_connections,
+                         @SuppressWarnings("SameParameterValue") boolean show_circles, boolean show_arrows)
    {
-      for (INode n : g.AllGraphNodes())
+      if (show_circles)
       {
-         DrawNode(n);
+         g.AllGraphNodes().forEach(Main::drawNode);
       }
 
-      for (INode n : g.AllGraphNodes())
+
+      if (show_connections)
       {
-         DrawConnections(n, show_arrows);
+         for (INode n : g.AllGraphNodes())
+         {
+            drawConnections(n, show_arrows);
+         }
       }
 
       if (show_labels)
       {
-         for (INode n : g.AllGraphNodes())
-         {
-            DrawLabel(n);
-         }
+         g.AllGraphNodes().forEach(Main::drawLabel);
       }
    }
 
-   private static void DrawNode(INode n)
+   static void drawNode(INode n)
    {
       s_app.noStroke();
-      s_app.fill(n.GetColour());
-      s_app.ellipse((float) n.GetPos().X, (float) n.GetPos().Y,
-            (float) n.GetRad(), (float) n.GetRad());
+      s_app.fill(n.getColour());
+      s_app.ellipse((float) n.getPos().X, (float) n.getPos().Y,
+            (float) n.getRad(), (float) n.getRad());
    }
 
-   private static void DrawLabel(INode n)
+   static void drawLabel(INode n)
    {
       s_app.fill(255, 255, 255);
-      s_app.text(n.GetName(),
-            (float) n.GetPos().X, (float) n.GetPos().Y);
+      s_app.text(n.getName(),
+            (float) n.getPos().X, (float) n.getPos().Y);
    }
 
-   private static void DrawConnections(INode n, boolean show_arrows)
+   static void drawConnections(INode n, boolean show_arrows)
    {
       // in connections are drawn by the other node...
-      for(DirectedEdge e : n.GetOutConnections())
+      for(DirectedEdge e : n.getOutConnections())
       {
          s_app.stroke(e.GetColour());
-         s_app.strokeWeight((float)(e.Width * 1.75));
-         Line(e.Start.GetPos(), e.End.GetPos());
+         s_app.strokeWeight((float)(e.HalfWidth * 1.9));
+         line(e.Start.getPos(), e.End.getPos());
 
          if (show_arrows)
          {
-            XY d = e.End.GetPos().Minus(e.Start.GetPos());
-            d = d.Divide(10);
+            XY d = e.End.getPos().minus(e.Start.getPos());
+            d = d.divide(10);
 
-            XY rot = new XY(-d.Y, d.X);
+            XY rot = d.rot90();
 
-            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Minus(rot));
-            Line(e.End.GetPos(), e.End.GetPos().Minus(d).Plus(rot));
+            line(e.End.getPos(), e.End.getPos().minus(d).minus(rot));
+            line(e.End.getPos(), e.End.getPos().minus(d).plus(rot));
          }
       }
    }
 
-   static void Stroke(int red, int green, int blue)
+   static void drawLevel(Level level)
+   {
+      s_app.stroke(0xffffffff);
+      s_app.strokeWeight(1);
+      level.getLoops().forEach(Main::drawLoop);
+      level.getDetailLoopSets().forEach(Main::drawLoopSet);
+
+      for(Loop l : level.getLevel())
+      {
+         s_app.stroke(240);
+         drawLoop(l);
+      }
+   }
+
+   static void drawLoopSet(LoopSet loops)
+   {
+      loops.forEach(Main::drawLoop);
+   }
+
+   static void drawLoop(Loop l)
+   {
+      ArrayList<XY> pnts = l.facet(5);
+
+      drawLoopPoints(pnts);
+   }
+
+   static void drawLoopPoints(ArrayList<XY> pnts)
+   {
+      XY prev = pnts.get(pnts.size() - 1);
+
+      for(XY curr : pnts)
+      {
+         line(prev, curr);
+
+         prev = curr;
+      }
+   }
+
+   static void stroke(int red, int green, int blue)
    {
       s_app.stroke(red, green, blue);
    }
 
-   static void Fill(int red, int green, int blue)
+   static void fill(int red, int green, int blue)
    {
       s_app.fill(red, green, blue);
    }
 
-   static PApplet s_app;
+   static void circle(double x, double y, double rad)
+   {
+      s_app.ellipse((float)x, (float)y, (float)rad, (float)rad);
+   }
 
-   Graph m_graph;
+   static void scaleTo(Box b)
+   {
+      double shorter_display = Math.min(s_app.width, s_app.height);
 
-   TemplateStore m_templates = new TemplateStore1();
+      double larger_box = Math.max(b.DX(), b.DY());
 
-   int m_reqSize = 30;
+      s_app.scale((float)(shorter_display / larger_box));
 
-   Expander m_expander;
+      s_app.translate((float)-b.Min.X,(float)-b.Min.Y);
+   }
 
-   boolean m_lay_out_running = true;
+   static void clear(int c)
+   {
+      s_app.background(c);
+   }
+
+   public static void strokeWidth(double d)
+   {
+      s_app.strokeWeight((float)d);
+   }
+
+   private static PApplet s_app;
+
+   private Graph m_graph;
+
+   private final TemplateStore m_templates = new TemplateStore1();
+
+   @SuppressWarnings("FieldCanBeLocal")
+   private final int m_reqSize = 30;
+
+   private StepperController m_expander;
+   private StepperController m_final_relaxer;
+
+   private boolean m_lay_out_running = true;
+   private boolean m_level_generated = false;
+   private boolean m_unions_done = false;
+   private boolean m_final_relaxation = false;
 
    // UI data
-   boolean m_step = false;
-   boolean m_go = false;
-   boolean m_auto_scale = true;
-   boolean m_labels = true;
-   boolean m_arrows = true;
-   boolean m_show_notes = true;
+   private boolean m_step = false;
+   private boolean m_go = true;
+   private boolean m_auto_scale = true;
+   private boolean m_labels = true;
+   private boolean m_arrows = false;
+   private boolean m_show_notes = true;
 
-   ArrayList<Annotation> m_notes = new ArrayList<>();
+   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+   private final ArrayList<Annotation> m_notes = new ArrayList<>();
 
-   double m_off_x = 0.0;
-   double m_off_y = 0.0;
-   double m_scale = 1.0;
+   private double m_off_x = 0.0;
+   private double m_off_y = 0.0;
+   private double m_scale = 1.0;
+
+   private Level m_level;
+
+   private final Random m_union_random = new Random(1);
+
+   private LevelGeneratorConfiguration m_expand_config;
 }

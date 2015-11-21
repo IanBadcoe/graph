@@ -39,7 +39,7 @@ class Template
       return from + "->" + to;
    }
 
-   private NodeRecord FindNodeRecord(String name)
+   private NodeRecord FindNodeRecord(@SuppressWarnings("SameParameterValue") String name)
    {
       return m_nodes.get(name);
    }
@@ -53,8 +53,8 @@ class Template
 
    boolean Expand(Graph graph, INode target, Random random)
    {
-      Collection<DirectedEdge> target_in_connections = target.GetInConnections();
-      Collection<DirectedEdge> target_out_connections = target.GetOutConnections();
+      Collection<DirectedEdge> target_in_connections = target.getInConnections();
+      Collection<DirectedEdge> target_out_connections = target.getOutConnections();
 
       if (m_num_in_nodes != target_in_connections.size())
       {
@@ -73,13 +73,14 @@ class Template
       template_to_graph.put(FindNodeRecord("<target>"), target);
 
       // create nodes for each we are adding and map to their NodeRecords
+      //noinspection Convert2streamapi
       for (NodeRecord nr : m_nodes.values())
       {
          if (nr.Type == NodeType.Internal)
          {
-            INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.Radius);
+            INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.GeomCreator, nr.Radius);
             template_to_graph.put(nr, n);
-            n.SetColour(nr.Colour);
+            n.setColour(nr.Colour);
          }
       }
 
@@ -87,6 +88,7 @@ class Template
       {
          Iterator<DirectedEdge> g_it = target_in_connections.iterator();
 
+         //noinspection Convert2streamapi
          for (NodeRecord nr : m_nodes.values())
          {
             if (nr.Type == NodeType.In)
@@ -104,6 +106,7 @@ class Template
       {
          Iterator<DirectedEdge> g_it = target_out_connections.iterator();
 
+         //noinspection Convert2streamapi
          for (NodeRecord nr : m_nodes.values())
          {
             if (nr.Type == NodeType.Out)
@@ -149,7 +152,7 @@ class Template
          {
             INode positionOn = template_to_graph.get(nr.PositionOn);
 
-            XY pos = positionOn.GetPos();
+            XY pos = positionOn.getPos();
             XY towards_step = new XY();
             XY away_step = new XY();
 
@@ -157,21 +160,21 @@ class Template
             {
                INode positionTowards = template_to_graph.get(nr.PositionTowards);
 
-               XY d = positionTowards.GetPos().Minus(pos);
+               XY d = positionTowards.getPos().minus(pos);
 
-               towards_step = d.Multiply(0.1);
+               towards_step = d.multiply(0.1);
             }
 
             if (nr.PositionAwayFrom != null)
             {
                INode positionAwayFrom = template_to_graph.get(nr.PositionAwayFrom);
 
-               XY d = positionAwayFrom.GetPos().Minus(pos);
+               XY d = positionAwayFrom.getPos().minus(pos);
 
-               away_step = d.Multiply(0.1);
+               away_step = d.multiply(0.1);
             }
 
-            pos = pos.Plus(towards_step).Minus(away_step);
+            pos = pos.plus(towards_step).minus(away_step);
 
             if (nr.Nudge)
             {
@@ -179,27 +182,22 @@ class Template
                // 100, so a displacement of 5 should be enough to separate things enough to avoid
                // stupid forces, while being nothing like as far as the nearest existing neighbours
                double angle = (rand.nextFloat() * (2 * Math.PI));
-               pos = pos.Plus(new XY(Math.sin(angle) * 5, Math.cos(angle) * 5));
+               pos = pos.plus(new XY(Math.sin(angle) * 5, Math.cos(angle) * 5));
             }
 
             INode n = template_to_graph.get(nr);
 
-            n.SetPos(pos);
+            n.setPos(pos);
          }
       }
 
-      if (Util.FindCrossingEdges(graph.AllGraphEdges()).size() > 0)
-      {
-         return false;
-      }
-
-      return true;
+      return Util.findCrossingEdges(graph.AllGraphEdges()).size() == 0;
    }
 
    private void ApplyConnections(INode node_replacing, HashMap<NodeRecord, INode> template_to_graph,
                          Graph graph)
    {
-      for(DirectedEdge e : node_replacing.GetConnections())
+      for(DirectedEdge e : node_replacing.getConnections())
       {
          graph.Disconnect(e.Start, e.End);
       }
@@ -210,7 +208,7 @@ class Template
          INode nf = template_to_graph.get(cr.From);
          INode nt = template_to_graph.get(cr.To);
 
-         DirectedEdge de = graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.Width);
+         DirectedEdge de = graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.HalfWidth);
          de.SetColour(cr.Colour);
       }
    }
@@ -220,6 +218,7 @@ class Template
       if (m_post_expand == null)
          return;
 
+      //noinspection Convert2streamapi
       for(NodeRecord nr : m_nodes.values())
       {
          // could have chance to modify existing (e.g. In/Out nodes?)
@@ -243,10 +242,12 @@ class Template
       final public String Codes;                // copied onto node
       final public double Radius;
       final public int Colour;
+      final public GeomLayout.IGeomLayoutCreateFromNode GeomCreator;
 
       NodeRecord(NodeType type, String name,
-                 boolean nudge, NodeRecord positionOn, NodeRecord positionTowards, NodeRecord positionAwayFrom,
-                 String codes, double radius, int colour)
+            boolean nudge, NodeRecord positionOn, NodeRecord positionTowards, NodeRecord positionAwayFrom,
+            String codes, double radius, int colour,
+            GeomLayout.IGeomLayoutCreateFromNode geomCreator)
       {
          Type = type;
          Name = name;
@@ -257,6 +258,7 @@ class Template
          Codes = codes;
          Radius = radius;
          Colour = colour;
+         GeomCreator = geomCreator;
       }
    }
 
@@ -266,19 +268,19 @@ class Template
       final public NodeRecord To;
       final public double MinLength;
       final public double MaxLength;
-      final public double Width;
+      final public double HalfWidth;
       final public int Colour;
 
       ConnectionRecord(NodeRecord from, NodeRecord to,
                        double min_length, double max_length,
-                       double width,
+                       double half_width,
             int colour)
       {
          From = from;
          To = to;
          MinLength = min_length;
          MaxLength = max_length;
-         Width = width;
+         HalfWidth = half_width;
          Colour = colour;
       }
    }

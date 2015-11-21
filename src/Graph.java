@@ -1,10 +1,17 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 class Graph
 {
    INode AddNode(String name, String codes, String template, double rad)
    {
-      Node n = new Node(name, codes, template, rad);
+      return AddNode(name, codes, template, CircularGeomLayout::createFromNode, rad);
+   }
+
+   INode AddNode(String name, String codes, String template,
+                 GeomLayout.IGeomLayoutCreateFromNode geomCreator, double rad)
+   {
+      Node n = new Node(name, codes, template, geomCreator, rad);
 
       if (m_restore != null)
       {
@@ -26,7 +33,7 @@ class Graph
       if (!Contains(inode))
          return false;
 
-      if (inode.GetConnections().size() > 0)
+      if (inode.getConnections().size() > 0)
          return false;
 
       Node node = (Node) inode;
@@ -47,18 +54,15 @@ class Graph
    }
 
    DirectedEdge Connect(INode from, INode to,
-         double min_length, double max_length, double width)
+         double min_length, double max_length, double half_width)
    {
       if (from == to
             || !Contains(from)
             || !Contains(to)
-            || from.Connects(to))
+            || from.connects(to))
          throw new UnsupportedOperationException();
 
-      Node n_from = (Node) from;
-      Node n_to = (Node) to;
-
-      DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, width);
+      DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, half_width);
 
       if (m_restore != null)
       {
@@ -72,7 +76,7 @@ class Graph
    {
       assert !m_edges.contains(e);
 
-      DirectedEdge real_edge = ((Node)e.Start).Connect((Node)e.End, e.MinLength, e.MaxLength, e.Width);
+      DirectedEdge real_edge = ((Node)e.Start).connect((Node)e.End, e.MinLength, e.MaxLength, e.HalfWidth);
 
       m_edges.add(real_edge);
 
@@ -84,7 +88,7 @@ class Graph
       if (!Contains(from) || !Contains(to))
          return false;
 
-      DirectedEdge e = from.GetConnectionTo(to);
+      DirectedEdge e = from.getConnectionTo(to);
 
       if (e == null)
          return false;
@@ -104,7 +108,7 @@ class Graph
       Node n_from = (Node)e.Start;
       Node n_to = (Node)e.End;
 
-      n_from.Disconnect(n_to);
+      n_from.disconnect(n_to);
 
       assert m_edges.contains(e);
       m_edges.remove(e);
@@ -127,7 +131,7 @@ class Graph
 
    ArrayList<INode> AllGraphNodes()
    {
-      return new ArrayList<INode>(m_nodes);
+      return new ArrayList<>(m_nodes);
    }
 
    IGraphRestore CreateRestorePoint()
@@ -145,16 +149,16 @@ class Graph
          return new Box();
 
       ArrayList<INode> nodes = AllGraphNodes();
-      XY min = nodes.get(0).GetPos();
-      XY max = nodes.get(0).GetPos();
+      XY min = nodes.get(0).getPos();
+      XY max = nodes.get(0).getPos();
 
       for (INode n : nodes)
       {
-         XY rad_box = new XY(n.GetRad(), n.GetRad());
+         XY rad_box = new XY(n.getRad(), n.getRad());
 
          // extend by node radius
-         min = min.Min(n.GetPos().Minus(rad_box));
-         max = max.Max(n.GetPos().Plus(rad_box));
+         min = min.min(n.getPos().minus(rad_box));
+         max = max.max(n.getPos().plus(rad_box));
       }
 
       return new Box(min, max);
@@ -171,7 +175,7 @@ class Graph
 
       for(INode n : m_nodes)
       {
-         ret += n.Print(0, true);
+         ret += n.print(0, true);
 
          ret += "\n";
       }
@@ -187,8 +191,8 @@ class Graph
 
    private final static class NodePos
    {
-      public XY Pos;
-      public INode N;
+      public final XY Pos;
+      public final INode N;
 
       NodePos(INode n, XY pos)
       {
@@ -214,10 +218,10 @@ class Graph
             m_chain_from_restore.m_chain_to_restore = this;
          }
 
-         for (INode n : Graph.this.AllGraphNodes())
-         {
-            m_positions.add(new NodePos(n, n.GetPos()));
-         }
+         m_positions.addAll(
+               Graph.this.AllGraphNodes()
+                     .stream()
+                     .map(n -> new NodePos(n, n.getPos())).collect(Collectors.toList()));
       }
 
       void AddNode(Node n)
@@ -293,23 +297,17 @@ class Graph
 
             if (me.getValue() == RestoreAction.Break)
             {
-               assert e.Start.Connects(e.End);
+               assert e.Start.connects(e.End);
 
                Graph.this.Disconnect_Inner(e);
             }
          }
 
          // which means we must be able to remove anything we added
-         for (Node n : m_nodes_added)
-         {
-            Graph.this.RemoveNode_Inner(n);
-         }
+         m_nodes_added.forEach(Graph.this::RemoveNode_Inner);
 
          // put back anything we removed
-         for (Node n : m_nodes_removed)
-         {
-            Graph.this.AddNode_Inner(n);
-         }
+         m_nodes_removed.forEach(Graph.this::AddNode_Inner);
 
          // which means we must be able to restore the original connections
          for (Map.Entry<DirectedEdge, RestoreAction> me : m_connections.entrySet())
@@ -318,7 +316,7 @@ class Graph
 
             if (me.getValue() == RestoreAction.Make)
             {
-               assert !e.Start.Connects(e.End);
+               assert !e.Start.connects(e.End);
 
                Graph.this.Connect_Inner(e);
             }
@@ -333,7 +331,7 @@ class Graph
          // and finally put all the positions back
          for (NodePos np : m_positions)
          {
-            np.N.SetPos(np.Pos);
+            np.N.setPos(np.Pos);
          }
 
          CleanUp();
@@ -362,14 +360,14 @@ class Graph
          return m_can_be_restored;
       }
 
-      private HashMap<DirectedEdge, RestoreAction> m_connections = new HashMap<>();
+      private final HashMap<DirectedEdge, RestoreAction> m_connections = new HashMap<>();
 
-      private ArrayList<NodePos> m_positions = new ArrayList<>();
+      private final ArrayList<NodePos> m_positions = new ArrayList<>();
 
-      private ArrayList<Node> m_nodes_added = new ArrayList<>();
-      private ArrayList<Node> m_nodes_removed = new ArrayList<>();
+      private final ArrayList<Node> m_nodes_added = new ArrayList<>();
+      private final ArrayList<Node> m_nodes_removed = new ArrayList<>();
 
-      GraphRestore m_chain_from_restore;
+      final GraphRestore m_chain_from_restore;
       GraphRestore m_chain_to_restore;
 
       // because we can only be used for a restored once...
@@ -390,11 +388,12 @@ class Graph
 
    boolean Contains(INode n)
    {
-      return m_nodes.contains(n);
+      //noinspection RedundantCast
+      return m_nodes.contains((Node)n);
    }
 
-   private HashSet<Node> m_nodes = new HashSet<>();
-   private HashSet<DirectedEdge> m_edges = new HashSet<>();
+   private final HashSet<Node> m_nodes = new HashSet<>();
+   private final HashSet<DirectedEdge> m_edges = new HashSet<>();
 
    private GraphRestore m_restore;
 }

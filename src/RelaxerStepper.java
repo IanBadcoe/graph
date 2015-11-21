@@ -1,18 +1,18 @@
 import java.util.ArrayList;
 
-class RelaxerStepper implements IExpandStepper
+class RelaxerStepper implements IStepper
 {
-   RelaxerStepper(Graph graph,
-                  double max_move,
-                  double force_target, double move_target)
+   RelaxerStepper(Graph graph, LevelGeneratorConfiguration c)
    {
       m_graph = graph;
+
+      m_config = c;
+   }
+
+   private void setUp()
+   {
       m_nodes = m_graph.AllGraphNodes();
       m_edges = m_graph.AllGraphEdges();
-      m_max_move = max_move;
-      m_force_target = force_target;
-      m_move_target = move_target;
-
       // these are shortest path lengths through the graph
       //
       // irrespective of node <-> node or node <-> edge forces, we don't want to be pushed further than this
@@ -22,24 +22,28 @@ class RelaxerStepper implements IExpandStepper
       // as we rely on edges stretching (in other cases) to tell ue when we need to
       // lengthen an edge (inserting a corner)
       m_node_dists = ShortestPathFinder.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
+
+      m_setup_done = true;
    }
 
    @Override
-   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
-      return RelaxStep(m_max_move, m_force_target, m_move_target);
+      if (!m_setup_done)
+      {
+         setUp();
+      }
+
+      return RelaxStep();
    }
 
    // step is scaled so that the max force we see causes a movement of max_move
    // until that means a step of > 1, then we start letting the system slow down :-)
-   private Expander.ExpandRetInner RelaxStep(double max_move, double force_target, double move_target)
+   private StepperController.ExpandRetInner RelaxStep()
    {
       double maxf = 0.0;
 
-      for(INode n : m_nodes)
-      {
-         n.ResetForce();
-      }
+      m_nodes.forEach(INode::resetForce);
 
       double max_edge_stretch = 1.0;
       double max_edge_squeeze = 1.0;
@@ -74,7 +78,7 @@ class RelaxerStepper implements IExpandStepper
             if (n == m)
                break;
 
-            if (!n.Connects(m))
+            if (!n.connects(m))
             {
                double fraction = AddNodeForces(n, m);
 
@@ -86,7 +90,7 @@ class RelaxerStepper implements IExpandStepper
 
       for(INode n : m_nodes)
       {
-         maxf = Math.max(n.GetForce(), maxf);
+         maxf = Math.max(n.getForce(), maxf);
       }
 
       boolean ended = true;
@@ -95,29 +99,29 @@ class RelaxerStepper implements IExpandStepper
 
       if (maxf > 0)
       {
-         step = Math.min(max_move / maxf, max_move);
+         step = Math.min(m_config.RelaxationMaxMove / maxf, m_config.RelaxationMaxMove);
 
          for (INode n : m_nodes)
          {
-            maxd = Math.max(n.Step(step), maxd);
+            maxd = Math.max(n.step(step), maxd);
          }
 
-         ended = maxd < move_target && maxf < force_target;
+         ended = maxd < m_config.RelaxationMoveTarget && maxf < m_config.RelaxationForceTarget;
       }
 
-      int crossings = Util.FindCrossingEdges(m_edges).size();
+      int crossings = Util.findCrossingEdges(m_edges).size();
 
       if (crossings > 0)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                null, "Generated crossing edges during relaxation.");
       } else if (ended)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                null, "Relaxed to still-point tolerances.");
       }
 
-      return new Expander.ExpandRetInner(Expander.ExpandStatus.Iterate,
+      return new StepperController.ExpandRetInner(StepperController.ExpandStatus.Iterate,
             null,
             " move:" + maxd +
             " time step:" + step +
@@ -137,28 +141,28 @@ class RelaxerStepper implements IExpandStepper
       INode nStart = e.Start;
       INode nEnd = e.End;
 
-      XY d = nEnd.GetPos().Minus(nStart.GetPos());
+      XY d = nEnd.getPos().minus(nStart.getPos());
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
-      if (d.IsZero())
+      if (d.isZero())
          return 1.0;
 
-      double l = d.Length();
-      d = d.Divide(l);
+      double l = d.length();
+      d = d.divide(l);
 
-      OrderedPair<Double, Double> fd = Util.UnitEdgeForce(l, dmin, dmax);
+      OrderedPair<Double, Double> fd = Util.unitEdgeForce(l, dmin, dmax);
 
       double ratio = fd.First;
-      double force = fd.Second * EDGE_FORCE_SCALE;
+      double force = fd.Second * m_config.EdgeLengthForceScale;
 
-      XY f = d.Multiply(force);
-      nStart.AddForce(f);
-      nEnd.AddForce(f.Negate());
+      XY f = d.multiply(force);
+      nStart.addForce(f);
+      nEnd.addForce(f.negate());
 
 /*      if (notes != null)
       {
-         notes.add(new Annotation(nStart.GetPos(), nEnd.GetPos(), 128, 128, 255,
+         notes.add(new Annotation(nStart.getPos(), nEnd.getPos(), 128, 128, 255,
                String.format("%6.4f\n%6.4f", force, ratio)));
       } */
 
@@ -168,33 +172,33 @@ class RelaxerStepper implements IExpandStepper
    // returns separation as a fraction of summed_radii
    private double AddNodeForces(INode node1, INode node2)
    {
-      XY d = node2.GetPos().Minus(node1.GetPos());
-      double adjusted_radius = Math.min(m_node_dists[node1.GetIdx()][node2.GetIdx()],
-            node1.GetRad() + node2.GetRad());
+      XY d = node2.getPos().minus(node1.getPos());
+      double adjusted_radius = Math.min(m_node_dists[node1.getIdx()][node2.getIdx()],
+            node1.getRad() + node2.getRad() + m_config.RelaxationMinimumSeparation);
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
-      if (d.IsZero())
+      if (d.isZero())
          return 0.0;
 
-      double l = d.Length();
-      d = d.Divide(l);
+      double l = d.length();
+      d = d.divide(l);
 
-      OrderedPair<Double, Double> fd = Util.UnitNodeForce(l, adjusted_radius);
+      OrderedPair<Double, Double> fd = Util.unitNodeForce(l, adjusted_radius);
 
       double ratio = fd.First;
 
       if (ratio != 0)
       {
-         double force = fd.Second * NODE_FORCE_SCALE;
+         double force = fd.Second * m_config.NodeToNodeForceScale;
 
-         XY f = d.Multiply(force);
-         node1.AddForce(f);
-         node2.AddForce(f.Negate());
+         XY f = d.multiply(force);
+         node1.addForce(f);
+         node2.addForce(f.negate());
 
 /*         if (notes != null)
          {
-            notes.add(new Annotation(node1.GetPos(), node2.GetPos(), 255, 128, 128,
+            notes.add(new Annotation(node1.getPos(), node2.getPos(), 255, 128, 128,
                   String.format("%6.4f\n%6.4f", force, 1 - ratio)));
          } */
       }
@@ -204,14 +208,14 @@ class RelaxerStepper implements IExpandStepper
 
    private double AddNodeEdgeForces(DirectedEdge e, INode n)
    {
-      Util.NEDRet vals = Util.NodeEdgeDist(n.GetPos(), e.Start.GetPos(), e.End.GetPos());
+      Util.NEDRet vals = Util.nodeEdgeDist(n.getPos(), e.Start.getPos(), e.End.getPos());
 
       if (vals == null)
          return 1.0;
 
-      double summed_radii = Math.min(m_node_dists[e.Start.GetIdx()][n.GetIdx()],
-            Math.min(m_node_dists[e.End.GetIdx()][n.GetIdx()],
-            n.GetRad() + e.Width));
+      double summed_radii = Math.min(m_node_dists[e.Start.getIdx()][n.getIdx()],
+            Math.min(m_node_dists[e.End.getIdx()][n.getIdx()],
+                  n.getRad() + e.HalfWidth) + m_config.RelaxationMinimumSeparation);
 
       if (vals.Dist > summed_radii)
       {
@@ -220,15 +224,15 @@ class RelaxerStepper implements IExpandStepper
 
       double ratio = vals.Dist / summed_radii;
 
-      double force = (ratio - 1) * EDGE_NODE_FORCE_SCALE;
+      double force = (ratio - 1) * m_config.EdgeToNodeForceScale;
 
-      XY f = vals.Direction.Multiply(force);
+      XY f = vals.Direction.multiply(force);
 
-      n.AddForce(f);
+      n.addForce(f);
       // the divide by two seems to be important, otherwise we can add "momentum" to the system and it can spin without ever converging
-      f = f.Negate().Divide(2);
-      e.Start.AddForce(f);
-      e.End.AddForce(f);
+      f = f.negate().divide(2);
+      e.Start.addForce(f);
+      e.End.addForce(f);
 
       return ratio;
    }
@@ -237,25 +241,20 @@ class RelaxerStepper implements IExpandStepper
    {
       for(INode nj : m_graph.AllGraphNodes())
       {
-         int j = nj.GetIdx();
+         int j = nj.getIdx();
          for(INode nk : m_graph.AllGraphNodes())
          {
-            int k = nk.GetIdx();
+            int k = nk.getIdx();
 
-            m_node_dists[j][k] = Math.min(nj.GetRad() + nk.GetRad(),
+            m_node_dists[j][k] = Math.min(nj.getRad() + nk.getRad(),
                   m_node_dists[j][k]);
          }
       }
    }
 
-   Graph m_graph;
-   ArrayList<INode> m_nodes;
-   ArrayList<DirectedEdge> m_edges;
-
-   final double m_max_move;
-
-   final double m_force_target;
-   final double m_move_target;
+   private final Graph m_graph;
+   private ArrayList<INode> m_nodes;
+   private ArrayList<DirectedEdge> m_edges;
 
    // whichever is smaller out of the summed-radii and the
    // shortest path through the graph between two nodes
@@ -263,9 +262,9 @@ class RelaxerStepper implements IExpandStepper
    // because otherwise a large node can force its second-closest
    // neighbour (and further) so far away that the edge gets split
    // and then the new second-closest neighbour is in the same position
-   double[][] m_node_dists;
+   private double[][] m_node_dists;
 
-   static final double EDGE_NODE_FORCE_SCALE = 1.0;
-   static final double EDGE_FORCE_SCALE = 0.01;
-   static final double NODE_FORCE_SCALE = 1.0;
+   private final LevelGeneratorConfiguration m_config;
+
+   private boolean m_setup_done = false;
 }

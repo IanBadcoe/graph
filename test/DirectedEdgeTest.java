@@ -2,9 +2,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Nobody on 10/21/2015.
- */
 public class DirectedEdgeTest
 {
    @Test
@@ -25,7 +22,6 @@ public class DirectedEdgeTest
          Node n1 = new Node("a", "1", "a1", 0);
          Node n2 = new Node("b", "2", "a2", 1);
          Node n3 = new Node("c", "3", "a3", 2);
-         Node n4 = new Node("d", "4", "a4", 3);
 
          DirectedEdge e1 = new DirectedEdge(n1, n2, 0, 0, 0);
          DirectedEdge e2 = new DirectedEdge(n1, n3, 0, 0, 0);
@@ -59,8 +55,10 @@ public class DirectedEdgeTest
       DirectedEdge e1 = new DirectedEdge(n1, n2, 0, 0, 0);
 
       // only the node identities affect edge identity
+      //noinspection ObjectEqualsNull
       assertFalse(e1.equals(null));
-      assertFalse(e1.equals(new Integer(1)));
+      //noinspection EqualsBetweenInconvertibleTypes
+      assertFalse(e1.equals(1));
       assertTrue(e1.equals(new DirectedEdge(n1, n2, 0, 0, 0)));
       assertTrue(e1.equals(new DirectedEdge(n1, n2, 1, 1, 1)));
       assertFalse(e1.equals(new DirectedEdge(n2, n1, 1, 1, 1)));
@@ -93,9 +91,9 @@ public class DirectedEdgeTest
       DirectedEdge e1 = new DirectedEdge(n1, n2, 0, 0, 0);
 
       assertEquals(0, e1.Length(), 0);
-      n1.SetPos(new XY(1, 0));
+      n1.setPos(new XY(1, 0));
       assertEquals(1, e1.Length(), 0);
-      n2.SetPos(new XY(0, 1));
+      n2.setPos(new XY(0, 1));
       assertEquals(Math.sqrt(2), e1.Length(), 0);
    }
 

@@ -12,7 +12,9 @@ class OrderedPair<T, U>
    @Override
    public int hashCode()
    {
-      return First.hashCode() * 31 ^ Second.hashCode();
+      int first_hash = First != null ? First.hashCode() * 31 : 0;
+      int second_hash = Second != null ? Second.hashCode() : 0;
+      return first_hash ^ second_hash;
    }
 
    @Override
@@ -24,5 +26,10 @@ class OrderedPair<T, U>
       OrderedPair op = (OrderedPair)o;
 
       return (First.equals(op.First) && Second.equals(op.Second));
+   }
+
+   public OrderedPair<U,T> swap()
+   {
+      return new OrderedPair<>(Second, First);
    }
 }

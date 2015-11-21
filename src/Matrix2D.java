@@ -1,9 +1,6 @@
-/**
- * Created by Nobody on 10/14/2015.
- */
 class Matrix2D
 {
-   final double M[][] = new double[2][2];
+   private final double[][] M = new double[2][2];
 
    Matrix2D(double angle)
    {

@@ -1,7 +1,5 @@
 import org.junit.Test;
 
-import java.util.Random;
-
 import static org.junit.Assert.*;
 
 public class ExpandToSizeStepperTest
@@ -16,9 +14,9 @@ public class ExpandToSizeStepperTest
 
       TemplateStore ts = new TemplateStore1();
 
-      Expander e = new Expander(g, new ExpandToSizeStepper(g, 1, ts, new Random(1)));
+      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 1, ts, new LevelGeneratorConfiguration(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       do
       {
@@ -26,10 +24,10 @@ public class ExpandToSizeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
    }
 
-   class SimpleAddNodeStepper implements IExpandStepper
+   class SimpleAddNodeStepper implements IStepper
    {
       SimpleAddNodeStepper(Graph g)
       {
@@ -37,15 +35,15 @@ public class ExpandToSizeStepperTest
       }
 
       @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
       {
          m_graph.AddNode("", "", "", 0);
 
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                null, "");
       }
 
-      Graph m_graph;
+      final Graph m_graph;
    }
 
    @Test
@@ -56,9 +54,9 @@ public class ExpandToSizeStepperTest
 
       Graph g = new Graph();
 
-      Expander e = new Expander(g, new ExpandToSizeStepper(g, 10, new TemplateStore1(), new Random(1)));
+      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       do
       {
@@ -66,7 +64,7 @@ public class ExpandToSizeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
       assertEquals(10, g.NumNodes());
    }
 
@@ -81,11 +79,13 @@ public class ExpandToSizeStepperTest
          // none of these parameters used in this case
          ExpandToSizeStepper etss = new ExpandToSizeStepper(null, 0, null, null);
 
-         etss.Step(Expander.ExpandStatus.Iterate);
+         etss.Step(StepperController.ExpandStatus.Iterate);
       }
       catch(UnsupportedOperationException uoe)
       {
          thrown = true;
       }
+
+      assertTrue(thrown);
    }
 }
