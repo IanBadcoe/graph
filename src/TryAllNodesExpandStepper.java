@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class TryAllNodesExpandStepper implements IStepper
@@ -8,17 +7,17 @@ public class TryAllNodesExpandStepper implements IStepper
    public interface IChildFactory
    {
       IStepper MakeChild(Graph g, INode n, Collection<Template> templates,
-                               Random r);
+                               LevelGeneratorConfiguration c);
    }
 
    TryAllNodesExpandStepper(Graph graph, TemplateStore templates,
-                            Random random)
+                            LevelGeneratorConfiguration c)
    {
       m_graph = graph;
       m_templates = templates;
       m_all_nodes = graph.AllGraphNodes().stream().filter(n -> n.getCodes().contains("e"))
             .collect(Collectors.toCollection(ArrayList::new));
-      m_random = random;
+      m_config = c;
    }
 
    @Override
@@ -38,7 +37,7 @@ public class TryAllNodesExpandStepper implements IStepper
                null, "All nodes failed to expand");
       }
 
-      INode node = Util.removeRandom(m_random, m_all_nodes);
+      INode node = Util.removeRandom(m_config.Rand, m_all_nodes);
 
       Collection<Template> templates = m_templates.GetTemplatesCopy();
 
@@ -50,7 +49,7 @@ public class TryAllNodesExpandStepper implements IStepper
                .collect(Collectors.toCollection(ArrayList::new));
 
       IStepper child = s_child_factory.MakeChild(
-            m_graph, node, templates, m_random);
+            m_graph, node, templates, m_config);
 
       //noinspection ConstantConditions
       return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
@@ -65,7 +64,7 @@ public class TryAllNodesExpandStepper implements IStepper
    private final Graph m_graph;
    private final TemplateStore m_templates;
    private final Collection<INode> m_all_nodes;
-   private final Random m_random;
+   private final LevelGeneratorConfiguration m_config;
 
    private static IChildFactory s_child_factory;
 }

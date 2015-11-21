@@ -1,7 +1,6 @@
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -9,7 +8,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
 {
    private final ArrayList<Template> m_templates = new ArrayList<>();
 
-   class FailStepperLoggingTemplates extends TestStepperController
+   class FailStepperLoggingTemplates extends TestStepper
    {
       FailStepperLoggingTemplates(Template template)
       {
@@ -38,7 +37,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
       TemplateStore ts = new TemplateStore1();
 
       StepperController e = new StepperController(g,
-            new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new Random(1)));
+            new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
 
       StepperController.ExpandRet ret;
 
@@ -64,7 +63,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
    public void testSuccess() throws Exception
    {
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new TestStepperController(true, null));
+            (a, b, c, d) -> new TestStepper(true, null));
 
       Graph g = new Graph();
 
@@ -73,7 +72,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
       TemplateStore ts = new TemplateStore1();
 
       StepperController e = new StepperController(g,
-            new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new Random(1)));
+            new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
 
       StepperController.ExpandRet ret;
 

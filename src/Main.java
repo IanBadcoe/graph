@@ -30,17 +30,9 @@ public class Main extends processing.core.PApplet
       ExpandToSizeStepper.SetChildFactory(
             TryAllNodesExpandStepper::new);
       EdgeAdjusterStepper.SetChildFactory(
-            a -> new RelaxerStepper(a,
-                  Configuration.RelaxationMaxMove,
-                  Configuration.RelaxationForceTarget,
-                  Configuration.RelaxationMoveTarget,
-                  Configuration.RelaxationMinimumSeparation));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetRelaxerFactory(
-            a -> new RelaxerStepper(a,
-                  Configuration.RelaxationMaxMove,
-                  Configuration.RelaxationForceTarget,
-                  Configuration.RelaxationMoveTarget,
-                  Configuration.RelaxationMinimumSeparation ));
+            RelaxerStepper::new);
       TryTemplateExpandStepper.SetAdjusterFactory(
             EdgeAdjusterStepper::new);
    }
@@ -50,17 +42,18 @@ public class Main extends processing.core.PApplet
    {
       ellipseMode(RADIUS);
 
+      m_expand_config = new LevelGeneratorConfiguration(85);
+
       m_graph = MakeSeed();
       m_expander = new StepperController(m_graph,
             new ExpandToSizeStepper(m_graph, m_reqSize, m_templates,
-                  new Random(85)));
+                  m_expand_config));
 
+      LevelGeneratorConfiguration temp = new LevelGeneratorConfiguration(m_expand_config);
+      temp.RelaxationForceTarget /= 5;
+      temp.RelaxationMoveTarget /= 5;
       m_final_relaxer = new StepperController(m_graph,
-            new RelaxerStepper(m_graph,
-               Configuration.RelaxationMaxMove,
-               Configuration.RelaxationForceTarget / 5,
-               Configuration.RelaxationMoveTarget / 5,
-               Configuration.RelaxationMinimumSeparation));
+            new RelaxerStepper(m_graph, temp));
    }
 
    @Override
@@ -423,4 +416,6 @@ public class Main extends processing.core.PApplet
    private Level m_level;
 
    private final Random m_union_random = new Random(1);
+
+   private LevelGeneratorConfiguration m_expand_config;
 }

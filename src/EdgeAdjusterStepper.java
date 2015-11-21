@@ -2,13 +2,14 @@ class EdgeAdjusterStepper implements IStepper
 {
    public interface IChildFactory
    {
-      IStepper MakeChild(Graph g);
+      IStepper MakeChild(Graph g, LevelGeneratorConfiguration c);
    }
 
-   EdgeAdjusterStepper(Graph graph, DirectedEdge edge)
+   EdgeAdjusterStepper(Graph graph, DirectedEdge edge, LevelGeneratorConfiguration c)
    {
       m_graph = graph;
       m_edge = edge;
+      m_config = c;
    }
 
    @Override
@@ -19,7 +20,7 @@ class EdgeAdjusterStepper implements IStepper
          case StepIn:
             SplitEdge();
 
-            IStepper child = m_child_factory.MakeChild(m_graph);
+            IStepper child = m_child_factory.MakeChild(m_graph, m_config);
 
             return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
                   child, "Relaxing split edge.");
@@ -65,6 +66,8 @@ class EdgeAdjusterStepper implements IStepper
 
    private final Graph m_graph;
    private final DirectedEdge m_edge;
+   private final LevelGeneratorConfiguration m_config;
+
 
    private static IChildFactory m_child_factory;
 }

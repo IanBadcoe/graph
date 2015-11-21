@@ -1,21 +1,28 @@
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class EdgeAdjusterStepperTest
 {
+   @Before
+   public void setUp() throws Exception
+   {
+      m_config = new LevelGeneratorConfiguration(1);
+   }
+
    @Test
    public void testStep_Fail() throws Exception
    {
       EdgeAdjusterStepper.SetChildFactory(
-            (a) -> new TestStepperController(false, null));
+            (a, b) -> new TestStepper(false, null));
 
       Graph g = new Graph();
       INode n1 = g.AddNode("", "", "", 0);
       INode n2 = g.AddNode("", "", "", 0);
       DirectedEdge de = g.Connect(n1, n2, 0, 0, 0);
 
-      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de));
+      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
 
       StepperController.ExpandRet ret;
 
@@ -32,14 +39,14 @@ public class EdgeAdjusterStepperTest
    public void testStep_Succeed() throws Exception
    {
       EdgeAdjusterStepper.SetChildFactory(
-            (a) -> new TestStepperController(true, null));
+            (a, b) -> new TestStepper(true, null));
 
       Graph g = new Graph();
       INode n1 = g.AddNode("", "", "", 0);
       INode n2 = g.AddNode("", "", "", 0);
       DirectedEdge de = g.Connect(n1, n2, 0, 0, 0);
 
-      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de));
+      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
 
       StepperController.ExpandRet ret;
 
@@ -71,7 +78,7 @@ public class EdgeAdjusterStepperTest
       try
       {
          // none of these parameters used in this case
-         EdgeAdjusterStepper etss = new EdgeAdjusterStepper(null, null);
+         EdgeAdjusterStepper etss = new EdgeAdjusterStepper(null, null, null);
 
          etss.Step(StepperController.ExpandStatus.Iterate);
       }
@@ -82,4 +89,6 @@ public class EdgeAdjusterStepperTest
 
       assertTrue(thrown);
    }
+
+   private LevelGeneratorConfiguration m_config;
 }

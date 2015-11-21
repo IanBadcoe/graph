@@ -1,24 +1,23 @@
 import java.util.ArrayList;
-import java.util.Random;
 
 class TryTemplateExpandStepper implements IStepper
 {
    interface IRelaxerFactory
    {
-      IStepper MakeRelaxer(Graph g);
+      IStepper MakeRelaxer(Graph g, LevelGeneratorConfiguration c);
    }
 
    interface IAdjusterFactory
    {
-      IStepper MakeAdjuster(Graph graph, DirectedEdge edge);
+      IStepper MakeAdjuster(Graph graph, DirectedEdge edge, LevelGeneratorConfiguration c);
    }
 
-   TryTemplateExpandStepper(Graph graph, INode node, Template template, Random random)
+   TryTemplateExpandStepper(Graph graph, INode node, Template template, LevelGeneratorConfiguration c)
    {
       m_graph = graph;
       m_node = node;
       m_template = template;
-      m_random = random;
+      m_config = c;
 
       m_phase = Phase.ExpandRelax;
    }
@@ -28,9 +27,9 @@ class TryTemplateExpandStepper implements IStepper
    {
       if (status == StepperController.ExpandStatus.StepIn)
       {
-         if (m_template.Expand(m_graph, m_node, m_random))
+         if (m_template.Expand(m_graph, m_node, m_config.Rand))
          {
-            IStepper child = m_relaxer_factory.MakeRelaxer(m_graph);
+            IStepper child = m_relaxer_factory.MakeRelaxer(m_graph, m_config);
 
             return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
                   child, "Relaxing successful expansion.");
@@ -113,7 +112,7 @@ class TryTemplateExpandStepper implements IStepper
          return null;
       }
 
-      IStepper child = m_adjuster_factory.MakeAdjuster(m_graph, e);
+      IStepper child = m_adjuster_factory.MakeAdjuster(m_graph, e, m_config);
 
       return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
             child, "Adjusting an edge.");
@@ -158,7 +157,7 @@ class TryTemplateExpandStepper implements IStepper
    private final Graph m_graph;
    private final INode m_node;
    private final Template m_template;
-   private final Random m_random;
+   private final LevelGeneratorConfiguration m_config;
 
    private Phase m_phase;
 

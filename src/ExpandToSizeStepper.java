@@ -1,20 +1,18 @@
-import java.util.Random;
-
 class ExpandToSizeStepper implements IStepper
 {
    public interface IChildFactory
    {
-      IStepper MakeChild(Graph g, TemplateStore ts, Random r);
+      IStepper MakeChild(Graph g, TemplateStore ts, LevelGeneratorConfiguration c);
    }
 
    ExpandToSizeStepper(Graph graph, int required_size, TemplateStore templates,
-         Random random)
+         LevelGeneratorConfiguration c)
    {
       m_graph = graph;
       m_orig_size = m_graph == null ? 0 : m_graph.NumNodes();
       m_required_size = required_size;
       m_templates = templates;
-      m_random = random;
+      m_config = c;
    }
 
    @Override
@@ -30,7 +28,7 @@ class ExpandToSizeStepper implements IStepper
                      null, "Target size reached");
             }
 
-            IStepper child = m_child_factory.MakeChild(m_graph, m_templates, m_random);
+            IStepper child = m_child_factory.MakeChild(m_graph, m_templates, m_config);
 
             return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
                   child, "More expansion required.");
@@ -57,7 +55,7 @@ class ExpandToSizeStepper implements IStepper
    private final Graph m_graph;
    private final int m_required_size;
    private final TemplateStore m_templates;
-   private final Random m_random;
+   private final LevelGeneratorConfiguration m_config;
    private final int m_orig_size;
 
    private static IChildFactory m_child_factory;

@@ -2,16 +2,11 @@ import java.util.ArrayList;
 
 class RelaxerStepper implements IStepper
 {
-   RelaxerStepper(Graph graph, double max_move,
-                  double force_target, double move_target,
-                  double minimum_separation)
+   RelaxerStepper(Graph graph, LevelGeneratorConfiguration c)
    {
       m_graph = graph;
 
-      m_max_move = max_move;
-      m_force_target = force_target;
-      m_move_target = move_target;
-      m_minimum_separation = minimum_separation;
+      m_config = c;
    }
 
    private void setUp()
@@ -28,13 +23,13 @@ class RelaxerStepper implements IStepper
       // lengthen an edge (inserting a corner)
       m_node_dists = ShortestPathFinder.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
 
-      m_step_up_done = true;
+      m_setup_done = true;
    }
 
    @Override
    public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
-      if (!m_step_up_done)
+      if (!m_setup_done)
       {
          setUp();
       }
@@ -104,14 +99,14 @@ class RelaxerStepper implements IStepper
 
       if (maxf > 0)
       {
-         step = Math.min(m_max_move / maxf, m_max_move);
+         step = Math.min(m_config.RelaxationMaxMove / maxf, m_config.RelaxationMaxMove);
 
          for (INode n : m_nodes)
          {
             maxd = Math.max(n.step(step), maxd);
          }
 
-         ended = maxd < m_move_target && maxf < m_force_target;
+         ended = maxd < m_config.RelaxationMoveTarget && maxf < m_config.RelaxationForceTarget;
       }
 
       int crossings = Util.findCrossingEdges(m_edges).size();
@@ -159,7 +154,7 @@ class RelaxerStepper implements IStepper
       OrderedPair<Double, Double> fd = Util.unitEdgeForce(l, dmin, dmax);
 
       double ratio = fd.First;
-      double force = fd.Second * Configuration.EdgeLengthForceScale;
+      double force = fd.Second * m_config.EdgeLengthForceScale;
 
       XY f = d.multiply(force);
       nStart.addForce(f);
@@ -179,7 +174,7 @@ class RelaxerStepper implements IStepper
    {
       XY d = node2.getPos().minus(node1.getPos());
       double adjusted_radius = Math.min(m_node_dists[node1.getIdx()][node2.getIdx()],
-            node1.getRad() + node2.getRad() + m_minimum_separation);
+            node1.getRad() + node2.getRad() + m_config.RelaxationMinimumSeparation);
 
       // in this case can just ignore these as we hope (i) won't happen and (ii) there will be other non-zero
       // forces to pull them apart
@@ -195,7 +190,7 @@ class RelaxerStepper implements IStepper
 
       if (ratio != 0)
       {
-         double force = fd.Second * Configuration.NodeToNodeForceScale;
+         double force = fd.Second * m_config.NodeToNodeForceScale;
 
          XY f = d.multiply(force);
          node1.addForce(f);
@@ -220,7 +215,7 @@ class RelaxerStepper implements IStepper
 
       double summed_radii = Math.min(m_node_dists[e.Start.getIdx()][n.getIdx()],
             Math.min(m_node_dists[e.End.getIdx()][n.getIdx()],
-                  n.getRad() + e.HalfWidth) + m_minimum_separation);
+                  n.getRad() + e.HalfWidth) + m_config.RelaxationMinimumSeparation);
 
       if (vals.Dist > summed_radii)
       {
@@ -229,7 +224,7 @@ class RelaxerStepper implements IStepper
 
       double ratio = vals.Dist / summed_radii;
 
-      double force = (ratio - 1) * Configuration.EdgeToNodeForceScale;
+      double force = (ratio - 1) * m_config.EdgeToNodeForceScale;
 
       XY f = vals.Direction.multiply(force);
 
@@ -269,10 +264,7 @@ class RelaxerStepper implements IStepper
    // and then the new second-closest neighbour is in the same position
    private double[][] m_node_dists;
 
-   private final double m_max_move;
-   private final double m_force_target;
-   private final double m_move_target;
-   private final double m_minimum_separation;
+   private final LevelGeneratorConfiguration m_config;
 
-   private boolean m_step_up_done = false;
+   private boolean m_setup_done = false;
 }

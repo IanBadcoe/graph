@@ -1,21 +1,19 @@
 import java.util.Collection;
-import java.util.Random;
 
 class TryAllTemplatesOnOneNodeStepper implements IStepper
 {
    public interface IChildFactory
    {
-      IStepper MakeChild(Graph g, INode n, Template y, Random r);
+      IStepper MakeChild(Graph g, INode n, Template t, LevelGeneratorConfiguration c);
    }
 
    TryAllTemplatesOnOneNodeStepper(Graph graph, INode node, Collection<Template> templates,
-         Random random)
+         LevelGeneratorConfiguration c)
    {
       m_graph = graph;
       m_node = node;
       m_templates = templates;
-      m_random = random;
-
+      m_config = c;
    }
 
    @Override
@@ -35,10 +33,10 @@ class TryAllTemplatesOnOneNodeStepper implements IStepper
                null, "Node: " + m_node.getName() + " failed to expand");
       }
 
-      Template t = Util.removeRandom(m_random, m_templates);
+      Template t = Util.removeRandom(m_config.Rand, m_templates);
 
       IStepper child = s_child_factory.MakeChild(
-            m_graph, m_node, t, m_random);
+            m_graph, m_node, t, m_config);
 
       //noinspection ConstantConditions
       return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
@@ -53,7 +51,7 @@ class TryAllTemplatesOnOneNodeStepper implements IStepper
    private final Graph m_graph;
    private final INode m_node;
    private final Collection<Template> m_templates;
-   private final Random m_random;
+   private final LevelGeneratorConfiguration m_config;
 
    private static IChildFactory s_child_factory;
 

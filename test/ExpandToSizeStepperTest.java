@@ -1,7 +1,5 @@
 import org.junit.Test;
 
-import java.util.Random;
-
 import static org.junit.Assert.*;
 
 public class ExpandToSizeStepperTest
@@ -10,13 +8,13 @@ public class ExpandToSizeStepperTest
    public void testAllTemplatesFail() throws Exception
    {
       ExpandToSizeStepper.SetChildFactory(
-            (a, b, c) -> new TestStepperController(false, null));
+            (a, b, c) -> new TestStepper(false, null));
 
       Graph g = new Graph();
 
       TemplateStore ts = new TemplateStore1();
 
-      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 1, ts, new Random(1)));
+      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 1, ts, new LevelGeneratorConfiguration(1)));
 
       StepperController.ExpandRet ret;
 
@@ -56,7 +54,7 @@ public class ExpandToSizeStepperTest
 
       Graph g = new Graph();
 
-      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 10, new TemplateStore1(), new Random(1)));
+      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
 
       StepperController.ExpandRet ret;
 

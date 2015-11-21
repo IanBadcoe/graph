@@ -1,6 +1,6 @@
-class TestStepperController implements IStepper
+class TestStepper implements IStepper
 {
-   TestStepperController(boolean succeed, Runnable action)
+   TestStepper(boolean succeed, Runnable action)
    {
       m_succeed = succeed;
       m_action = action;
