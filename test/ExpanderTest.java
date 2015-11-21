@@ -13,7 +13,7 @@ public class ExpanderTest
       }
 
       @Override
-      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+      public StepperController.StatusReportInner step(StepperController.Status status)
       {
          switch (status)
          {
@@ -21,22 +21,22 @@ public class ExpanderTest
             case Iterate:
                if (m_iter_count < m_iterate)
                {
-                  return new StepperController.ExpandRetInner(StepperController.ExpandStatus.Iterate,
+                  return new StepperController.StatusReportInner(StepperController.Status.Iterate,
                         null, "iterate: " + m_iter_count++);
                }
                else if (m_depth > 0)
                {
-                  return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+                  return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                         new StepDepthStepper(m_depth - 1, m_iterate), "in: " + m_depth);
                }
                else
                {
-                  return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+                  return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                         null, "out: " + m_depth);
                }
 
             case StepOutSuccess:
-               return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+               return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                      null, "out: " + m_depth);
          }
 
@@ -57,11 +57,11 @@ public class ExpanderTest
          StepperController e = new StepperController(null,
                new StepDepthStepper(0, 0));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          assertEquals("out: 0", ret.Log);
          assertTrue(ret.Complete);
 
@@ -82,23 +82,23 @@ public class ExpanderTest
          StepperController e = new StepperController(null,
                new StepDepthStepper(1, 0));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepIn, ret.Status);
+         assertEquals(StepperController.Status.StepIn, ret.Status);
          assertEquals("in: 1", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          assertEquals("out: 0", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          assertEquals("out: 1", ret.Log);
          assertTrue(ret.Complete);
 
@@ -119,29 +119,29 @@ public class ExpanderTest
          StepperController e = new StepperController(null,
                new StepDepthStepper(0, 3));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 0", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 1", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 2", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          assertEquals("out: 0", ret.Log);
          assertTrue(ret.Complete);
 
@@ -162,71 +162,71 @@ public class ExpanderTest
          StepperController e = new StepperController(null,
                new StepDepthStepper(2, 2));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 0", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 1", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepIn, ret.Status);
+         assertEquals(StepperController.Status.StepIn, ret.Status);
          assertEquals("in: 2", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 0", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 1", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepIn, ret.Status);
+         assertEquals(StepperController.Status.StepIn, ret.Status);
          assertEquals("in: 1", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 0", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.Iterate, ret.Status);
+         assertEquals(StepperController.Status.Iterate, ret.Status);
          assertEquals("iterate: 1", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          assertEquals("out: 0", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          assertEquals("out: 1", ret.Log);
          assertFalse(ret.Complete);
 
          ret = e.Step();
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          assertEquals("out: 2", ret.Log);
          assertTrue(ret.Complete);
 
@@ -254,15 +254,15 @@ public class ExpanderTest
       }
 
       @Override
-      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+      public StepperController.StatusReportInner step(StepperController.Status status)
       {
-         if (status == StepperController.ExpandStatus.StepIn)
+         if (status == StepperController.Status.StepIn)
          {
             m_graph.AddNode("n" + m_depth, "", "", 0);
 
             if (m_depth > 0)
             {
-               return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+               return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                      new StepFailStepper(m_graph, m_depth - 1, m_fail_depth),
                      "");
             }
@@ -270,12 +270,12 @@ public class ExpanderTest
 
          if (m_depth == m_fail_depth)
          {
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                   null, "");
          }
          else
          {
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                   null, "");
          }
       }
@@ -294,7 +294,7 @@ public class ExpanderTest
          StepperController e = new StepperController(g,
                new StepFailStepper(g, 3, 3));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          do
          {
@@ -302,7 +302,7 @@ public class ExpanderTest
          }
          while (!ret.Complete);
 
-         assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+         assertEquals(StepperController.Status.StepOutFailure, ret.Status);
          // we failed at outer stepper-level, so whole graph should have been restored
          assertEquals(g.NumNodes(), 0);
 
@@ -325,7 +325,7 @@ public class ExpanderTest
          StepperController e = new StepperController(g,
                new StepFailStepper(g, 3, 2));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          do
          {
@@ -334,7 +334,7 @@ public class ExpanderTest
          while (!ret.Complete);
 
          // outer stepper succeeded
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // we failed one stepper-level down, so one node should still he here
          assertEquals(g.NumNodes(), 1);
 
@@ -357,7 +357,7 @@ public class ExpanderTest
          StepperController e = new StepperController(g,
                new StepFailStepper(g, 3, 1));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          do
          {
@@ -366,7 +366,7 @@ public class ExpanderTest
          while (!ret.Complete);
 
          // outer stepper succeeded
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // we failed two stepper-levels down, so two nodes should still he here
          assertEquals(g.NumNodes(), 2);
 
@@ -389,7 +389,7 @@ public class ExpanderTest
          StepperController e = new StepperController(g,
                new StepFailStepper(g, 3, 0));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          do
          {
@@ -398,7 +398,7 @@ public class ExpanderTest
          while (!ret.Complete);
 
          // outer stepper succeeded
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // we failed three stepper-levels down, so three nodes should still he here
          assertEquals(g.NumNodes(), 3);
 
@@ -421,7 +421,7 @@ public class ExpanderTest
          StepperController e = new StepperController(g,
                new StepFailStepper(g, 3, -1));
 
-         StepperController.ExpandRet ret;
+         StepperController.StatusReport ret;
 
          do
          {
@@ -430,7 +430,7 @@ public class ExpanderTest
          while (!ret.Complete);
 
          // outer stepper succeeded
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // did not fail, so all four nodes should still he here
          assertEquals(g.NumNodes(), 4);
 

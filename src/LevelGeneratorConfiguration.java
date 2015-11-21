@@ -57,4 +57,14 @@ class LevelGeneratorConfiguration
 
    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    // --------------------------------------------------------------------------------------------------------------
+
+   // --------------------------------------------------------------------------------------------------------------
+   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+   // steps to turn at once during expansion or final relaxation
+   // (just makes fewer calls to LevelGenerator.step as relaxation takes thousands of steps to complete)
+
+   public int ExpandStepsToRun = 1000;
+
+   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   // --------------------------------------------------------------------------------------------------------------
 }

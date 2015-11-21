@@ -2,7 +2,7 @@ import java.util.Stack;
 
 public class StepperController
 {
-   enum ExpandStatus
+   enum Status
    {
       Iterate,          // current stepper requires more steps
       StepIn,           // move down into a child stepper
@@ -10,13 +10,13 @@ public class StepperController
       StepOutFailure    // current stepper failed, revert graph and move back to parent
    }
 
-   static class ExpandRetInner
+   static class StatusReportInner
    {
-      final ExpandStatus Status;
+      final StepperController.Status Status;
       final IStepper ChildStepper;
       final String Log;
 
-      ExpandRetInner(ExpandStatus status,
+      StatusReportInner(StepperController.Status status,
                 IStepper childStepper,
                 String log)
       {
@@ -26,17 +26,27 @@ public class StepperController
       }
    }
 
-   static class ExpandRet
+   static class StatusReport
    {
-      final ExpandStatus Status;
+      final StepperController.Status Status;
       final String Log;
       final boolean Complete;
 
-      ExpandRet(ExpandRetInner eri,
+      StatusReport(StatusReportInner eri,
                 boolean complete)
       {
          Status = eri.Status;
          Log = eri.Log;
+
+         Complete = complete;
+      }
+
+      StatusReport(StepperController.Status status,
+            String log,
+            boolean complete)
+      {
+         Status = status;
+         Log = log;
 
          Complete = complete;
       }
@@ -47,17 +57,17 @@ public class StepperController
       m_graph = graph;
       PushStepper(initial_stepper);
       // we start with a (conceptual) step in from the invoking code
-      m_last_step_status = ExpandStatus.StepIn;
+      m_last_step_status = Status.StepIn;
    }
 
-   ExpandRet Step()
+   StatusReport Step()
    {
       IStepper stepper = CurrentStepper();
 
       if (stepper == null)
          throw new NullPointerException("Attempt to step without an initial stepper.  Either you failed to supply one, or this StepperController has completed.");
 
-      ExpandRetInner eri = stepper.Step(m_last_step_status);
+      StatusReportInner eri = stepper.step(m_last_step_status);
 
       m_last_step_status = eri.Status;
 
@@ -76,7 +86,7 @@ public class StepperController
             break;
       }
 
-      return new ExpandRet(eri, CurrentStepper() == null);
+      return new StatusReport(eri, CurrentStepper() == null);
    }
 
    private void PushStepper(IStepper stepper)
@@ -106,5 +116,5 @@ public class StepperController
    private final Stack<OrderedPair<IStepper, IGraphRestore>>
          m_stack = new Stack<>();
    private final Graph m_graph;
-   private ExpandStatus m_last_step_status;
+   private Status m_last_step_status;
 }

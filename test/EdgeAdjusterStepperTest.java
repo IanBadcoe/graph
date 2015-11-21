@@ -24,7 +24,7 @@ public class EdgeAdjusterStepperTest
 
       StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       do
       {
@@ -32,7 +32,7 @@ public class EdgeAdjusterStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
    }
 
    @Test
@@ -48,7 +48,7 @@ public class EdgeAdjusterStepperTest
 
       StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       do
       {
@@ -56,7 +56,7 @@ public class EdgeAdjusterStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(3, g.NumNodes());
       assertFalse(n1.connects(n2));
       assertEquals(0, n1.getInConnections().size());
@@ -80,7 +80,7 @@ public class EdgeAdjusterStepperTest
          // none of these parameters used in this case
          EdgeAdjusterStepper etss = new EdgeAdjusterStepper(null, null, null);
 
-         etss.Step(StepperController.ExpandStatus.Iterate);
+         etss.step(StepperController.Status.Iterate);
       }
       catch(UnsupportedOperationException uoe)
       {

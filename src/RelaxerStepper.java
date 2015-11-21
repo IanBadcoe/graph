@@ -27,7 +27,7 @@ class RelaxerStepper implements IStepper
    }
 
    @Override
-   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+   public StepperController.StatusReportInner step(StepperController.Status status)
    {
       if (!m_setup_done)
       {
@@ -39,7 +39,7 @@ class RelaxerStepper implements IStepper
 
    // step is scaled so that the max force we see causes a movement of max_move
    // until that means a step of > 1, then we start letting the system slow down :-)
-   private StepperController.ExpandRetInner RelaxStep()
+   private StepperController.StatusReportInner RelaxStep()
    {
       double maxf = 0.0;
 
@@ -113,15 +113,15 @@ class RelaxerStepper implements IStepper
 
       if (crossings > 0)
       {
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                null, "Generated crossing edges during relaxation.");
       } else if (ended)
       {
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                null, "Relaxed to still-point tolerances.");
       }
 
-      return new StepperController.ExpandRetInner(StepperController.ExpandStatus.Iterate,
+      return new StepperController.StatusReportInner(StepperController.Status.Iterate,
             null,
             " move:" + maxd +
             " time step:" + step +

@@ -41,18 +41,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // with a possible triangle and no other constraints
       // should get all lengths within a small tolerance of the target
@@ -103,18 +103,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // should arrive at a compromise, close to linear with
       // n1 -> n2 a bit compressed and the other two edges stretched
@@ -146,18 +146,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // should take a single cycle to see that nothing needs to move
       assertEquals(1, count);
@@ -180,18 +180,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // shouldn't take many cycle to bring them close to the target separation
       assertTrue(count < 100);
@@ -222,18 +222,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // should take a single cycle to see that nothing needs to move
       assertEquals(1, count);
@@ -268,18 +268,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // shouldn't take long to push the edges apart
       assertTrue(count < 50);
@@ -312,18 +312,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // takes a little time to push the edge and node apart
       assertTrue(count < 120);
@@ -357,17 +357,17 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
 
       // should detect immediately
       assertTrue(count == 1);
@@ -400,17 +400,17 @@ public class RelaxerStepperTest
          // run it to a tighter convergence than usual
          RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-         StepperController.ExpandRetInner ret;
+         StepperController.StatusReportInner ret;
          int count = 0;
          do
          {
             count++;
             // RelaxerStepper doesn't use previous status
-            ret = rs.Step(StepperController.ExpandStatus.Iterate);
+            ret = rs.step(StepperController.Status.Iterate);
          }
-         while(ret.Status == StepperController.ExpandStatus.Iterate);
+         while(ret.Status == StepperController.Status.Iterate);
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
          // rather a lot?
          assertTrue(count < 50000);
@@ -438,17 +438,17 @@ public class RelaxerStepperTest
          // run it to a tighter convergence than usual
          RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-         StepperController.ExpandRetInner ret;
+         StepperController.StatusReportInner ret;
          int count = 0;
          do
          {
             count++;
             // RelaxerStepper doesn't use previous status
-            ret = rs.Step(StepperController.ExpandStatus.Iterate);
+            ret = rs.step(StepperController.Status.Iterate);
          }
-         while(ret.Status == StepperController.ExpandStatus.Iterate);
+         while(ret.Status == StepperController.Status.Iterate);
 
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
          // rather a lot?
          assertTrue(count < 10000);
@@ -476,18 +476,18 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // should be already relaxed
       assertEquals(1, count);
@@ -523,21 +523,21 @@ public class RelaxerStepperTest
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-      StepperController.ExpandRetInner ret;
+      StepperController.StatusReportInner ret;
       int count = 0;
       do
       {
          count++;
          // RelaxerStepper doesn't use previous status
-         ret = rs.Step(StepperController.ExpandStatus.Iterate);
+         ret = rs.step(StepperController.Status.Iterate);
       }
-      while(ret.Status == StepperController.ExpandStatus.Iterate);
+      while(ret.Status == StepperController.Status.Iterate);
 
       // should be already relaxed
       assertTrue(count < 3000);
 
       // simple case should succeed
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
       // all edges should be able to reach ~2 even if that violates the radius of n1
       DirectedEdge e12 = n1.getConnectionTo(n2);
@@ -570,18 +570,18 @@ public class RelaxerStepperTest
          m_config.RelaxationMinimumSeparation = 1;
          RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-         StepperController.ExpandRetInner ret;
+         StepperController.StatusReportInner ret;
          int count = 0;
          do
          {
             count++;
             // RelaxerStepper doesn't use previous status
-            ret = rs.Step(StepperController.ExpandStatus.Iterate);
+            ret = rs.step(StepperController.Status.Iterate);
          }
-         while(ret.Status == StepperController.ExpandStatus.Iterate);
+         while(ret.Status == StepperController.Status.Iterate);
 
          // simple case should succeed
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
          // shouldn't take many cycle to bring them close to the target separation
          assertTrue(count < 100);
@@ -611,18 +611,18 @@ public class RelaxerStepperTest
          m_config.RelaxationMinimumSeparation = 1;
          RelaxerStepper rs = new RelaxerStepper(g, m_config);
 
-         StepperController.ExpandRetInner ret;
+         StepperController.StatusReportInner ret;
          int count = 0;
          do
          {
             count++;
             // RelaxerStepper doesn't use previous status
-            ret = rs.Step(StepperController.ExpandStatus.Iterate);
+            ret = rs.step(StepperController.Status.Iterate);
          }
-         while(ret.Status == StepperController.ExpandStatus.Iterate);
+         while(ret.Status == StepperController.Status.Iterate);
 
          // simple case should succeed
-         assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
 
          // takes a little time to push the edge and node apart
          assertTrue(count < 130);

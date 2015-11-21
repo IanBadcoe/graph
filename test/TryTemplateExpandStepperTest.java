@@ -18,7 +18,7 @@ public class TryTemplateExpandStepperTest
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n1, tb.Build(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       do
       {
@@ -26,7 +26,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
    }
 
    private int m_fail_count = 0;
@@ -52,7 +52,7 @@ public class TryTemplateExpandStepperTest
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_fail_count = 0;
 
@@ -62,7 +62,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
       assertEquals(1, m_fail_count);
    }
 
@@ -95,7 +95,7 @@ public class TryTemplateExpandStepperTest
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -106,7 +106,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
       assertEquals(1, m_success_count);
       assertEquals(1, m_fail_count);
    }
@@ -119,13 +119,13 @@ public class TryTemplateExpandStepperTest
       }
 
       @Override
-      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+      public StepperController.StatusReportInner step(StepperController.Status status)
       {
          m_e.Start.setPos(new XY(5, 0));
 
          m_success_count++;
 
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                null, "");
       }
 
@@ -163,7 +163,7 @@ public class TryTemplateExpandStepperTest
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -174,7 +174,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(2, m_success_count);
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
@@ -216,7 +216,7 @@ public class TryTemplateExpandStepperTest
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -227,7 +227,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(3, m_success_count);
       // we should have replaced n2
       assertEquals(3, g.NumNodes());
@@ -264,7 +264,7 @@ public class TryTemplateExpandStepperTest
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -275,7 +275,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(1, m_success_count);
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
@@ -324,7 +324,7 @@ public class TryTemplateExpandStepperTest
       {
          // should be looking for return value from edge-relaxer now
          // give it the one value it can never expect...
-         tes.Step(StepperController.ExpandStatus.Iterate);
+         tes.step(StepperController.Status.Iterate);
       }
       catch (UnsupportedOperationException uoe)
       {
@@ -374,7 +374,7 @@ public class TryTemplateExpandStepperTest
       {
          // should be looking for return value from edge-adjuster now
          // give it the one value it can never expect...
-         tes.Step(StepperController.ExpandStatus.Iterate);
+         tes.step(StepperController.Status.Iterate);
       }
       catch (UnsupportedOperationException uoe)
       {

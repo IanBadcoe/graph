@@ -7,7 +7,7 @@ class TestStepper implements IStepper
    }
 
    @Override
-   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+   public StepperController.StatusReportInner step(StepperController.Status status)
    {
       if (m_action != null)
       {
@@ -16,12 +16,12 @@ class TestStepper implements IStepper
 
       if (m_succeed)
       {
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                null, "");
       }
       else
       {
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                null, "");
       }
    }

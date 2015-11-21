@@ -16,7 +16,7 @@ class ExpandToSizeStepper implements IStepper
    }
 
    @Override
-   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+   public StepperController.StatusReportInner step(StepperController.Status status)
    {
       switch (status)
       {
@@ -24,23 +24,23 @@ class ExpandToSizeStepper implements IStepper
          case StepOutSuccess:
             if (m_graph.NumNodes() >= m_required_size)
             {
-               return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+               return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                      null, "Target size reached");
             }
 
             IStepper child = m_child_factory.MakeChild(m_graph, m_templates, m_config);
 
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+            return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                   child, "More expansion required.");
 
          case StepOutFailure:
             if (m_graph.NumNodes() > m_orig_size)
             {
-               return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+               return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                      null, "Partial success");
             }
 
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                   null, "Failed.");
       }
 

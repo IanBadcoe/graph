@@ -33,6 +33,7 @@ class Level
 
       for(DirectedEdge de : m_graph.AllGraphEdges())
       {
+         // TODO : store this on the edge to allow corridor geometry options
          GeomLayout gl = new RectangularGeomLayout(de.Start.getPos(), de.End.getPos(), de.HalfWidth);
          m_base_loops.add(gl.makeBaseGeometry());
       }
@@ -48,7 +49,7 @@ class Level
 
          assert m_level != null;
 
-         return true;
+         return false;
       }
 
       if (m_detail_loop_sets.size() > 0)
@@ -59,10 +60,10 @@ class Level
 
          assert m_level != null;
 
-         return true;
+         return false;
       }
 
-      return false;
+      return true;
    }
 
    public void visualise(Random m_union_random)
@@ -78,7 +79,6 @@ class Level
       return Collections.unmodifiableCollection(m_base_loops);
    }
 
-
    public Collection<LoopSet> getDetailLoopSets()
    {
       return Collections.unmodifiableCollection(m_detail_loop_sets);
@@ -89,6 +89,11 @@ class Level
       return m_level;
    }
 
+   public void finalise()
+   {
+
+   }
+
    private final Graph m_graph;
 
    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -97,5 +102,4 @@ class Level
    private final ArrayList<LoopSet> m_detail_loop_sets = new ArrayList<>();
 
    private LoopSet m_level = new LoopSet();
-
 }

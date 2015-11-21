@@ -17,9 +17,9 @@ public class TryAllTemplatesOnOneNodeStepperTest
       }
 
       @Override
-      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+      public StepperController.StatusReportInner step(StepperController.Status status)
       {
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                null, "");
       }
    }
@@ -39,7 +39,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
       StepperController e = new StepperController(g,
             new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_templates.clear();
 
@@ -49,7 +49,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
 
       assertEquals(ts.NumTemplates(), m_templates.size());
 
@@ -74,7 +74,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
       StepperController e = new StepperController(g,
             new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_templates.clear();
 
@@ -84,6 +84,6 @@ public class TryAllTemplatesOnOneNodeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
    }
 }

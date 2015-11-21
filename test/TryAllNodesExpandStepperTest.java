@@ -34,7 +34,7 @@ public class TryAllNodesExpandStepperTest
       StepperController e = new StepperController(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_nodes.clear();
 
@@ -44,7 +44,7 @@ public class TryAllNodesExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
 
       assertEquals(3, m_nodes.size());
       assertTrue(m_nodes.contains(n1));
@@ -68,7 +68,7 @@ public class TryAllNodesExpandStepperTest
       StepperController e = new StepperController(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       m_nodes.clear();
 
@@ -78,6 +78,6 @@ public class TryAllNodesExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
    }
 }

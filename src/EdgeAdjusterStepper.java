@@ -13,7 +13,7 @@ class EdgeAdjusterStepper implements IStepper
    }
 
    @Override
-   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+   public StepperController.StatusReportInner step(StepperController.Status status)
    {
       switch (status)
       {
@@ -22,15 +22,15 @@ class EdgeAdjusterStepper implements IStepper
 
             IStepper child = m_child_factory.MakeChild(m_graph, m_config);
 
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+            return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                   child, "Relaxing split edge.");
 
          case StepOutSuccess:
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                   null, "Successfully relaxed split edge.");
 
          case StepOutFailure:
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                   null, "Failed to relax split edge.");
       }
 

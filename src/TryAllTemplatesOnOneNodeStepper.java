@@ -17,19 +17,19 @@ class TryAllTemplatesOnOneNodeStepper implements IStepper
    }
 
    @Override
-   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+   public StepperController.StatusReportInner step(StepperController.Status status)
    {
       // if our child succeeds, we succeed
-      if (status == StepperController.ExpandStatus.StepOutSuccess)
+      if (status == StepperController.Status.StepOutSuccess)
       {
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                null, "Graph Expand step Succeeded");
       }
 
       // no matter what other previous status, if we run out of templates we're a fail
       if (m_templates.size() == 0)
       {
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                null, "Node: " + m_node.getName() + " failed to expand");
       }
 
@@ -39,7 +39,7 @@ class TryAllTemplatesOnOneNodeStepper implements IStepper
             m_graph, m_node, t, m_config);
 
       //noinspection ConstantConditions
-      return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+      return new StepperController.StatusReportInner(StepperController.Status.StepIn,
             child, "Trying to expand node: " + m_node.getName() + " with template: " + t.GetName());
    }
 

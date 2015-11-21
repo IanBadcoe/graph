@@ -1,7 +1,6 @@
 import processing.core.PApplet;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 @SuppressWarnings("WeakerAccess")
 public class Main extends processing.core.PApplet
@@ -41,19 +40,6 @@ public class Main extends processing.core.PApplet
    public void setup()
    {
       ellipseMode(RADIUS);
-
-      m_expand_config = new LevelGeneratorConfiguration(85);
-
-      m_graph = MakeSeed();
-      m_expander = new StepperController(m_graph,
-            new ExpandToSizeStepper(m_graph, m_reqSize, m_templates,
-                  m_expand_config));
-
-      LevelGeneratorConfiguration temp = new LevelGeneratorConfiguration(m_expand_config);
-      temp.RelaxationForceTarget /= 5;
-      temp.RelaxationMoveTarget /= 5;
-      m_final_relaxer = new StepperController(m_graph,
-            new RelaxerStepper(m_graph, temp));
    }
 
    @Override
@@ -119,69 +105,31 @@ public class Main extends processing.core.PApplet
       strokeWeight(0.0f);
 //      textSize(0.01f);
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
-      if (m_lay_out_running)
+      if (m_generator != null)
       {
-         for (int i = 0; i < 1000; i++)
+         ret = m_generator.step();
+
+         // take before complete so we can draw it...
+         m_level = m_generator.getLevel();
+
+         if (ret.Complete)
          {
-            if ((m_step || m_go) && m_lay_out_running)
+            if (ret.Status != StepperController.Status.StepOutSuccess)
             {
-               m_step = false;
-
-               ret = m_expander.Step();
-
-               m_lay_out_running = !ret.Complete;
-
-               //            print(ret.Log, "\n");
+               exit();
             }
-            else
-            {
-               break;
-            }
+
+            m_generator = null;
+            m_config = null;
          }
-      }
-      else if (!m_final_relaxation)
-      {
-         for (int i = 0; i < 1000; i++)
-         {
-            if ((m_step || m_go) && !m_final_relaxation)
-            {
-               m_step = false;
-
-               ret = m_final_relaxer.Step();
-
-               m_final_relaxation = ret.Complete;
-
-               //            print(ret.Log, "\n");
-            }
-            else
-            {
-               break;
-            }
-         }
-      }
-      else if (!m_level_generated)
-      {
-         m_level = new Level(m_graph);
-
-         m_level.generateGeometry();
-
-         m_level_generated = true;
-
-//         m_go = false;
-      }
-      else if ((m_step || m_go) && !m_unions_done)
-      {
-         m_unions_done = !m_level.unionOne(m_union_random);
-
-         m_step = false;
       }
 
       double range = min(width, height);
 
-      if (m_auto_scale)
-         autoScale(m_graph, range * 0.05, range * 0.95);
+      if (m_auto_scale && m_generator != null && m_generator.getGraph() != null)
+         autoScale(m_generator.getGraph(), range * 0.05, range * 0.95);
 
       translate((float)(range * 0.05), (float)(range * 0.05));
 
@@ -189,7 +137,15 @@ public class Main extends processing.core.PApplet
 
       translate((float)m_off_x, (float)m_off_y);
 
-      drawGraph(m_graph, m_labels, !m_unions_done, true, m_arrows);
+      if (m_generator != null && m_generator.getGraph() != null)
+      {
+         LevelGenerator.Phase p = m_generator.getPhase();
+         drawGraph(m_generator.getGraph(),
+               m_labels,
+               p != LevelGenerator.Phase.Union,
+               true,
+               m_arrows);
+      }
 
       if (m_level != null)
       {
@@ -216,24 +172,6 @@ public class Main extends processing.core.PApplet
       m_off_x = -b.Min.X;
       m_off_y = -b.Min.Y;
       m_scale = smaller_scale;
-   }
-
-   private Graph MakeSeed()
-   {
-      Graph ret = new Graph();
-      INode start = ret.AddNode("Start", "<", "Seed", 55f);
-      INode expander = ret.AddNode("StepperController", "e", "Seed", 55f);
-      INode end = ret.AddNode("End", ">", "Seed", 55f);
-
-      start.setPos(new XY(-100, 0));
-      expander.setPos(new XY(0, 0));
-      end.setPos(new XY(0, 100));
-
-      ret.Connect(start, expander, 90, 110, 10);
-      ret.Connect(expander, end, 90, 110, 10);
-
-      //not expandable, which simplifies expansion as start won't need replacing
-      return ret;
    }
 
 
@@ -383,21 +321,6 @@ public class Main extends processing.core.PApplet
 
    private static PApplet s_app;
 
-   private Graph m_graph;
-
-   private final TemplateStore m_templates = new TemplateStore1();
-
-   @SuppressWarnings("FieldCanBeLocal")
-   private final int m_reqSize = 30;
-
-   private StepperController m_expander;
-   private StepperController m_final_relaxer;
-
-   private boolean m_lay_out_running = true;
-   private boolean m_level_generated = false;
-   private boolean m_unions_done = false;
-   private boolean m_final_relaxation = false;
-
    // UI data
    private boolean m_step = false;
    private boolean m_go = true;
@@ -413,9 +336,7 @@ public class Main extends processing.core.PApplet
    private double m_off_y = 0.0;
    private double m_scale = 1.0;
 
+   private LevelGeneratorConfiguration m_config = new LevelGeneratorConfiguration(85);
+   private LevelGenerator m_generator = new LevelGenerator(m_config);
    private Level m_level;
-
-   private final Random m_union_random = new Random(1);
-
-   private LevelGeneratorConfiguration m_expand_config;
 }

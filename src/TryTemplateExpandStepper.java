@@ -23,19 +23,19 @@ class TryTemplateExpandStepper implements IStepper
    }
 
    @Override
-   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+   public StepperController.StatusReportInner step(StepperController.Status status)
    {
-      if (status == StepperController.ExpandStatus.StepIn)
+      if (status == StepperController.Status.StepIn)
       {
          if (m_template.Expand(m_graph, m_node, m_config.Rand))
          {
             IStepper child = m_relaxer_factory.MakeRelaxer(m_graph, m_config);
 
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+            return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                   child, "Relaxing successful expansion.");
          }
 
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                null, "Failed to expand");
       }
 
@@ -47,7 +47,7 @@ class TryTemplateExpandStepper implements IStepper
       return EdgeRelaxReturn(status);
    }
 
-   private StepperController.ExpandRetInner ExpandRelaxReturn(StepperController.ExpandStatus status)
+   private StepperController.StatusReportInner ExpandRelaxReturn(StepperController.Status status)
    {
       switch (status)
       {
@@ -56,18 +56,18 @@ class TryTemplateExpandStepper implements IStepper
          case StepOutSuccess:
             m_phase = Phase.EdgeCorrection;
 
-            StepperController.ExpandRetInner ret = TryLaunchEdgeAdjust();
+            StepperController.StatusReportInner ret = TryLaunchEdgeAdjust();
 
             if (ret != null)
             {
                return ret;
             }
 
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                   null, "No stressed edges to adjust");
 
          case StepOutFailure:
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                   null, "Failed to relax expanded node.");
       }
 
@@ -76,25 +76,25 @@ class TryTemplateExpandStepper implements IStepper
       throw new UnsupportedOperationException();
    }
 
-   private StepperController.ExpandRetInner EdgeRelaxReturn(StepperController.ExpandStatus status)
+   private StepperController.StatusReportInner EdgeRelaxReturn(StepperController.Status status)
    {
       switch (status)
       {
          // succeeded in relaxing expanded graph,
          // look for a first edge to relax
          case StepOutSuccess:
-            StepperController.ExpandRetInner ret = TryLaunchEdgeAdjust();
+            StepperController.StatusReportInner ret = TryLaunchEdgeAdjust();
 
             if (ret != null)
             {
                return ret;
             }
 
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                   null, "No more stressed edges to adjust");
 
          case StepOutFailure:
-            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
                   null, "Failed to adjust edge.");
       }
 
@@ -103,7 +103,7 @@ class TryTemplateExpandStepper implements IStepper
       throw new UnsupportedOperationException();
    }
 
-   private StepperController.ExpandRetInner TryLaunchEdgeAdjust()
+   private StepperController.StatusReportInner TryLaunchEdgeAdjust()
    {
       DirectedEdge e = MostStressedEdge(m_graph.AllGraphEdges());
 
@@ -114,7 +114,7 @@ class TryTemplateExpandStepper implements IStepper
 
       IStepper child = m_adjuster_factory.MakeAdjuster(m_graph, e, m_config);
 
-      return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
+      return new StepperController.StatusReportInner(StepperController.Status.StepIn,
             child, "Adjusting an edge.");
    }
 

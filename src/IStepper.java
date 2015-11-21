@@ -10,5 +10,5 @@ interface IStepper
    //
    // some steps will themselves fail when a child fails
    // others will go on to try other stuff
-   StepperController.ExpandRetInner Step(StepperController.ExpandStatus status);
+   StepperController.StatusReportInner step(StepperController.Status status);
 }

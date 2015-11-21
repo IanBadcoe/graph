@@ -16,7 +16,7 @@ public class ExpandToSizeStepperTest
 
       StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 1, ts, new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       do
       {
@@ -24,7 +24,7 @@ public class ExpandToSizeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.Status.StepOutFailure, ret.Status);
    }
 
    class SimpleAddNodeStepper implements IStepper
@@ -35,11 +35,11 @@ public class ExpandToSizeStepperTest
       }
 
       @Override
-      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
+      public StepperController.StatusReportInner step(StepperController.Status status)
       {
          m_graph.AddNode("", "", "", 0);
 
-         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
+         return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                null, "");
       }
 
@@ -56,7 +56,7 @@ public class ExpandToSizeStepperTest
 
       StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
 
-      StepperController.ExpandRet ret;
+      StepperController.StatusReport ret;
 
       do
       {
@@ -64,7 +64,7 @@ public class ExpandToSizeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(10, g.NumNodes());
    }
 
@@ -79,7 +79,7 @@ public class ExpandToSizeStepperTest
          // none of these parameters used in this case
          ExpandToSizeStepper etss = new ExpandToSizeStepper(null, 0, null, null);
 
-         etss.Step(StepperController.ExpandStatus.Iterate);
+         etss.step(StepperController.Status.Iterate);
       }
       catch(UnsupportedOperationException uoe)
       {
