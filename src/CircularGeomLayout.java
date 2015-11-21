@@ -9,7 +9,7 @@ class CircularGeomLayout extends GeomLayout
 
    static CircularGeomLayout createFromNode(INode n)
    {
-      return new CircularGeomLayout(n.getPos(), n.getRad() * 0.95);
+      return new CircularGeomLayout(n.getPos(), n.getRad());
    }
 
    @Override

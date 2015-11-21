@@ -1,20 +1,23 @@
 import java.util.ArrayList;
 
-class RelaxerStepper implements IExpandStepper
+class RelaxerStepper implements IStepper
 {
    RelaxerStepper(Graph graph, double max_move,
                   double force_target, double move_target,
                   double minimum_separation)
    {
       m_graph = graph;
-      m_nodes = m_graph.AllGraphNodes();
-      m_edges = m_graph.AllGraphEdges();
 
       m_max_move = max_move;
       m_force_target = force_target;
       m_move_target = move_target;
       m_minimum_separation = minimum_separation;
+   }
 
+   private void setUp()
+   {
+      m_nodes = m_graph.AllGraphNodes();
+      m_edges = m_graph.AllGraphEdges();
       // these are shortest path lengths through the graph
       //
       // irrespective of node <-> node or node <-> edge forces, we don't want to be pushed further than this
@@ -24,17 +27,24 @@ class RelaxerStepper implements IExpandStepper
       // as we rely on edges stretching (in other cases) to tell ue when we need to
       // lengthen an edge (inserting a corner)
       m_node_dists = ShortestPathFinder.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
+
+      m_step_up_done = true;
    }
 
    @Override
-   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
+      if (!m_step_up_done)
+      {
+         setUp();
+      }
+
       return RelaxStep();
    }
 
    // step is scaled so that the max force we see causes a movement of max_move
    // until that means a step of > 1, then we start letting the system slow down :-)
-   private Expander.ExpandRetInner RelaxStep()
+   private StepperController.ExpandRetInner RelaxStep()
    {
       double maxf = 0.0;
 
@@ -108,15 +118,15 @@ class RelaxerStepper implements IExpandStepper
 
       if (crossings > 0)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                null, "Generated crossing edges during relaxation.");
       } else if (ended)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                null, "Relaxed to still-point tolerances.");
       }
 
-      return new Expander.ExpandRetInner(Expander.ExpandStatus.Iterate,
+      return new StepperController.ExpandRetInner(StepperController.ExpandStatus.Iterate,
             null,
             " move:" + maxd +
             " time step:" + step +
@@ -248,8 +258,8 @@ class RelaxerStepper implements IExpandStepper
    }
 
    private final Graph m_graph;
-   private final ArrayList<INode> m_nodes;
-   private final ArrayList<DirectedEdge> m_edges;
+   private ArrayList<INode> m_nodes;
+   private ArrayList<DirectedEdge> m_edges;
 
    // whichever is smaller out of the summed-radii and the
    // shortest path through the graph between two nodes
@@ -257,10 +267,12 @@ class RelaxerStepper implements IExpandStepper
    // because otherwise a large node can force its second-closest
    // neighbour (and further) so far away that the edge gets split
    // and then the new second-closest neighbour is in the same position
-   private final double[][] m_node_dists;
+   private double[][] m_node_dists;
 
    private final double m_max_move;
    private final double m_force_target;
    private final double m_move_target;
    private final double m_minimum_separation;
+
+   private boolean m_step_up_done = false;
 }

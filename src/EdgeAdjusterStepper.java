@@ -1,8 +1,8 @@
-class EdgeAdjusterStepper implements IExpandStepper
+class EdgeAdjusterStepper implements IStepper
 {
    public interface IChildFactory
    {
-      IExpandStepper MakeChild(Graph g);
+      IStepper MakeChild(Graph g);
    }
 
    EdgeAdjusterStepper(Graph graph, DirectedEdge edge)
@@ -12,24 +12,24 @@ class EdgeAdjusterStepper implements IExpandStepper
    }
 
    @Override
-   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
       switch (status)
       {
          case StepIn:
             SplitEdge();
 
-            IExpandStepper child = m_child_factory.MakeChild(m_graph);
+            IStepper child = m_child_factory.MakeChild(m_graph);
 
-            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
+            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
                   child, "Relaxing split edge.");
 
          case StepOutSuccess:
-            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                   null, "Successfully relaxed split edge.");
 
          case StepOutFailure:
-            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                   null, "Failed to relax split edge.");
       }
 

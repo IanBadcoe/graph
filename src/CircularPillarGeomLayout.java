@@ -9,7 +9,7 @@ class CircularPillarGeomLayout extends GeomLayout
 
    static GeomLayout createFromNode(INode n)
    {
-      return new CircularPillarGeomLayout(n.getPos(), n.getRad() * 0.95);
+      return new CircularPillarGeomLayout(n.getPos(), n.getRad());
    }
 
    @Override

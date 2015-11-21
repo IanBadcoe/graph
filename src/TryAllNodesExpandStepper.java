@@ -3,11 +3,11 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class TryAllNodesExpandStepper implements IExpandStepper
+public class TryAllNodesExpandStepper implements IStepper
 {
    public interface IChildFactory
    {
-      IExpandStepper MakeChild(Graph g, INode n, Collection<Template> templates,
+      IStepper MakeChild(Graph g, INode n, Collection<Template> templates,
                                Random r);
    }
 
@@ -22,19 +22,19 @@ public class TryAllNodesExpandStepper implements IExpandStepper
    }
 
    @Override
-   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
       // if our child succeeds, we succeed
-      if (status == Expander.ExpandStatus.StepOutSuccess)
+      if (status == StepperController.ExpandStatus.StepOutSuccess)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                null, "Graph Expand step Succeeded");
       }
 
       // no matter what other previous status, if we run out of nodes we're a fail
       if (m_all_nodes.size() == 0)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                null, "All nodes failed to expand");
       }
 
@@ -49,11 +49,11 @@ public class TryAllNodesExpandStepper implements IExpandStepper
          templates = templates.stream().filter(t -> t.GetCodes().contains("e"))
                .collect(Collectors.toCollection(ArrayList::new));
 
-      IExpandStepper child = s_child_factory.MakeChild(
+      IStepper child = s_child_factory.MakeChild(
             m_graph, node, templates, m_random);
 
       //noinspection ConstantConditions
-      return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
+      return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
             child, "Trying to expand node: " + node.getName());
    }
 

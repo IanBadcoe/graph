@@ -1,6 +1,6 @@
 import java.util.Stack;
 
-public class Expander
+public class StepperController
 {
    enum ExpandStatus
    {
@@ -13,11 +13,11 @@ public class Expander
    static class ExpandRetInner
    {
       final ExpandStatus Status;
-      final IExpandStepper ChildStepper;
+      final IStepper ChildStepper;
       final String Log;
 
       ExpandRetInner(ExpandStatus status,
-                IExpandStepper childStepper,
+                IStepper childStepper,
                 String log)
       {
          Status = status;
@@ -42,7 +42,7 @@ public class Expander
       }
    }
 
-   Expander(Graph graph, IExpandStepper initial_stepper)
+   StepperController(Graph graph, IStepper initial_stepper)
    {
       m_graph = graph;
       PushStepper(initial_stepper);
@@ -52,10 +52,10 @@ public class Expander
 
    ExpandRet Step()
    {
-      IExpandStepper stepper = CurrentStepper();
+      IStepper stepper = CurrentStepper();
 
       if (stepper == null)
-         throw new NullPointerException("Attempt to step without an initial stepper.  Either you failed to supply one, or this Expander has completed.");
+         throw new NullPointerException("Attempt to step without an initial stepper.  Either you failed to supply one, or this StepperController has completed.");
 
       ExpandRetInner eri = stepper.Step(m_last_step_status);
 
@@ -79,13 +79,13 @@ public class Expander
       return new ExpandRet(eri, CurrentStepper() == null);
    }
 
-   private void PushStepper(IExpandStepper stepper)
+   private void PushStepper(IStepper stepper)
    {
       m_stack.push(
             new OrderedPair<>(stepper, m_graph != null ? m_graph.CreateRestorePoint() : null));
    }
 
-   private IExpandStepper CurrentStepper()
+   private IStepper CurrentStepper()
    {
       if (m_stack.empty())
          return null;
@@ -103,7 +103,7 @@ public class Expander
       }
    }
 
-   private final Stack<OrderedPair<IExpandStepper, IGraphRestore>>
+   private final Stack<OrderedPair<IStepper, IGraphRestore>>
          m_stack = new Stack<>();
    private final Graph m_graph;
    private ExpandStatus m_last_step_status;

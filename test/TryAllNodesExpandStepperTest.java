@@ -9,7 +9,7 @@ public class TryAllNodesExpandStepperTest
 {
    private static final ArrayList<INode> m_nodes = new ArrayList<>();
 
-   class TestStepperLoggingNodes extends TestStepper
+   class TestStepperLoggingNodes extends TestStepperController
    {
       TestStepperLoggingNodes(INode n)
       {
@@ -32,10 +32,10 @@ public class TryAllNodesExpandStepperTest
       INode n2 = g.AddNode("", "e", "", 0);
       INode n3 = g.AddNode("", "e", "", 0);
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_nodes.clear();
 
@@ -45,7 +45,7 @@ public class TryAllNodesExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
 
       assertEquals(3, m_nodes.size());
       assertTrue(m_nodes.contains(n1));
@@ -57,7 +57,7 @@ public class TryAllNodesExpandStepperTest
    public void testSuccess()
    {
       TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new TestStepper(true, null));
+            (a, b, c, d) -> new TestStepperController(true, null));
 
       Graph g = new Graph();
 
@@ -66,10 +66,10 @@ public class TryAllNodesExpandStepperTest
       g.AddNode("", "e", "", 0);
       g.AddNode("", "e", "", 0);
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_nodes.clear();
 
@@ -79,6 +79,6 @@ public class TryAllNodesExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
    }
 }

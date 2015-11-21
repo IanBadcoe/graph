@@ -9,18 +9,18 @@ public class TryAllTemplatesOnOneNodeStepperTest
 {
    private final ArrayList<Template> m_templates = new ArrayList<>();
 
-   class FaiStepperLoggingTemplates extends TestStepper
+   class FailStepperLoggingTemplates extends TestStepperController
    {
-      FaiStepperLoggingTemplates(Template template)
+      FailStepperLoggingTemplates(Template template)
       {
          super(false, null);
          m_templates.add(template);
       }
 
       @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
       {
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                null, "");
       }
    }
@@ -29,7 +29,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
    public void testTryAllTemplates() throws Exception
    {
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new FaiStepperLoggingTemplates(c));
+            (a, b, c, d) -> new FailStepperLoggingTemplates(c));
 
       Graph g = new Graph();
 
@@ -37,10 +37,10 @@ public class TryAllTemplatesOnOneNodeStepperTest
 
       TemplateStore ts = new TemplateStore1();
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_templates.clear();
 
@@ -50,7 +50,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
 
       assertEquals(ts.NumTemplates(), m_templates.size());
 
@@ -64,7 +64,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
    public void testSuccess() throws Exception
    {
       TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new TestStepper(true, null));
+            (a, b, c, d) -> new TestStepperController(true, null));
 
       Graph g = new Graph();
 
@@ -72,10 +72,10 @@ public class TryAllTemplatesOnOneNodeStepperTest
 
       TemplateStore ts = new TemplateStore1();
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_templates.clear();
 
@@ -85,6 +85,6 @@ public class TryAllTemplatesOnOneNodeStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
    }
 }

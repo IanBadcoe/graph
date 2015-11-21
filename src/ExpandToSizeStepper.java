@@ -1,10 +1,10 @@
 import java.util.Random;
 
-class ExpandToSizeStepper implements IExpandStepper
+class ExpandToSizeStepper implements IStepper
 {
    public interface IChildFactory
    {
-      IExpandStepper MakeChild(Graph g, TemplateStore ts, Random r);
+      IStepper MakeChild(Graph g, TemplateStore ts, Random r);
    }
 
    ExpandToSizeStepper(Graph graph, int required_size, TemplateStore templates,
@@ -18,7 +18,7 @@ class ExpandToSizeStepper implements IExpandStepper
    }
 
    @Override
-   public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+   public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
    {
       switch (status)
       {
@@ -26,23 +26,23 @@ class ExpandToSizeStepper implements IExpandStepper
          case StepOutSuccess:
             if (m_graph.NumNodes() >= m_required_size)
             {
-               return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+               return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                      null, "Target size reached");
             }
 
-            IExpandStepper child = m_child_factory.MakeChild(m_graph, m_templates, m_random);
+            IStepper child = m_child_factory.MakeChild(m_graph, m_templates, m_random);
 
-            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepIn,
+            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepIn,
                   child, "More expansion required.");
 
          case StepOutFailure:
             if (m_graph.NumNodes() > m_orig_size)
             {
-               return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+               return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                      null, "Partial success");
             }
 
-            return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutFailure,
+            return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutFailure,
                   null, "Failed.");
       }
 

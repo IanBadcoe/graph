@@ -17,10 +17,10 @@ public class TryTemplateExpandStepperTest
       // one node with no input doesn't match the template
       INode n1 = g.AddNode("", "", "", 0);
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n1, tb.Build(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       do
       {
@@ -28,7 +28,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
    }
 
    private int m_fail_count = 0;
@@ -37,7 +37,7 @@ public class TryTemplateExpandStepperTest
    public void testExpandedTemplateRelaxFail() throws Exception
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a) -> new TestStepper(false, () -> m_fail_count++));
+            (a) -> new TestStepperController(false, () -> m_fail_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -51,10 +51,10 @@ public class TryTemplateExpandStepperTest
       INode n2 = g.AddNode("", "", "", 0);
       g.Connect(n1, n2, 0, 0, 0);
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_fail_count = 0;
 
@@ -64,7 +64,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
       assertEquals(1, m_fail_count);
    }
 
@@ -74,9 +74,9 @@ public class TryTemplateExpandStepperTest
    public void testEdgeAdjustFail()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepperController(true, () -> m_success_count++));
       TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b) -> new TestStepper(false, () -> m_fail_count++));
+            (a, b) -> new TestStepperController(false, () -> m_fail_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -94,10 +94,10 @@ public class TryTemplateExpandStepperTest
       // be "stressed"
       n2.setPos(new XY(10, 0));
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -108,12 +108,12 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
       assertEquals(1, m_success_count);
       assertEquals(1, m_fail_count);
    }
 
-   class SimpleEdgeAdjuster implements IExpandStepper
+   class SimpleEdgeAdjuster implements IStepper
    {
       SimpleEdgeAdjuster( DirectedEdge e)
       {
@@ -121,13 +121,13 @@ public class TryTemplateExpandStepperTest
       }
 
       @Override
-      public Expander.ExpandRetInner Step(Expander.ExpandStatus status)
+      public StepperController.ExpandRetInner Step(StepperController.ExpandStatus status)
       {
          m_e.Start.setPos(new XY(5, 0));
 
          m_success_count++;
 
-         return new Expander.ExpandRetInner(Expander.ExpandStatus.StepOutSuccess,
+         return new StepperController.ExpandRetInner(StepperController.ExpandStatus.StepOutSuccess,
                null, "");
       }
 
@@ -140,7 +140,7 @@ public class TryTemplateExpandStepperTest
    public void testEdgeAdjustSucceed()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepperController(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -162,10 +162,10 @@ public class TryTemplateExpandStepperTest
       TryTemplateExpandStepper.SetAdjusterFactory(
             (a, b) -> new SimpleEdgeAdjuster(b));
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -176,7 +176,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
       assertEquals(2, m_success_count);
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
@@ -189,7 +189,7 @@ public class TryTemplateExpandStepperTest
    public void testEdgeTwoAdjustsSucceed()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepperController(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -215,10 +215,10 @@ public class TryTemplateExpandStepperTest
       TryTemplateExpandStepper.SetAdjusterFactory(
             (a, b) -> new SimpleEdgeAdjuster(b));
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -229,7 +229,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
       assertEquals(3, m_success_count);
       // we should have replaced n2
       assertEquals(3, g.NumNodes());
@@ -243,10 +243,10 @@ public class TryTemplateExpandStepperTest
    public void testNoEdgeAdjustRequired()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepperController(true, () -> m_success_count++));
       // won't be called
       TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b) -> new TestStepper(false, () -> assertTrue(false)));
+            (a, b) -> new TestStepperController(false, () -> assertTrue(false)));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -263,10 +263,10 @@ public class TryTemplateExpandStepperTest
       // space nodes far as the new edge requires
       n2.setPos(new XY(5, 0));
 
-      Expander e = new Expander(g,
+      StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1)));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       m_fail_count = 0;
       m_success_count = 0;
@@ -277,7 +277,7 @@ public class TryTemplateExpandStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
       assertEquals(1, m_success_count);
       // we should have replaced n2
       assertEquals(2, g.NumNodes());
@@ -290,7 +290,7 @@ public class TryTemplateExpandStepperTest
    public void testCrazyPrevStatus_1()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepperController(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -312,8 +312,8 @@ public class TryTemplateExpandStepperTest
       TryTemplateExpandStepper.SetAdjusterFactory(
             (a, b) -> new SimpleEdgeAdjuster(b));
 
-      IExpandStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1));
-      Expander e = new Expander(g, tes);
+      IStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1));
+      StepperController e = new StepperController(g, tes);
 
       for(int i = 0; i < 4; i++)
       {
@@ -326,7 +326,7 @@ public class TryTemplateExpandStepperTest
       {
          // should be looking for return value from edge-relaxer now
          // give it the one value it can never expect...
-         tes.Step(Expander.ExpandStatus.Iterate);
+         tes.Step(StepperController.ExpandStatus.Iterate);
       }
       catch (UnsupportedOperationException uoe)
       {
@@ -340,7 +340,7 @@ public class TryTemplateExpandStepperTest
    public void testCrazyPrevStatus_2()
    {
       TryTemplateExpandStepper.SetRelaxerFactory(
-            (a) -> new TestStepper(true, () -> m_success_count++));
+            (a) -> new TestStepperController(true, () -> m_success_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -362,8 +362,8 @@ public class TryTemplateExpandStepperTest
       TryTemplateExpandStepper.SetAdjusterFactory(
             (a, b) -> new SimpleEdgeAdjuster(b));
 
-      IExpandStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1));
-      Expander e = new Expander(g, tes);
+      IStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new Random(1));
+      StepperController e = new StepperController(g, tes);
 
       for(int i = 0; i < 2; i++)
       {
@@ -376,7 +376,7 @@ public class TryTemplateExpandStepperTest
       {
          // should be looking for return value from edge-adjuster now
          // give it the one value it can never expect...
-         tes.Step(Expander.ExpandStatus.Iterate);
+         tes.Step(StepperController.ExpandStatus.Iterate);
       }
       catch (UnsupportedOperationException uoe)
       {

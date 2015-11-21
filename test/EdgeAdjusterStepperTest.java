@@ -8,16 +8,16 @@ public class EdgeAdjusterStepperTest
    public void testStep_Fail() throws Exception
    {
       EdgeAdjusterStepper.SetChildFactory(
-            (a) -> new TestStepper(false, null));
+            (a) -> new TestStepperController(false, null));
 
       Graph g = new Graph();
       INode n1 = g.AddNode("", "", "", 0);
       INode n2 = g.AddNode("", "", "", 0);
       DirectedEdge de = g.Connect(n1, n2, 0, 0, 0);
 
-      Expander e = new Expander(g, new EdgeAdjusterStepper(g, de));
+      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       do
       {
@@ -25,23 +25,23 @@ public class EdgeAdjusterStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutFailure, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutFailure, ret.Status);
    }
 
    @Test
    public void testStep_Succeed() throws Exception
    {
       EdgeAdjusterStepper.SetChildFactory(
-            (a) -> new TestStepper(true, null));
+            (a) -> new TestStepperController(true, null));
 
       Graph g = new Graph();
       INode n1 = g.AddNode("", "", "", 0);
       INode n2 = g.AddNode("", "", "", 0);
       DirectedEdge de = g.Connect(n1, n2, 0, 0, 0);
 
-      Expander e = new Expander(g, new EdgeAdjusterStepper(g, de));
+      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de));
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
       do
       {
@@ -49,7 +49,7 @@ public class EdgeAdjusterStepperTest
       }
       while(!ret.Complete);
 
-      assertEquals(Expander.ExpandStatus.StepOutSuccess, ret.Status);
+      assertEquals(StepperController.ExpandStatus.StepOutSuccess, ret.Status);
       assertEquals(3, g.NumNodes());
       assertFalse(n1.connects(n2));
       assertEquals(0, n1.getInConnections().size());
@@ -73,7 +73,7 @@ public class EdgeAdjusterStepperTest
          // none of these parameters used in this case
          EdgeAdjusterStepper etss = new EdgeAdjusterStepper(null, null);
 
-         etss.Step(Expander.ExpandStatus.Iterate);
+         etss.Step(StepperController.ExpandStatus.Iterate);
       }
       catch(UnsupportedOperationException uoe)
       {

@@ -18,7 +18,7 @@ public class RectangularGeomLayout extends GeomLayout
       dir = dir.divide(length);
 
       XY width_dir = dir.rot270();
-      XY half_width = width_dir.multiply(m_half_width * 0.95);
+      XY half_width = width_dir.multiply(m_half_width);
 
       XY start_left = m_start.plus(half_width);
       XY start_right = m_start.minus(half_width);
@@ -27,9 +27,9 @@ public class RectangularGeomLayout extends GeomLayout
 
       ArrayList<Curve> curves = new ArrayList<>();
       curves.add(new LineCurve(start_left, dir, length));
-      curves.add(new LineCurve(end_left, width_dir.negate(), m_half_width * 1.9));
+      curves.add(new LineCurve(end_left, width_dir.negate(), m_half_width * 2));
       curves.add(new LineCurve(end_right, dir.negate(), length));
-      curves.add(new LineCurve(start_right, width_dir, m_half_width * 1.9));
+      curves.add(new LineCurve(start_right, width_dir, m_half_width * 2));
 
       assert  curves.get(0).endPos().equals(curves.get(1).startPos(), 1e-6);
       assert  curves.get(1).endPos().equals(curves.get(2).startPos(), 1e-6);

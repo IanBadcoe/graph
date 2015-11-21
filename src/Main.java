@@ -51,9 +51,16 @@ public class Main extends processing.core.PApplet
       ellipseMode(RADIUS);
 
       m_graph = MakeSeed();
-      m_expander = new Expander(m_graph,
+      m_expander = new StepperController(m_graph,
             new ExpandToSizeStepper(m_graph, m_reqSize, m_templates,
                   new Random(85)));
+
+      m_final_relaxer = new StepperController(m_graph,
+            new RelaxerStepper(m_graph,
+               Configuration.RelaxationMaxMove,
+               Configuration.RelaxationForceTarget / 5,
+               Configuration.RelaxationMoveTarget / 5,
+               Configuration.RelaxationMinimumSeparation));
    }
 
    @Override
@@ -119,27 +126,49 @@ public class Main extends processing.core.PApplet
       strokeWeight(0.0f);
 //      textSize(0.01f);
 
-      Expander.ExpandRet ret;
+      StepperController.ExpandRet ret;
 
-      for(int i = 0; i < 1000; i++)
+      if (m_lay_out_running)
       {
-         if ((m_step || m_go) && m_lay_out_running)
+         for (int i = 0; i < 1000; i++)
          {
-            m_step = false;
+            if ((m_step || m_go) && m_lay_out_running)
+            {
+               m_step = false;
 
-            ret = m_expander.Step();
+               ret = m_expander.Step();
 
-            m_lay_out_running = !ret.Complete;
+               m_lay_out_running = !ret.Complete;
 
-//            print(ret.Log, "\n");
-         }
-         else
-         {
-            break;
+               //            print(ret.Log, "\n");
+            }
+            else
+            {
+               break;
+            }
          }
       }
+      else if (!m_final_relaxation)
+      {
+         for (int i = 0; i < 1000; i++)
+         {
+            if ((m_step || m_go) && !m_final_relaxation)
+            {
+               m_step = false;
 
-      if (!m_lay_out_running && !m_level_generated)
+               ret = m_final_relaxer.Step();
+
+               m_final_relaxation = ret.Complete;
+
+               //            print(ret.Log, "\n");
+            }
+            else
+            {
+               break;
+            }
+         }
+      }
+      else if (!m_level_generated)
       {
          m_level = new Level(m_graph);
 
@@ -149,8 +178,7 @@ public class Main extends processing.core.PApplet
 
 //         m_go = false;
       }
-
-      if ((m_step || m_go) && m_level_generated && !m_unions_done)
+      else if ((m_step || m_go) && !m_unions_done)
       {
          m_unions_done = !m_level.unionOne(m_union_random);
 
@@ -180,7 +208,7 @@ public class Main extends processing.core.PApplet
          m_notes.forEach(Annotation::Draw);
       }
 
-      saveFrame("Frame####.jpg");
+//      saveFrame("..\\graph non-git\\Frame####.jpg");
    }
 
    private void autoScale(Graph g, double low, double high)
@@ -201,7 +229,7 @@ public class Main extends processing.core.PApplet
    {
       Graph ret = new Graph();
       INode start = ret.AddNode("Start", "<", "Seed", 55f);
-      INode expander = ret.AddNode("Expander", "e", "Seed", 55f);
+      INode expander = ret.AddNode("StepperController", "e", "Seed", 55f);
       INode end = ret.AddNode("End", ">", "Seed", 55f);
 
       start.setPos(new XY(-100, 0));
@@ -369,11 +397,13 @@ public class Main extends processing.core.PApplet
    @SuppressWarnings("FieldCanBeLocal")
    private final int m_reqSize = 30;
 
-   private Expander m_expander;
+   private StepperController m_expander;
+   private StepperController m_final_relaxer;
 
    private boolean m_lay_out_running = true;
    private boolean m_level_generated = false;
    private boolean m_unions_done = false;
+   private boolean m_final_relaxation = false;
 
    // UI data
    private boolean m_step = false;
