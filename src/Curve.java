@@ -1,5 +1,8 @@
 abstract class Curve
 {
+   public final double StartParam;
+   public final double EndParam;
+
    Curve(double start_param, double end_param)
    {
       StartParam = start_param;
@@ -21,6 +24,8 @@ abstract class Curve
    public abstract Curve merge(Curve c_after);
 
    public abstract double length();
+
+   public abstract XY computeNormal(double p);
 
    // overridden for cyclic curves
 
@@ -64,10 +69,6 @@ abstract class Curve
    {
       return computePos(EndParam);
    }
-
-   public final double StartParam;
-
-   public final double EndParam;
 
    public double paramRange()
    {

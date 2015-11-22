@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 public class EdgeAdjusterStepperTest
 {
+   @SuppressWarnings("RedundantThrows")
    @Before
    public void setUp() throws Exception
    {

@@ -148,6 +148,37 @@ class Loop
       return ret;
    }
 
+   public ArrayList<OrderedPair<XY,XY>> facetWithNormals(double max_length)
+   {
+      ArrayList<OrderedPair<XY,XY>> ret = new ArrayList<>();
+
+      for(Curve c : m_curves)
+      {
+         double param_step = c.paramRange()
+               * (max_length / c.length());
+
+         double p = 0;
+
+         double start_p = c.StartParam;
+
+         while(p < c.paramRange())
+         {
+            ret.add(new OrderedPair<>(
+                  c.computePos(start_p + p),
+                  c.computeNormal(start_p + p)));
+
+            p += param_step;
+         }
+      }
+
+      return ret;
+   }
+
+   Box getBounds()
+   {
+      return m_curves.stream().map(Curve::boundingBox).reduce(new Box(), (b, a) -> a.union(b));
+   }
+
    private final ArrayList<Curve> m_curves = new ArrayList<>();
 
    private final double m_param_range;

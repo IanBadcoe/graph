@@ -114,7 +114,9 @@ public class LevelGenerator
 
    private StepperController.StatusReport baseGeometryStep()
    {
-      m_level = new Level(m_graph);
+      m_level = new Level(m_graph,
+            m_config.CellSize,
+            m_config.WallFacetLength);
 
       m_level.generateGeometry();
 
@@ -189,7 +191,7 @@ public class LevelGenerator
       Done
    }
 
-   Phase m_phase = Phase.Init;
+   private Phase m_phase = Phase.Init;
 
    private Graph m_graph;
 
@@ -208,7 +210,7 @@ public class LevelGenerator
 
    private final Random m_union_random = new Random(1);
 
-   private LevelGeneratorConfiguration m_config;
+   private final LevelGeneratorConfiguration m_config;
 
-   Level m_level;
+   private Level m_level;
 }

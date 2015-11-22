@@ -456,6 +456,12 @@ public class UtilTest
       }
 
       @Override
+      public XY computeNormal(double p)
+      {
+         return null;
+      }
+
+      @Override
       public double paramCoordinateDist(double p1, double p2)
       {
          return 0;

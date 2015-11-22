@@ -180,6 +180,19 @@ class CircleCurve extends Curve
    }
 
    @Override
+   public XY computeNormal(double p)
+   {
+      XY normal = new XY(Math.sin(p), Math.cos(p));
+
+      if (Rotation == RotationDirection.Reverse)
+      {
+         normal = normal.negate();
+      }
+
+      return normal;
+   }
+
+   @Override
    public boolean withinParams(double p, double tol)
    {
       if (isCyclic())

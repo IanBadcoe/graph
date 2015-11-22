@@ -45,12 +45,6 @@ public class Main extends processing.core.PApplet
    @Override
    public void keyPressed()
    {
-      if (key == ' ')
-         m_step = true;
-
-      if (key == 'g')
-         m_go = !m_go;
-
       if (key == 'a')
          m_auto_scale = !m_auto_scale;
 
@@ -249,26 +243,30 @@ public class Main extends processing.core.PApplet
    {
       s_app.stroke(0xffffffff);
       s_app.strokeWeight(1);
-      level.getLoops().forEach(Main::drawLoop);
-      level.getDetailLoopSets().forEach(Main::drawLoopSet);
 
-      for(Loop l : level.getLevel())
+      s_app.stroke(240);
+      s_app.fill(180, 120, 120);
+
+      Box bounds = level.getBounds();
+
+      s_app.beginShape();
+      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Max.Y + 1000);
+      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Max.Y + 1000);
+      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
+      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
+
+      level.getWallLoops().forEach(Main::drawWallLoop);
+      s_app.endShape(CLOSE);
+   }
+
+   static void drawWallLoop(WallLoop wl)
+   {
+      s_app.beginContour();
+      for(Wall w : wl)
       {
-         s_app.stroke(240);
-         drawLoop(l);
+         s_app.vertex((float)w.Start.X, (float)w.Start.Y);
       }
-   }
-
-   static void drawLoopSet(LoopSet loops)
-   {
-      loops.forEach(Main::drawLoop);
-   }
-
-   static void drawLoop(Loop l)
-   {
-      ArrayList<XY> pnts = l.facet(5);
-
-      drawLoopPoints(pnts);
+      s_app.endContour();
    }
 
    static void drawLoopPoints(ArrayList<XY> pnts)
@@ -309,7 +307,7 @@ public class Main extends processing.core.PApplet
       s_app.translate((float)-b.Min.X,(float)-b.Min.Y);
    }
 
-   static void clear(int c)
+   static void clear(@SuppressWarnings("SameParameterValue") int c)
    {
       s_app.background(c);
    }
@@ -322,8 +320,6 @@ public class Main extends processing.core.PApplet
    private static PApplet s_app;
 
    // UI data
-   private boolean m_step = false;
-   private boolean m_go = true;
    private boolean m_auto_scale = true;
    private boolean m_labels = true;
    private boolean m_arrows = false;

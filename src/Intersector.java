@@ -277,6 +277,7 @@ public class Intersector
    }
 
    // non-private only for testing
+   @SuppressWarnings("WeakerAccess")
    static void removeEasyLoops(ArrayList<ArrayList<Curve>> working_loops,
                                LoopSet ret,
                                Collection<Box> other_bounds,

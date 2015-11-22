@@ -94,6 +94,12 @@ class LineCurve extends Curve
    }
 
    @Override
+   public XY computeNormal(double v)
+   {
+      return Direction.rot90();
+   }
+
+   @Override
    public int hashCode()
    {
       return super.hashCode_inner() * 17 + Position.hashCode() * 31 ^ Direction.hashCode();

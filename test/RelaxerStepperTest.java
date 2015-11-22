@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 public class RelaxerStepperTest
 {
+   @SuppressWarnings("RedundantThrows")
    @Before
    public void setUp() throws Exception
    {
@@ -637,5 +638,5 @@ public class RelaxerStepperTest
       }
    }
 
-   LevelGeneratorConfiguration m_config;
+   private LevelGeneratorConfiguration m_config;
 }

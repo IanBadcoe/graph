@@ -1,5 +1,6 @@
 import java.util.Random;
 
+@SuppressWarnings("CanBeFinal")
 class LevelGeneratorConfiguration
 {
    LevelGeneratorConfiguration(int rand_seed)
@@ -60,10 +61,20 @@ class LevelGeneratorConfiguration
 
    // --------------------------------------------------------------------------------------------------------------
    // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-   // steps to turn at once during expansion or final relaxation
+   // steps to run at once during expansion or final relaxation
    // (just makes fewer calls to LevelGenerator.step as relaxation takes thousands of steps to complete)
 
    public int ExpandStepsToRun = 1000;
+
+   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   // --------------------------------------------------------------------------------------------------------------
+
+   // --------------------------------------------------------------------------------------------------------------
+   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+   // settings for the created level
+
+   double CellSize = 20;
+   double WallFacetLength = 10;
 
    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    // --------------------------------------------------------------------------------------------------------------

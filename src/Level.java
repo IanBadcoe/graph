@@ -2,13 +2,18 @@ import java.util.*;
 
 class Level
 {
-   Level(Graph graph)
+   Level(Graph graph, double cell_size, double wall_facet_length)
    {
       m_graph = graph;
+
+      m_cell_size = cell_size;
+      m_wall_facet_length = wall_facet_length;
    }
 
    void generateGeometry()
    {
+      Box bounds = new Box();
+
       for(INode n : m_graph.AllGraphNodes())
       {
          GeomLayout gl = n.geomLayoutCreator().create(n);
@@ -19,6 +24,8 @@ class Level
          // could have node with no geometry?
          if (base != null)
          {
+            bounds = bounds.union(base.getBounds());
+
             m_base_loops.add(base);
          }
 
@@ -27,6 +34,8 @@ class Level
          // can definitely have no details
          if (details != null)
          {
+            // bounds of details no-bigger than base, so can ignore
+
             m_detail_loop_sets.add(details);
          }
       }
@@ -35,8 +44,16 @@ class Level
       {
          // TODO : store this on the edge to allow corridor geometry options
          GeomLayout gl = new RectangularGeomLayout(de.Start.getPos(), de.End.getPos(), de.HalfWidth);
-         m_base_loops.add(gl.makeBaseGeometry());
+         Loop l = gl.makeBaseGeometry();
+
+         // may one day have corridors w/o geometry, but for the moment not
+
+         bounds = bounds.union(l.getBounds());
+
+         m_base_loops.add(l);
       }
+
+      m_bounds = bounds;
    }
 
    boolean unionOne(Random r)
@@ -74,24 +91,84 @@ class Level
       Intersector.union(m_level, new LoopSet(temp), 1e-6, m_union_random, true);
    }
 
-   Collection<Loop> getLoops()
+   Collection<WallLoop> getWallLoops()
    {
-      return Collections.unmodifiableCollection(m_base_loops);
-   }
-
-   public Collection<LoopSet> getDetailLoopSets()
-   {
-      return Collections.unmodifiableCollection(m_detail_loop_sets);
-   }
-
-   public LoopSet getLevel()
-   {
-      return m_level;
+      return Collections.unmodifiableCollection(m_wall_loops);
    }
 
    public void finalise()
    {
+      for(Loop l : m_level)
+      {
+         ArrayList<OrderedPair<XY, XY>> loop_pnts = l.facetWithNormals(m_wall_facet_length);
 
+         OrderedPair<XY, XY> prev = loop_pnts.get(loop_pnts.size() - 1);
+
+         WallLoop wl = new WallLoop();
+
+         Wall prev_w = null;
+
+         for(OrderedPair<XY, XY> curr : loop_pnts)
+         {
+            Wall w = new Wall(prev.First, curr.First,
+                  prev.Second.plus(curr.Second).makeUnit());
+
+            if (prev_w != null)
+            {
+               w.setPrev(prev_w);
+               prev_w.setNext(w);
+            }
+
+            addWallToMap(w);
+            wl.add(w);
+
+            prev_w = w;
+
+            prev = curr;
+         }
+
+         //noinspection ConstantConditions
+         prev_w.setNext(wl.get(0));
+         wl.get(0).setPrev(prev_w);
+
+         m_wall_loops.add(wl);
+      }
+
+   }
+
+   private void addWallToMap(Wall w)
+   {
+      OrderedPair<Integer, Integer> cell = posToGridCell(w.Start);
+
+      ArrayList<Wall> walls = m_wall_map.get(cell);
+
+      if (walls == null)
+      {
+         walls = new ArrayList<>();
+
+         m_wall_map.put(cell, walls);
+      }
+
+      walls.add(w);
+   }
+
+   public Box getBounds()
+   {
+      return m_bounds;
+   }
+
+   public Wall nearestWall(XY nearest_to, XY probe_towards)
+   {
+      return null;
+   }
+
+   private OrderedPair<Integer, Integer> posToGridCell(XY pos)
+   {
+      XY rel_pos = pos.minus(m_bounds.Min);
+
+      XY cell_pos = rel_pos.divide(20);
+
+      return new OrderedPair<>((int)cell_pos.X, (int)cell_pos.Y);
    }
 
    private final Graph m_graph;
@@ -101,5 +178,16 @@ class Level
    private final ArrayList<Loop> m_base_loops = new ArrayList<>();
    private final ArrayList<LoopSet> m_detail_loop_sets = new ArrayList<>();
 
+   private final HashMap<OrderedPair<Integer, Integer>, ArrayList<Wall>> m_wall_map
+         = new HashMap<>();
+
    private LoopSet m_level = new LoopSet();
+
+   private Box m_bounds;
+
+   @SuppressWarnings("FieldCanBeLocal")
+   private final double m_cell_size;
+   private final double m_wall_facet_length;
+
+   private final WallLoopSet m_wall_loops = new WallLoopSet();
 }
