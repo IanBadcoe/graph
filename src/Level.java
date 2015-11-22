@@ -2,6 +2,25 @@ import java.util.*;
 
 class Level
 {
+   // cell-coordinate
+   static private class CC extends OrderedPair<Integer, Integer>
+   {
+      CC(int x, int y)
+      {
+         super(x, y);
+      }
+
+      CC minus(CC rhs)
+      {
+         return new CC(First - rhs.First, Second - rhs.Second);
+      }
+
+      CC plus(CC rhs)
+      {
+         return new CC(First + rhs.First, Second + rhs.Second);
+      }
+   }
+
    Level(Graph graph, double cell_size, double wall_facet_length)
    {
       m_graph = graph;
@@ -138,7 +157,9 @@ class Level
 
    private void addWallToMap(Wall w)
    {
-      OrderedPair<Integer, Integer> cell = posToGridCell(w.Start);
+      // using centre point halves the effective length of the facet,
+      // making our cell-search distances smaller
+      CC cell = posToGridCell(w.Start.plus(w.End).divide(2));
 
       ArrayList<Wall> walls = m_wall_map.get(cell);
 
@@ -157,18 +178,58 @@ class Level
       return m_bounds;
    }
 
-   public Wall nearestWall(XY nearest_to, XY probe_towards)
+   // place prob_to beyond edge of level to definitely find something
+   // however far
+   public Wall nearestWall(XY nearest_to, XY probe_to)
    {
-      return null;
+      XY diff = probe_to.minus(nearest_to);
+
+      // this will step us along search line in whichever axis we travers fastest
+      XY major_step;
+
+      if (Math.abs(diff.X) > Math.abs(diff.Y))
+      {
+         major_step = new XY(Math.signum(diff.X), 0);
+      }
+      else
+      {
+         major_step = new XY(0, Math.signum(diff.Y));
+      }
+
+      CC near_point_cell = posToGridCell(nearest_to);
+
+      double max_hit_dist = (m_cell_size + m_wall_facet_length) / 2;
+
+      assert cellCentre(near_point_cell).minus(nearest_to).length() < max_hit_dist;
+
+      XY step_back = nearest_to.minus(major_step);
+
+      XY curr = nearest_to;
+
+      // if we are close enough to the trailing edge of the cell we're in
+      if (cellCentre(posToGridCell((step_back))).minus(nearest_to).length() < max_hit_dist)
+      {
+         curr = step_back;
+      }
    }
 
-   private OrderedPair<Integer, Integer> posToGridCell(XY pos)
+   private XY cellCentre(CC cell)
+   {
+      return cellOrigin(cell).plus(new XY(m_cell_size / 2, m_cell_size / 2));
+   }
+
+   private XY cellOrigin(CC cell)
+   {
+      return new XY(cell.First * m_cell_size, cell.Second * m_cell_size);
+   }
+
+   private CC posToGridCell(XY pos)
    {
       XY rel_pos = pos.minus(m_bounds.Min);
 
       XY cell_pos = rel_pos.divide(20);
 
-      return new OrderedPair<>((int)cell_pos.X, (int)cell_pos.Y);
+      return new CC((int)cell_pos.X, (int)cell_pos.Y);
    }
 
    private final Graph m_graph;
@@ -178,7 +239,7 @@ class Level
    private final ArrayList<Loop> m_base_loops = new ArrayList<>();
    private final ArrayList<LoopSet> m_detail_loop_sets = new ArrayList<>();
 
-   private final HashMap<OrderedPair<Integer, Integer>, ArrayList<Wall>> m_wall_map
+   private final HashMap<CC, ArrayList<Wall>> m_wall_map
          = new HashMap<>();
 
    private LoopSet m_level = new LoopSet();
