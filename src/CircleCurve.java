@@ -50,7 +50,7 @@ class CircleCurve extends Curve
       Rotation = rotation;
 
       if (Radius <= 0)
-         throw new IllegalArgumentException("-ve radius");
+         throw new IllegalArgumentException("-ve or zero radius");
    }
 
    @Override

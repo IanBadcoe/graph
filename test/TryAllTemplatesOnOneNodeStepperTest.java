@@ -32,7 +32,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
 
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("", "", "", 0);
+      INode n1 = g.addNode("", "", "", 0);
 
       TemplateStore ts = new TemplateStore1();
 
@@ -67,7 +67,7 @@ public class TryAllTemplatesOnOneNodeStepperTest
 
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("", "", "", 0);
+      INode n1 = g.addNode("", "", "", 0);
 
       TemplateStore ts = new TemplateStore1();
 

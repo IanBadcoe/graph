@@ -11,11 +11,11 @@ public class ShortestPathFinderTest
       Graph g = new Graph();
 
       INode[] nodes = new INode[5];
-      INode n1 = nodes[0] = g.AddNode("", "", "", 0);
-      INode n2 = nodes[1] = g.AddNode("", "", "", 0);
-      INode n3 = nodes[2] = g.AddNode("", "", "", 0);
-      INode n4 = nodes[3] = g.AddNode("", "", "", 0);
-      INode n5 = nodes[4] = g.AddNode("", "", "", 0);
+      INode n1 = nodes[0] = g.addNode("", "", "", 0);
+      INode n2 = nodes[1] = g.addNode("", "", "", 0);
+      INode n3 = nodes[2] = g.addNode("", "", "", 0);
+      INode n4 = nodes[3] = g.addNode("", "", "", 0);
+      INode n5 = nodes[4] = g.addNode("", "", "", 0);
 
       //               n3 --3-> n5
       //               ^\      ^
@@ -24,12 +24,12 @@ public class ShortestPathFinderTest
       //            /      v/
       // n1 -10-> n2 --4-> n4
 
-      g.Connect(n1, n2, 10.1, 10, 0);
-      g.Connect(n2, n3, 3.1, 3, 0);
-      g.Connect(n2, n4, 4.1, 4, 0);
-      g.Connect(n3, n4, 5.1, 5, 0);
-      g.Connect(n4, n5, 2.1, 2, 0);
-      g.Connect(n3, n5, 3.1, 3, 0);
+      g.connect(n1, n2, 10.1, 10, 0);
+      g.connect(n2, n3, 3.1, 3, 0);
+      g.connect(n2, n4, 4.1, 4, 0);
+      g.connect(n3, n4, 5.1, 5, 0);
+      g.connect(n4, n5, 2.1, 2, 0);
+      g.connect(n3, n5, 3.1, 3, 0);
 
       double[][] ans = ShortestPathFinder.FindPathLengths(g, x -> x.MinLength);
 
@@ -40,9 +40,9 @@ public class ShortestPathFinderTest
              {14.2, 4.1, 5.1, 0, 2.1},
              {16.3, 6.2, 3.1, 2.1, 0}};
 
-      for(int i = 0; i < g.NumNodes(); i++)
+      for(int i = 0; i < g.numNodes(); i++)
       {
-         for(int j = 0; j < g.NumNodes(); j++)
+         for(int j = 0; j < g.numNodes(); j++)
          {
             assertEquals(exp[i][j], ans[nodes[i].getIdx()][nodes[j].getIdx()], 1e-9);
          }

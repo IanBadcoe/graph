@@ -19,11 +19,11 @@ public class RelaxerStepperTest
    public void testEdgeRelaxation() throws Exception
    {
       Graph g = new Graph();
-      INode n1 = g.AddNode("n1", "", "", 0);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      INode n3 = g.AddNode("n3", "", "", 0);
-      INode n4 = g.AddNode("n4", "", "", 0);
-      INode n5 = g.AddNode("n5", "", "", 0);
+      INode n1 = g.addNode("n1", "", "", 0);
+      INode n2 = g.addNode("n2", "", "", 0);
+      INode n3 = g.addNode("n3", "", "", 0);
+      INode n4 = g.addNode("n4", "", "", 0);
+      INode n5 = g.addNode("n5", "", "", 0);
 
       // place them non-overlapping and separated in both dimensions
       n1.setPos(new XY(0, 0));
@@ -33,11 +33,11 @@ public class RelaxerStepperTest
       n5.setPos(new XY(0, 100));
 
       // a possible triangle and two single-connected nodes
-      g.Connect(n1, n2, 100, 100, 0);
-      g.Connect(n2, n3, 80, 80, 0);
-      g.Connect(n3, n1, 60, 60, 0);
-      g.Connect(n3, n4, 120, 120, 0);
-      g.Connect(n1, n5, 40, 40, 0);
+      g.connect(n1, n2, 100, 100, 0);
+      g.connect(n2, n3, 80, 80, 0);
+      g.connect(n3, n1, 60, 60, 0);
+      g.connect(n3, n4, 120, 120, 0);
+      g.connect(n1, n5, 40, 40, 0);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -87,9 +87,9 @@ public class RelaxerStepperTest
    {
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("n1", "", "", 0);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      INode n3 = g.AddNode("n3", "", "", 0);
+      INode n1 = g.addNode("n1", "", "", 0);
+      INode n2 = g.addNode("n2", "", "", 0);
+      INode n3 = g.addNode("n3", "", "", 0);
 
       // place them non-overlapping and separated in both dimensions
       n1.setPos(new XY(0, 0));
@@ -97,9 +97,9 @@ public class RelaxerStepperTest
       n3.setPos(new XY(0, -100));
 
       // an impossible triangle
-      g.Connect(n1, n2, 100, 100, 0);
-      g.Connect(n2, n3, 40, 40, 0);
-      g.Connect(n3, n1, 40, 40, 0);
+      g.connect(n1, n2, 100, 100, 0);
+      g.connect(n2, n3, 40, 40, 0);
+      g.connect(n3, n1, 40, 40, 0);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -138,8 +138,8 @@ public class RelaxerStepperTest
    public void testNodeWideSeparationRelaxation() throws Exception
    {
       Graph g = new Graph();
-      INode n1 = g.AddNode("n1", "", "", 10.0);
-      INode n2 = g.AddNode("n2", "", "", 10.0);
+      INode n1 = g.addNode("n1", "", "", 10.0);
+      INode n2 = g.addNode("n2", "", "", 10.0);
 
       n1.setPos(new XY(   0,    0));
       n2.setPos(new XY(-100, 0));
@@ -172,8 +172,8 @@ public class RelaxerStepperTest
    public void testNodeTooCloseRelaxation() throws Exception
    {
       Graph g = new Graph();
-      INode n1 = g.AddNode("n1", "", "", 10.0);
-      INode n2 = g.AddNode("n2", "", "", 10.0);
+      INode n1 = g.addNode("n1", "", "", 10.0);
+      INode n2 = g.addNode("n2", "", "", 10.0);
 
       n1.setPos(new XY(   0,    0));
       n2.setPos(new XY(  -1,    0));
@@ -207,18 +207,18 @@ public class RelaxerStepperTest
    {
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("edge1start", "", "", 10.0);
-      INode n2 = g.AddNode("edge1end", "", "", 10.0);
-      INode n3 = g.AddNode("edge2start", "", "", 10.0);
-      INode n4 = g.AddNode("edge2end", "", "", 10.0);
+      INode n1 = g.addNode("edge1start", "", "", 10.0);
+      INode n2 = g.addNode("edge1end", "", "", 10.0);
+      INode n3 = g.addNode("edge2start", "", "", 10.0);
+      INode n4 = g.addNode("edge2end", "", "", 10.0);
 
       n1.setPos(new XY(0, 0));
       n2.setPos(new XY(0, 20));
       n3.setPos(new XY(100, 0));
       n4.setPos(new XY(100, 20));
 
-      g.Connect(n1, n2, 20, 20, 10);
-      g.Connect(n3, n4, 20, 20, 10);
+      g.connect(n1, n2, 20, 20, 10);
+      g.connect(n3, n4, 20, 20, 10);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -253,18 +253,18 @@ public class RelaxerStepperTest
    {
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("edge1start", "", "", 10.0);
-      INode n2 = g.AddNode("edge1end", "", "", 10.0);
-      INode n3 = g.AddNode("edge2start", "", "", 10.0);
-      INode n4 = g.AddNode("edge2end", "", "", 10.0);
+      INode n1 = g.addNode("edge1start", "", "", 10.0);
+      INode n2 = g.addNode("edge1end", "", "", 10.0);
+      INode n3 = g.addNode("edge2start", "", "", 10.0);
+      INode n4 = g.addNode("edge2end", "", "", 10.0);
 
       n1.setPos(new XY(0, 0));
       n2.setPos(new XY(0, 20));
       n3.setPos(new XY(1, 0));
       n4.setPos(new XY(1, 20));
 
-      g.Connect(n1, n2, 20, 20, 10);
-      g.Connect(n3, n4, 20, 20, 10);
+      g.connect(n1, n2, 20, 20, 10);
+      g.connect(n3, n4, 20, 20, 10);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -299,16 +299,16 @@ public class RelaxerStepperTest
    {
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("edge1start", "", "", 10.0);
-      INode n2 = g.AddNode("edge1end", "", "", 10.0);
-      INode n3 = g.AddNode("node", "", "", 10.0);
+      INode n1 = g.addNode("edge1start", "", "", 10.0);
+      INode n2 = g.addNode("edge1end", "", "", 10.0);
+      INode n3 = g.addNode("node", "", "", 10.0);
 
       // edge long enough that there is no n1->n3 or n2->n3 interaction
       n1.setPos(new XY(0, 0));
       n2.setPos(new XY(0, 100));
       n3.setPos(new XY(1, 50));
 
-      g.Connect(n1, n2, 100, 100, 10);
+      g.connect(n1, n2, 100, 100, 10);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -341,10 +341,10 @@ public class RelaxerStepperTest
    {
       Graph g = new Graph();
 
-      INode n1 = g.AddNode("edge1start", "", "", 10.0);
-      INode n2 = g.AddNode("edge1end", "", "", 10.0);
-      INode n3 = g.AddNode("edge2start", "", "", 10.0);
-      INode n4 = g.AddNode("edge2end", "", "", 10.0);
+      INode n1 = g.addNode("edge1start", "", "", 10.0);
+      INode n2 = g.addNode("edge1end", "", "", 10.0);
+      INode n3 = g.addNode("edge2start", "", "", 10.0);
+      INode n4 = g.addNode("edge2end", "", "", 10.0);
 
       // two clearly crossing edges
       n1.setPos(new XY(0, -100));
@@ -352,8 +352,8 @@ public class RelaxerStepperTest
       n3.setPos(new XY(-100, 0));
       n4.setPos(new XY(100, 0));
 
-      g.Connect(n1, n2, 100, 100, 10);
-      g.Connect(n3, n4, 100, 100, 10);
+      g.connect(n1, n2, 100, 100, 10);
+      g.connect(n3, n4, 100, 100, 10);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -385,9 +385,9 @@ public class RelaxerStepperTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("edgesstart", "", "", 10.0);
-         INode n2 = g.AddNode("edgesmiddle", "", "", 10.0);
-         INode n3 = g.AddNode("edgesend", "", "", 10.0);
+         INode n1 = g.addNode("edgesstart", "", "", 10.0);
+         INode n2 = g.addNode("edgesmiddle", "", "", 10.0);
+         INode n3 = g.addNode("edgesend", "", "", 10.0);
 
          // zero length edge and a non-zero one attached at one end that will separate
          // the overlying nodes
@@ -395,8 +395,8 @@ public class RelaxerStepperTest
          n2.setPos(new XY(0, 0));
          n3.setPos(new XY(-110, 0));
 
-         g.Connect(n1, n2, 100, 100, 10);
-         g.Connect(n2, n3, 100, 100, 10);
+         g.connect(n1, n2, 100, 100, 10);
+         g.connect(n2, n3, 100, 100, 10);
 
          // run it to a tighter convergence than usual
          RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -424,9 +424,9 @@ public class RelaxerStepperTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("edgestart", "", "", 10.0);
-         INode n2 = g.AddNode("edgeend", "", "", 10.0);
-         INode n3 = g.AddNode("node", "", "", 10.0);
+         INode n1 = g.addNode("edgestart", "", "", 10.0);
+         INode n2 = g.addNode("edgeend", "", "", 10.0);
+         INode n3 = g.addNode("node", "", "", 10.0);
 
          // two zero separation nodes and an edge attached to one that will separate
          // the overlying nodes
@@ -434,7 +434,7 @@ public class RelaxerStepperTest
          n2.setPos(new XY(110, 0));
          n3.setPos(new XY(0, 0));
 
-         g.Connect(n1, n2, 100, 100, 10);
+         g.connect(n1, n2, 100, 100, 10);
 
          // run it to a tighter convergence than usual
          RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -463,8 +463,8 @@ public class RelaxerStepperTest
    public void testAdjoiningEdgeOverridesRadii()
    {
       Graph g = new Graph();
-      INode n1 = g.AddNode("n1", "", "", 100);
-      INode n2 = g.AddNode("n2", "", "", 100);
+      INode n1 = g.addNode("n1", "", "", 100);
+      INode n2 = g.addNode("n2", "", "", 100);
 
       // place them non-overlapping and separated in both dimensions
       n1.setPos(new XY(0, 0));
@@ -472,7 +472,7 @@ public class RelaxerStepperTest
 
       // edge wants distance of 100, node-radii want 200 but node-radii
       // should be ignored between connected nodes
-      g.Connect(n1, n2, 100, 100, 0);
+      g.connect(n1, n2, 100, 100, 0);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -501,11 +501,11 @@ public class RelaxerStepperTest
    public void testNonAdjoiningEdgesOverrideRadii()
    {
       Graph g = new Graph();
-      INode n1 = g.AddNode("n1", "", "", 6);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      INode n3 = g.AddNode("n3", "", "", 0);
-      INode n4 = g.AddNode("n4", "", "", 0);
-      INode n5 = g.AddNode("n5", "", "", 0);
+      INode n1 = g.addNode("n1", "", "", 6);
+      INode n2 = g.addNode("n2", "", "", 0);
+      INode n3 = g.addNode("n3", "", "", 0);
+      INode n4 = g.addNode("n4", "", "", 0);
+      INode n5 = g.addNode("n5", "", "", 0);
 
       // place them non-overlapping and separated in both dimensions
       n1.setPos(new XY(0, 0));
@@ -516,10 +516,10 @@ public class RelaxerStepperTest
 
       // edges wants distances of 2, n1 radius wants 6 but shortest path through
       // graph should come out below that (for n2, n3) and let them get closer
-      g.Connect(n1, n2, 2, 2, 0);
-      g.Connect(n2, n3, 2, 2, 0);
-      g.Connect(n3, n4, 2, 2, 0);
-      g.Connect(n4, n5, 2, 2, 0);
+      g.connect(n1, n2, 2, 2, 0);
+      g.connect(n2, n3, 2, 2, 0);
+      g.connect(n3, n4, 2, 2, 0);
+      g.connect(n4, n5, 2, 2, 0);
 
       // run it to a tighter convergence than usual
       RelaxerStepper rs = new RelaxerStepper(g, m_config);
@@ -560,8 +560,8 @@ public class RelaxerStepperTest
    {
       {
          Graph g = new Graph();
-         INode n1 = g.AddNode("n1", "", "", 10.0);
-         INode n2 = g.AddNode("n2", "", "", 10.0);
+         INode n1 = g.addNode("n1", "", "", 10.0);
+         INode n2 = g.addNode("n2", "", "", 10.0);
 
          n1.setPos(new XY(   0,    0));
          n2.setPos(new XY(  -1,    0));
@@ -596,16 +596,16 @@ public class RelaxerStepperTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("edge1start", "", "", 10.0);
-         INode n2 = g.AddNode("edge1end", "", "", 10.0);
-         INode n3 = g.AddNode("node", "", "", 10.0);
+         INode n1 = g.addNode("edge1start", "", "", 10.0);
+         INode n2 = g.addNode("edge1end", "", "", 10.0);
+         INode n3 = g.addNode("node", "", "", 10.0);
 
          // edge long enough that there is no n1->n3 or n2->n3 interaction
          n1.setPos(new XY(0, 0));
          n2.setPos(new XY(0, 100));
          n3.setPos(new XY(1, 50));
 
-         g.Connect(n1, n2, 100, 100, 10);
+         g.connect(n1, n2, 100, 100, 10);
 
          // run it to a tighter convergence than usual
          // add an extra separation of 1 unit

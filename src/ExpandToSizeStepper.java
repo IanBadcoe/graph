@@ -9,7 +9,7 @@ class ExpandToSizeStepper implements IStepper
          LevelGeneratorConfiguration c)
    {
       m_graph = graph;
-      m_orig_size = m_graph == null ? 0 : m_graph.NumNodes();
+      m_orig_size = m_graph == null ? 0 : m_graph.numNodes();
       m_required_size = required_size;
       m_templates = templates;
       m_config = c;
@@ -22,7 +22,7 @@ class ExpandToSizeStepper implements IStepper
       {
          case StepIn:
          case StepOutSuccess:
-            if (m_graph.NumNodes() >= m_required_size)
+            if (m_graph.numNodes() >= m_required_size)
             {
                return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                      null, "Target size reached");
@@ -34,7 +34,7 @@ class ExpandToSizeStepper implements IStepper
                   child, "More expansion required.");
 
          case StepOutFailure:
-            if (m_graph.NumNodes() > m_orig_size)
+            if (m_graph.numNodes() > m_orig_size)
             {
                return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                      null, "Partial success");

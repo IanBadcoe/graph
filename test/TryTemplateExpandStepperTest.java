@@ -13,7 +13,7 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with no input doesn't match the template
-      INode n1 = g.AddNode("", "", "", 0);
+      INode n1 = g.addNode("", "", "", 0);
 
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n1, tb.Build(), new LevelGeneratorConfiguration(1)));
@@ -45,9 +45,9 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with one input does matches the template
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("", "", "", 0);
+      INode n2 = g.addNode("", "", "", 0);
+      g.connect(n1, n2, 0, 0, 0);
 
       StepperController e = new StepperController(g,
             new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
@@ -85,9 +85,9 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with one input does matches the template
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("", "", "", 0);
+      INode n2 = g.addNode("", "", "", 0);
+      g.connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
       n2.setPos(new XY(10, 0));
@@ -149,9 +149,9 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with one input does matches the template
-      INode n1 = g.AddNode("n1", "", "", 0);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("n1", "", "", 0);
+      INode n2 = g.addNode("n2", "", "", 0);
+      g.connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
       n2.setPos(new XY(10, 0));
@@ -177,10 +177,10 @@ public class TryTemplateExpandStepperTest
       assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(2, m_success_count);
       // we should have replaced n2
-      assertEquals(2, g.NumNodes());
-      assertEquals(1, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
+      assertEquals(2, g.numNodes());
+      assertEquals(1, g.numEdges());
+      assertTrue(g.allGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
+      assertTrue(g.allGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
    }
 
    @Test
@@ -200,11 +200,11 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with one input does matches the template
-      INode n1 = g.AddNode("n1", "", "", 0);
-      INode n11 = g.AddNode("n1a", "", "", 0);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      g.Connect(n1, n2, 0, 0, 0);
-      g.Connect(n11, n2, 0, 0, 0);
+      INode n1 = g.addNode("n1", "", "", 0);
+      INode n11 = g.addNode("n1a", "", "", 0);
+      INode n2 = g.addNode("n2", "", "", 0);
+      g.connect(n1, n2, 0, 0, 0);
+      g.connect(n11, n2, 0, 0, 0);
       // space nodes far enough apart both the edges the template adds will
       // be "stressed"
       n2.setPos(new XY(10, 0));
@@ -230,11 +230,11 @@ public class TryTemplateExpandStepperTest
       assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(3, m_success_count);
       // we should have replaced n2
-      assertEquals(3, g.NumNodes());
-      assertEquals(2, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1a")));
+      assertEquals(3, g.numNodes());
+      assertEquals(2, g.numEdges());
+      assertTrue(g.allGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
+      assertTrue(g.allGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
+      assertTrue(g.allGraphNodes().stream().anyMatch(x -> x.getName().equals("n1a")));
    }
 
    @Test
@@ -255,9 +255,9 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with one input does matches the template
-      INode n1 = g.AddNode("n1", "", "", 0);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("n1", "", "", 0);
+      INode n2 = g.addNode("n2", "", "", 0);
+      g.connect(n1, n2, 0, 0, 0);
       // space nodes far as the new edge requires
       n2.setPos(new XY(5, 0));
 
@@ -278,10 +278,10 @@ public class TryTemplateExpandStepperTest
       assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
       assertEquals(1, m_success_count);
       // we should have replaced n2
-      assertEquals(2, g.NumNodes());
-      assertEquals(1, g.NumEdges());
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
-      assertTrue(g.AllGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
+      assertEquals(2, g.numNodes());
+      assertEquals(1, g.numEdges());
+      assertTrue(g.allGraphNodes().stream().anyMatch(x -> x.getName().equals("internal")));
+      assertTrue(g.allGraphNodes().stream().anyMatch(x -> x.getName().equals("n1")));
    }
 
    @Test
@@ -299,9 +299,9 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with one input does matches the template
-      INode n1 = g.AddNode("n1", "", "", 0);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("n1", "", "", 0);
+      INode n2 = g.addNode("n2", "", "", 0);
+      g.connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
       n2.setPos(new XY(10, 0));
@@ -349,9 +349,9 @@ public class TryTemplateExpandStepperTest
       Graph g = new Graph();
 
       // one node with one input does matches the template
-      INode n1 = g.AddNode("n1", "", "", 0);
-      INode n2 = g.AddNode("n2", "", "", 0);
-      g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("n1", "", "", 0);
+      INode n2 = g.addNode("n2", "", "", 0);
+      g.connect(n1, n2, 0, 0, 0);
       // space nodes far enough apart that the edge the template adds will
       // be "stressed"
       n2.setPos(new XY(10, 0));

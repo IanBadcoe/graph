@@ -258,7 +258,7 @@ public class ExpanderTest
       {
          if (status == StepperController.Status.StepIn)
          {
-            m_graph.AddNode("n" + m_depth, "", "", 0);
+            m_graph.addNode("n" + m_depth, "", "", 0);
 
             if (m_depth > 0)
             {
@@ -304,7 +304,7 @@ public class ExpanderTest
 
          assertEquals(StepperController.Status.StepOutFailure, ret.Status);
          // we failed at outer stepper-level, so whole graph should have been restored
-         assertEquals(g.NumNodes(), 0);
+         assertEquals(g.numNodes(), 0);
 
          boolean thrown = false;
          try
@@ -336,7 +336,7 @@ public class ExpanderTest
          // outer stepper succeeded
          assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // we failed one stepper-level down, so one node should still he here
-         assertEquals(g.NumNodes(), 1);
+         assertEquals(g.numNodes(), 1);
 
          boolean thrown = false;
          try
@@ -368,7 +368,7 @@ public class ExpanderTest
          // outer stepper succeeded
          assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // we failed two stepper-levels down, so two nodes should still he here
-         assertEquals(g.NumNodes(), 2);
+         assertEquals(g.numNodes(), 2);
 
          boolean thrown = false;
          try
@@ -400,7 +400,7 @@ public class ExpanderTest
          // outer stepper succeeded
          assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // we failed three stepper-levels down, so three nodes should still he here
-         assertEquals(g.NumNodes(), 3);
+         assertEquals(g.numNodes(), 3);
 
          boolean thrown = false;
          try
@@ -432,7 +432,7 @@ public class ExpanderTest
          // outer stepper succeeded
          assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
          // did not fail, so all four nodes should still he here
-         assertEquals(g.NumNodes(), 4);
+         assertEquals(g.numNodes(), 4);
 
          boolean thrown = false;
          try

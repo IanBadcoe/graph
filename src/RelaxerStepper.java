@@ -11,8 +11,8 @@ class RelaxerStepper implements IStepper
 
    private void setUp()
    {
-      m_nodes = m_graph.AllGraphNodes();
-      m_edges = m_graph.AllGraphEdges();
+      m_nodes = m_graph.allGraphNodes();
+      m_edges = m_graph.allGraphEdges();
       // these are shortest path lengths through the graph
       //
       // irrespective of node <-> node or node <-> edge forces, we don't want to be pushed further than this
@@ -239,10 +239,10 @@ class RelaxerStepper implements IStepper
 
    void AdjustPathLengthsForRadii()
    {
-      for(INode nj : m_graph.AllGraphNodes())
+      for(INode nj : m_graph.allGraphNodes())
       {
          int j = nj.getIdx();
-         for(INode nk : m_graph.AllGraphNodes())
+         for(INode nk : m_graph.allGraphNodes())
          {
             int k = nk.getIdx();
 

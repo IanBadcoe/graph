@@ -13,9 +13,9 @@ class ShortestPathFinder
 {
    public static double[][] FindPathLengths(Graph g, Function<DirectedEdge, Double> get_edge_length)
    {
-      double[][] ret = new double[g.NumNodes()][g.NumNodes()];
+      double[][] ret = new double[g.numNodes()][g.numNodes()];
 
-      for (int i = 0; i < g.NumNodes(); i++)
+      for (int i = 0; i < g.numNodes(); i++)
       {
          // if you try to build a dungeon bigger than this you deserve all you get
          Arrays.fill(ret[i], Double.MAX_VALUE);
@@ -23,7 +23,7 @@ class ShortestPathFinder
 
       int count = 0;
 
-      for(INode n : g.AllGraphNodes())
+      for(INode n : g.allGraphNodes())
       {
          n.setIdx(count);
 
@@ -32,7 +32,7 @@ class ShortestPathFinder
          count++;
       }
 
-      for(DirectedEdge de : g.AllGraphEdges())
+      for(DirectedEdge de : g.allGraphEdges())
       {
          int si = de.Start.getIdx();
          int ei = de.End.getIdx();
@@ -42,13 +42,13 @@ class ShortestPathFinder
          ret[si][ei] = ret[ei][si] = len;
       }
 
-      for(INode nk : g.AllGraphNodes())
+      for(INode nk : g.allGraphNodes())
       {
          int k = nk.getIdx();
-         for(INode ni : g.AllGraphNodes())
+         for(INode ni : g.allGraphNodes())
          {
             int i = ni.getIdx();
-            for(INode nj : g.AllGraphNodes())
+            for(INode nj : g.allGraphNodes())
             {
                int j = nj.getIdx();
                ret[i][j] = Math.min(ret[i][j], ret[i][k] + ret[k][j]);

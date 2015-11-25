@@ -27,9 +27,9 @@ public class TryAllNodesExpandStepperTest
       Graph g = new Graph();
 
       // all nodes must be tagged "e" to be considered expandable
-      INode n1 = g.AddNode("", "e", "", 0);
-      INode n2 = g.AddNode("", "e", "", 0);
-      INode n3 = g.AddNode("", "e", "", 0);
+      INode n1 = g.addNode("", "e", "", 0);
+      INode n2 = g.addNode("", "e", "", 0);
+      INode n3 = g.addNode("", "e", "", 0);
 
       StepperController e = new StepperController(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new LevelGeneratorConfiguration(1)));
@@ -61,9 +61,9 @@ public class TryAllNodesExpandStepperTest
       Graph g = new Graph();
 
       // all nodes must be tagged "e" to be considered expandable
-      g.AddNode("", "e", "", 0);
-      g.AddNode("", "e", "", 0);
-      g.AddNode("", "e", "", 0);
+      g.addNode("", "e", "", 0);
+      g.addNode("", "e", "", 0);
+      g.addNode("", "e", "", 0);
 
       StepperController e = new StepperController(g,
             new TryAllNodesExpandStepper(g, new TemplateStore(), new LevelGeneratorConfiguration(1)));

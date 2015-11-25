@@ -105,7 +105,7 @@ class TryTemplateExpandStepper implements IStepper
 
    private StepperController.StatusReportInner TryLaunchEdgeAdjust()
    {
-      DirectedEdge e = MostStressedEdge(m_graph.AllGraphEdges());
+      DirectedEdge e = MostStressedEdge(m_graph.allGraphEdges());
 
       if (e == null)
       {

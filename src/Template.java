@@ -78,7 +78,7 @@ class Template
       {
          if (nr.Type == NodeType.Internal)
          {
-            INode n = graph.AddNode(nr.Name, nr.Codes, m_name, nr.GeomCreator, nr.Radius);
+            INode n = graph.addNode(nr.Name, nr.Codes, m_name, nr.Radius, nr.GeomCreator);
             template_to_graph.put(nr, n);
             n.setColour(nr.Colour);
          }
@@ -130,7 +130,7 @@ class Template
          {
             // we needed target for use in position calculations
             // but now we're done with it
-            graph.RemoveNode(target);
+            graph.removeNode(target);
 
             ApplyPostExpand(template_to_graph);
 
@@ -191,7 +191,7 @@ class Template
          }
       }
 
-      return Util.findCrossingEdges(graph.AllGraphEdges()).size() == 0;
+      return Util.findCrossingEdges(graph.allGraphEdges()).size() == 0;
    }
 
    private void ApplyConnections(INode node_replacing, HashMap<NodeRecord, INode> template_to_graph,
@@ -199,7 +199,7 @@ class Template
    {
       for(DirectedEdge e : node_replacing.getConnections())
       {
-         graph.Disconnect(e.Start, e.End);
+         graph.disconnect(e.Start, e.End);
       }
 
       // apply new connections
@@ -208,7 +208,7 @@ class Template
          INode nf = template_to_graph.get(cr.From);
          INode nt = template_to_graph.get(cr.To);
 
-         DirectedEdge de = graph.Connect(nf, nt, cr.MinLength, cr.MaxLength, cr.HalfWidth);
+         DirectedEdge de = graph.connect(nf, nt, cr.MinLength, cr.MaxLength, cr.HalfWidth);
          de.SetColour(cr.Colour);
       }
    }

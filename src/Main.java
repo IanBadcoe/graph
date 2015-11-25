@@ -156,7 +156,7 @@ public class Main extends processing.core.PApplet
 
    private void autoScale(Graph g, double low, double high)
    {
-      Box b = g.XYBounds();
+      Box b = g.bounds();
 
       double sx = (high - low) / b.DX();
       double sy = (high - low) / b.DY();
@@ -184,13 +184,13 @@ public class Main extends processing.core.PApplet
    {
       if (show_circles)
       {
-         g.AllGraphNodes().forEach(Main::drawNode);
+         g.allGraphNodes().forEach(Main::drawNode);
       }
 
 
       if (show_connections)
       {
-         for (INode n : g.AllGraphNodes())
+         for (INode n : g.allGraphNodes())
          {
             drawConnections(n, show_arrows);
          }
@@ -198,7 +198,7 @@ public class Main extends processing.core.PApplet
 
       if (show_labels)
       {
-         g.AllGraphNodes().forEach(Main::drawLabel);
+         g.allGraphNodes().forEach(Main::drawLabel);
       }
    }
 

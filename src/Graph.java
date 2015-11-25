@@ -3,13 +3,13 @@ import java.util.stream.Collectors;
 
 class Graph
 {
-   INode AddNode(String name, String codes, String template, double rad)
+   INode addNode(String name, String codes, String template, double rad)
    {
-      return AddNode(name, codes, template, CircularGeomLayout::createFromNode, rad);
+      return addNode(name, codes, template, rad, CircularGeomLayout::createFromNode);
    }
 
-   INode AddNode(String name, String codes, String template,
-                 GeomLayout.IGeomLayoutCreateFromNode geomCreator, double rad)
+   INode addNode(String name, String codes, String template, double rad,
+                 GeomLayout.IGeomLayoutCreateFromNode geomCreator)
    {
       Node n = new Node(name, codes, template, geomCreator, rad);
 
@@ -18,19 +18,19 @@ class Graph
          m_restore.AddNode(n);
       }
 
-      AddNode_Inner(n);
+      addNodeInner(n);
 
       return n;
    }
 
-   private void AddNode_Inner(Node n)
+   private void addNodeInner(Node n)
    {
       m_nodes.add(n);
    }
 
-   boolean RemoveNode(INode inode)
+   boolean removeNode(INode inode)
    {
-      if (!Contains(inode))
+      if (!contains(inode))
          return false;
 
       if (inode.getConnections().size() > 0)
@@ -43,49 +43,58 @@ class Graph
          m_restore.RemoveNode(node);
       }
 
-      RemoveNode_Inner(node);
+      removeNodeInner(node);
 
       return true;
    }
 
-   private void RemoveNode_Inner(Node node)
+   private void removeNodeInner(Node node)
    {
       m_nodes.remove(node);
    }
 
-   DirectedEdge Connect(INode from, INode to,
+   DirectedEdge connect(INode from, INode to,
          double min_length, double max_length, double half_width)
    {
+      return connect(from, to, min_length, max_length, half_width,
+            DirectedEdge::makeDefaultCorridor);
+   }
+
+   DirectedEdge connect(INode from, INode to,
+         double min_length, double max_length, double half_width,
+         GeomLayout.IGeomLayoutCreateFromDirectedEdge layoutCreator)
+   {
       if (from == to
-            || !Contains(from)
-            || !Contains(to)
+            || !contains(from)
+            || !contains(to)
             || from.connects(to))
          throw new UnsupportedOperationException();
 
-      DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, half_width);
+      DirectedEdge temp = new DirectedEdge(from, to, min_length, max_length, half_width, layoutCreator);
 
       if (m_restore != null)
       {
          m_restore.Connect(temp);
       }
 
-      return Connect_Inner(temp);
+      return connectInner(temp);
    }
 
-   private DirectedEdge Connect_Inner(DirectedEdge e)
+   private DirectedEdge connectInner(DirectedEdge e)
    {
       assert !m_edges.contains(e);
 
-      DirectedEdge real_edge = ((Node)e.Start).connect((Node)e.End, e.MinLength, e.MaxLength, e.HalfWidth);
+      DirectedEdge real_edge = ((Node)e.Start).connect((Node)e.End, e.MinLength, e.MaxLength, e.HalfWidth,
+            e.LayoutCreator);
 
       m_edges.add(real_edge);
 
       return real_edge;
    }
 
-   boolean Disconnect(INode from, INode to)
+   boolean disconnect(INode from, INode to)
    {
-      if (!Contains(from) || !Contains(to))
+      if (!contains(from) || !contains(to))
          return false;
 
       DirectedEdge e = from.getConnectionTo(to);
@@ -98,12 +107,12 @@ class Graph
          m_restore.Disconnect(e);
       }
 
-      Disconnect_Inner(e);
+      disconnectInner(e);
 
       return true;
    }
 
-   private void Disconnect_Inner(DirectedEdge e)
+   private void disconnectInner(DirectedEdge e)
    {
       Node n_from = (Node)e.Start;
       Node n_to = (Node)e.End;
@@ -114,27 +123,27 @@ class Graph
       m_edges.remove(e);
    }
 
-   int NumNodes()
+   int numNodes()
    {
       return m_nodes.size();
    }
 
-   int NumEdges()
+   int numEdges()
    {
       return m_edges.size();
    }
 
-   ArrayList<DirectedEdge> AllGraphEdges()
+   ArrayList<DirectedEdge> allGraphEdges()
    {
       return new ArrayList<>(m_edges);
    }
 
-   ArrayList<INode> AllGraphNodes()
+   ArrayList<INode> allGraphNodes()
    {
       return new ArrayList<>(m_nodes);
    }
 
-   IGraphRestore CreateRestorePoint()
+   IGraphRestore createRestorePoint()
    {
       GraphRestore gr = new GraphRestore(m_restore);
 
@@ -143,12 +152,12 @@ class Graph
       return gr;
    }
 
-   Box XYBounds()
+   Box bounds()
    {
       if (m_nodes.size() == 0)
          return new Box();
 
-      ArrayList<INode> nodes = AllGraphNodes();
+      ArrayList<INode> nodes = allGraphNodes();
       XY min = nodes.get(0).getPos();
       XY max = nodes.get(0).getPos();
 
@@ -164,12 +173,12 @@ class Graph
       return new Box(min, max);
    }
 
-   IGraphRestore CurrentRestore()
+   IGraphRestore currentRestore()
    {
       return m_restore;
    }
 
-   String Print()
+   String print()
    {
       String ret = "";
 
@@ -219,7 +228,7 @@ class Graph
          }
 
          m_positions.addAll(
-               Graph.this.AllGraphNodes()
+               Graph.this.allGraphNodes()
                      .stream()
                      .map(n -> new NodePos(n, n.getPos())).collect(Collectors.toList()));
       }
@@ -299,15 +308,15 @@ class Graph
             {
                assert e.Start.connects(e.End);
 
-               Graph.this.Disconnect_Inner(e);
+               Graph.this.disconnectInner(e);
             }
          }
 
          // which means we must be able to remove anything we added
-         m_nodes_added.forEach(Graph.this::RemoveNode_Inner);
+         m_nodes_added.forEach(Graph.this::removeNodeInner);
 
          // put back anything we removed
-         m_nodes_removed.forEach(Graph.this::AddNode_Inner);
+         m_nodes_removed.forEach(Graph.this::addNodeInner);
 
          // which means we must be able to restore the original connections
          for (Map.Entry<DirectedEdge, RestoreAction> me : m_connections.entrySet())
@@ -318,11 +327,11 @@ class Graph
             {
                assert !e.Start.connects(e.End);
 
-               Graph.this.Connect_Inner(e);
+               Graph.this.connectInner(e);
             }
          }
 
-         int restored_size = Graph.this.NumNodes();
+         int restored_size = Graph.this.numNodes();
          int prev_size = m_positions.size();
 
          // putting connections back should leave us the same size as before...
@@ -374,7 +383,7 @@ class Graph
       boolean m_can_be_restored = true;
    }
 
-   void ClearRestore()
+   void clearRestore()
    {
       GraphRestore root = m_restore;
 
@@ -386,7 +395,7 @@ class Graph
       root.CleanUp();
    }
 
-   boolean Contains(INode n)
+   boolean contains(INode n)
    {
       //noinspection RedundantCast
       return m_nodes.contains((Node)n);

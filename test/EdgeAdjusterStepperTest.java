@@ -19,9 +19,9 @@ public class EdgeAdjusterStepperTest
             (a, b) -> new TestStepper(false, null));
 
       Graph g = new Graph();
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      DirectedEdge de = g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("", "", "", 0);
+      INode n2 = g.addNode("", "", "", 0);
+      DirectedEdge de = g.connect(n1, n2, 0, 0, 0);
 
       StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
 
@@ -43,9 +43,9 @@ public class EdgeAdjusterStepperTest
             (a, b) -> new TestStepper(true, null));
 
       Graph g = new Graph();
-      INode n1 = g.AddNode("", "", "", 0);
-      INode n2 = g.AddNode("", "", "", 0);
-      DirectedEdge de = g.Connect(n1, n2, 0, 0, 0);
+      INode n1 = g.addNode("", "", "", 0);
+      INode n2 = g.addNode("", "", "", 0);
+      DirectedEdge de = g.connect(n1, n2, 0, 0, 0);
 
       StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
 
@@ -58,7 +58,7 @@ public class EdgeAdjusterStepperTest
       while(!ret.Complete);
 
       assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
-      assertEquals(3, g.NumNodes());
+      assertEquals(3, g.numNodes());
       assertFalse(n1.connects(n2));
       assertEquals(0, n1.getInConnections().size());
       assertEquals(1, n1.getOutConnections().size());

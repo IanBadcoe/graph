@@ -12,7 +12,7 @@ public class NodeTest
 
       assertEquals(0, n1.numConnections());
 
-      n1.connect(n2, 0, 0, 0);
+      n1.connect(n2, 0, 0, 0, null);
 
       assertEquals(1, n1.numConnections());
 
@@ -27,12 +27,12 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0, null);
 
          boolean thrown = false;
          try
          {
-            n1.connect(n2, 0, 0, 0);
+            n1.connect(n2, 0, 0, 0, null);
          }
          catch(IllegalArgumentException iae)
          {
@@ -49,12 +49,12 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0, null);
 
          boolean thrown = false;
          try
          {
-            n2.connect(n1, 0, 0, 0);
+            n2.connect(n1, 0, 0, 0, null);
          }
          catch(IllegalArgumentException iae)
          {
@@ -75,7 +75,7 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0, null);
 
          DirectedEdge de = n1.getConnectionTo(n2);
 
@@ -87,7 +87,7 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0, null);
 
          DirectedEdge de = n1.getConnectionTo(null);
 
@@ -106,7 +106,7 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0, null);
 
          DirectedEdge de = n2.getConnectionFrom(n1);
 
@@ -118,7 +118,7 @@ public class NodeTest
       {
          Node n1 = new Node("xxx", "", "", 0);
          Node n2 = new Node("yyy", "", "", 0);
-         n1.connect(n2, 0, 0, 0);
+         n1.connect(n2, 0, 0, 0, null);
 
          DirectedEdge de = n1.getConnectionFrom(null);
 
@@ -138,7 +138,7 @@ public class NodeTest
       Node n2 = new Node("", "", "", 0);
       Node n3 = new Node("", "", "", 0);
 
-      n1.connect(n2, 1, 2, 3);
+      n1.connect(n2, 1, 2, 3, null);
 
       assertTrue(n1.connects(n2));
       assertTrue(n2.connects(n1));

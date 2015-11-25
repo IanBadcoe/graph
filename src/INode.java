@@ -50,5 +50,4 @@ interface INode
 
    // access the geometry-layout object for this node...
    GeomLayout.IGeomLayoutCreateFromNode geomLayoutCreator();
-
 }

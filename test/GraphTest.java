@@ -12,23 +12,23 @@ public class GraphTest
    {
       Graph g = new Graph();
 
-      INode n = g.AddNode("n", "x", "y", 10);
+      INode n = g.addNode("n", "x", "y", 10);
 
-      assertEquals(1, g.NumNodes());
-      assertEquals(0, g.NumEdges());
-      assertTrue(g.Contains(n));
+      assertEquals(1, g.numNodes());
+      assertEquals(0, g.numEdges());
+      assertTrue(g.contains(n));
 
       assertEquals("n", n.getName());
       assertEquals("x", n.getCodes());
       assertEquals("y", n.getTemplate());
       assertEquals(10.0, n.getRad(), 0);
 
-      INode n2 = g.AddNode("n2", "x2", "y2", 20);
+      INode n2 = g.addNode("n2", "x2", "y2", 20);
 
-      assertEquals(2, g.NumNodes());
-      assertEquals(0, g.NumEdges());
-      assertTrue(g.Contains(n2));
-      assertTrue(g.Contains(n));
+      assertEquals(2, g.numNodes());
+      assertEquals(0, g.numEdges());
+      assertTrue(g.contains(n2));
+      assertTrue(g.contains(n));
 
       assertEquals("n2", n2.getName());
       assertEquals("x2", n2.getCodes());
@@ -41,37 +41,37 @@ public class GraphTest
    {
       Graph g = new Graph();
 
-      INode n = g.AddNode("n", "x", "y", 10);
-      INode n2 = g.AddNode("n2", "x2", "y2", 20);
-      g.Connect(n, n2, 0, 0, 0);
+      INode n = g.addNode("n", "x", "y", 10);
+      INode n2 = g.addNode("n2", "x2", "y2", 20);
+      g.connect(n, n2, 0, 0, 0);
 
-      assertEquals(2, g.NumNodes());
-      assertEquals(1, g.NumEdges());
-      assertTrue(g.Contains(n2));
-      assertTrue(g.Contains(n));
+      assertEquals(2, g.numNodes());
+      assertEquals(1, g.numEdges());
+      assertTrue(g.contains(n2));
+      assertTrue(g.contains(n));
 
       // cannot remove a connected node
-      assertFalse(g.RemoveNode(n));
-      assertFalse(g.RemoveNode(n2));
+      assertFalse(g.removeNode(n));
+      assertFalse(g.removeNode(n2));
 
-      assertEquals(2, g.NumNodes());
-      assertTrue(g.Contains(n2));
-      assertTrue(g.Contains(n));
+      assertEquals(2, g.numNodes());
+      assertTrue(g.contains(n2));
+      assertTrue(g.contains(n));
 
-      g.Disconnect(n, n2);
-      assertEquals(0, g.NumEdges());
+      g.disconnect(n, n2);
+      assertEquals(0, g.numEdges());
 
       // cannot remove a node we never heard of
-      assertFalse(g.RemoveNode(new Node("", "", "", 0)));
+      assertFalse(g.removeNode(new Node("", "", "", 0)));
 
-      assertTrue(g.RemoveNode(n));
-      assertEquals(1, g.NumNodes());
-      assertTrue(g.Contains(n2));
-      assertTrue(!g.Contains(n));
+      assertTrue(g.removeNode(n));
+      assertEquals(1, g.numNodes());
+      assertTrue(g.contains(n2));
+      assertTrue(!g.contains(n));
 
-      assertTrue(g.RemoveNode(n2));
-      assertEquals(0, g.NumNodes());
-      assertTrue(!g.Contains(n2));
+      assertTrue(g.removeNode(n2));
+      assertEquals(0, g.numNodes());
+      assertTrue(!g.contains(n2));
    }
 
    @Test
@@ -79,18 +79,18 @@ public class GraphTest
    {
       Graph g = new Graph();
 
-      assertEquals(0, g.NumEdges());
+      assertEquals(0, g.numEdges());
 
-      INode n = g.AddNode("n", "x", "y", 10);
+      INode n = g.addNode("n", "x", "y", 10);
 
-      INode n2 = g.AddNode("n2", "x2", "y2", 20);
+      INode n2 = g.addNode("n2", "x2", "y2", 20);
 
       assertFalse(n.connects(n2));
       assertFalse(n2.connects(n));
-      assertEquals(0, g.NumEdges());
+      assertEquals(0, g.numEdges());
 
-      assertNotNull(g.Connect(n, n2, 1, 2, 3));
-      assertEquals(1, g.NumEdges());
+      assertNotNull(g.connect(n, n2, 1, 2, 3));
+      assertEquals(1, g.numEdges());
       assertTrue(n.connects(n2));
       assertTrue(n2.connects(n));
 
@@ -108,24 +108,24 @@ public class GraphTest
       Graph g = new Graph();
 
       // cannot disconnect two unknown nodes
-      assertFalse(g.Disconnect(new Node("", "", "", 0),
+      assertFalse(g.disconnect(new Node("", "", "", 0),
             new Node("", "", "", 0)));
 
-      INode n = g.AddNode("n", "x", "y", 10);
+      INode n = g.addNode("n", "x", "y", 10);
 
       {
          // cannot diconnect a node we know and one we don't
          INode dummy = new Node("", "", "", 0);
-         assertFalse(g.Disconnect(n, dummy));
+         assertFalse(g.disconnect(n, dummy));
       }
 
-      INode n2 = g.AddNode("n2", "x2", "y2", 20);
-      g.Connect(n, n2, 0, 0, 0);
-      assertEquals(1, g.NumEdges());
+      INode n2 = g.addNode("n2", "x2", "y2", 20);
+      g.connect(n, n2, 0, 0, 0);
+      assertEquals(1, g.numEdges());
       assertTrue(n.connects(n2));
 
-      assertTrue((g.Disconnect(n, n2)));
-      assertEquals(0, g.NumEdges());
+      assertTrue((g.disconnect(n, n2)));
+      assertEquals(0, g.numEdges());
       assertFalse(n.connects(n2));
    }
 
@@ -133,31 +133,31 @@ public class GraphTest
    public void testAllGraphEdges() throws Exception
    {
       Graph g = new Graph();
-      INode n = g.AddNode("n", "", "", 0);
-      INode m = g.AddNode("m", "", "", 0);
-      INode o = g.AddNode("o", "", "", 0);
+      INode n = g.addNode("n", "", "", 0);
+      INode m = g.addNode("m", "", "", 0);
+      INode o = g.addNode("o", "", "", 0);
 
-      assertEquals(0, g.NumEdges());
+      assertEquals(0, g.numEdges());
 
-      g.Connect(n, m, 0, 0, 0);
+      g.connect(n, m, 0, 0, 0);
 
-      assertEquals(1, g.NumEdges());
-      assertTrue(g.AllGraphEdges().contains(new DirectedEdge(n, m, 0, 0, 0)));
+      assertEquals(1, g.numEdges());
+      assertTrue(g.allGraphEdges().contains(new DirectedEdge(n, m, 0, 0, 0)));
 
-      g.Connect(m, o, 0, 0, 0);
+      g.connect(m, o, 0, 0, 0);
 
-      assertEquals(2, g.NumEdges());
-      assertTrue(g.AllGraphEdges().contains(new DirectedEdge(m, o, 0, 0, 0)));
+      assertEquals(2, g.numEdges());
+      assertTrue(g.allGraphEdges().contains(new DirectedEdge(m, o, 0, 0, 0)));
 
-      g.Connect(o, n, 0, 0, 0);
+      g.connect(o, n, 0, 0, 0);
 
-      assertEquals(3, g.NumEdges());
-      assertTrue(g.AllGraphEdges().contains(new DirectedEdge(o, n, 0, 0, 0)));
+      assertEquals(3, g.numEdges());
+      assertTrue(g.allGraphEdges().contains(new DirectedEdge(o, n, 0, 0, 0)));
 
-      g.Disconnect(n, m);
+      g.disconnect(n, m);
 
-      assertEquals(2, g.NumEdges());
-      assertFalse(g.AllGraphEdges().contains(new DirectedEdge(n, m, 0, 0, 0)));
+      assertEquals(2, g.numEdges());
+      assertFalse(g.allGraphEdges().contains(new DirectedEdge(n, m, 0, 0, 0)));
    }
 
    @Test
@@ -165,35 +165,35 @@ public class GraphTest
    {
       Graph g = new Graph();
 
-      assertEquals(0, g.NumNodes());
+      assertEquals(0, g.numNodes());
 
-      INode n = g.AddNode("n", "", "", 0);
+      INode n = g.addNode("n", "", "", 0);
 
-      assertEquals(1, g.NumNodes());
-      assertTrue(g.AllGraphNodes().contains(n));
+      assertEquals(1, g.numNodes());
+      assertTrue(g.allGraphNodes().contains(n));
 
-      INode m = g.AddNode("m", "", "", 0);
+      INode m = g.addNode("m", "", "", 0);
 
-      assertEquals(2, g.NumNodes());
-      assertTrue(g.AllGraphNodes().contains(m));
+      assertEquals(2, g.numNodes());
+      assertTrue(g.allGraphNodes().contains(m));
 
-      INode o = g.AddNode("o", "", "", 0);
+      INode o = g.addNode("o", "", "", 0);
 
-      assertEquals(3, g.NumNodes());
-      assertTrue(g.AllGraphNodes().contains(o));
+      assertEquals(3, g.numNodes());
+      assertTrue(g.allGraphNodes().contains(o));
 
-      g.RemoveNode(n);
+      g.removeNode(n);
 
-      assertEquals(2, g.NumNodes());
-      assertFalse(g.AllGraphNodes().contains(n));
+      assertEquals(2, g.numNodes());
+      assertFalse(g.allGraphNodes().contains(n));
    }
 
    class GraphRecord
    {
       GraphRecord(Graph g)
       {
-         m_nodes.addAll(g.AllGraphNodes());
-         m_edges.addAll(g.AllGraphEdges());
+         m_nodes.addAll(g.allGraphNodes());
+         m_edges.addAll(g.allGraphEdges());
 
          for(INode n : m_nodes)
          {
@@ -203,19 +203,19 @@ public class GraphTest
 
       boolean Compare(Graph g)
       {
-         if (m_nodes.size() != g.NumNodes())
+         if (m_nodes.size() != g.numNodes())
             return false;
 
-         if (!m_nodes.containsAll(g.AllGraphNodes()))
+         if (!m_nodes.containsAll(g.allGraphNodes()))
             return false;
 
-         if (m_edges.size() != g.NumEdges())
+         if (m_edges.size() != g.numEdges())
             return false;
 
-         if (!m_edges.containsAll(g.AllGraphEdges()))
+         if (!m_edges.containsAll(g.allGraphEdges()))
             return false;
 
-         for(INode n : g.AllGraphNodes())
+         for(INode n : g.allGraphNodes())
          {
             if (!n.getPos().equals(m_positions.get(n)))
                return false;
@@ -264,7 +264,7 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
          GraphRecord gr = new GraphRecord(g);
 
@@ -275,11 +275,11 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
 
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
 
          GraphRecord gr = new GraphRecord(g);
 
@@ -292,8 +292,8 @@ public class GraphTest
 
          GraphRecord gr = new GraphRecord(g);
 
-         INode n1 = g.AddNode("", "", "", 0);
-         g.RemoveNode(n1);
+         INode n1 = g.addNode("", "", "", 0);
+         g.removeNode(n1);
 
          assertTrue(gr.Compare(g));
       }
@@ -302,15 +302,15 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
 
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
          GraphRecord gr = new GraphRecord(g);
 
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
 
-         g.Disconnect(n1, n2);
+         g.disconnect(n1, n2);
 
          assertTrue(gr.Compare(g));
       }
@@ -321,7 +321,7 @@ public class GraphTest
 
          GraphRecord gr = new GraphRecord(g);
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
          assertFalse(gr.Compare(g));
       }
@@ -330,13 +330,13 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
 
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
          GraphRecord gr = new GraphRecord(g);
 
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
 
          assertFalse(gr.Compare(g));
       }
@@ -345,7 +345,7 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
 
          GraphRecord gr = new GraphRecord(g);
 
@@ -364,7 +364,7 @@ public class GraphTest
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
          assertTrue(igr.Restore());
          // restores only work once...
@@ -379,9 +379,9 @@ public class GraphTest
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
          igr.Restore();
 
@@ -394,12 +394,12 @@ public class GraphTest
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
 
          igr.Restore();
 
@@ -410,19 +410,19 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         g.Disconnect(n1, n2);
+         g.disconnect(n1, n2);
 
-         g.RemoveNode(n1);
-         g.RemoveNode(n2);
+         g.removeNode(n1);
+         g.removeNode(n2);
 
          igr.Restore();
 
@@ -435,11 +435,11 @@ public class GraphTest
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
 
-         g.RemoveNode(n1);
+         g.removeNode(n1);
 
          igr.Restore();
 
@@ -450,15 +450,15 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         g.Connect(n1, n2, 0, 0, 0);
-         g.Disconnect(n1, n2);
+         g.connect(n1, n2, 0, 0, 0);
+         g.disconnect(n1, n2);
 
          igr.Restore();
 
@@ -469,16 +469,16 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         g.Connect(n1, n2, 0, 0, 0);
-         g.Disconnect(n1, n2);
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
+         g.disconnect(n1, n2);
+         g.connect(n1, n2, 0, 0, 0);
 
          igr.Restore();
 
@@ -489,16 +489,16 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
-         g.Connect(n1, n2, 0, 0, 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
+         g.connect(n1, n2, 0, 0, 0);
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         g.Disconnect(n1, n2);
-         g.Connect(n1, n2, 0, 0, 0);
+         g.disconnect(n1, n2);
+         g.connect(n1, n2, 0, 0, 0);
 
          igr.Restore();
 
@@ -509,17 +509,17 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
-         g.Connect(n1, n2, 0, 0, 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
+         g.connect(n1, n2, 0, 0, 0);
 
          GraphRecord gr = new GraphRecord(g);
 
-         IGraphRestore igr = g.CreateRestorePoint();
+         IGraphRestore igr = g.createRestorePoint();
 
-         g.Disconnect(n1, n2);
-         g.Connect(n1, n2, 0, 0, 0);
-         g.Disconnect(n1, n2);
+         g.disconnect(n1, n2);
+         g.connect(n1, n2, 0, 0, 0);
+         g.disconnect(n1, n2);
 
          igr.Restore();
 
@@ -532,29 +532,29 @@ public class GraphTest
 
          GraphRecord gr1 = new GraphRecord(g);
 
-         IGraphRestore igr1 = g.CreateRestorePoint();
+         IGraphRestore igr1 = g.createRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
 
          GraphRecord gr2 = new GraphRecord(g);
 
-         IGraphRestore igr2 = g.CreateRestorePoint();
+         IGraphRestore igr2 = g.createRestorePoint();
 
-         INode n3 = g.AddNode("", "", "", 0);
-         INode n4 = g.AddNode("", "", "", 0);
+         INode n3 = g.addNode("", "", "", 0);
+         INode n4 = g.addNode("", "", "", 0);
 
-         g.Connect(n3, n4, 0, 0, 0);
+         g.connect(n3, n4, 0, 0, 0);
 
-         assertEquals(igr2, g.CurrentRestore());
+         assertEquals(igr2, g.currentRestore());
 
          igr2.Restore();
 
          assertFalse(igr2.CanBeRestored());
          assertTrue(igr1.CanBeRestored());
-         assertEquals(igr1, g.CurrentRestore());
+         assertEquals(igr1, g.currentRestore());
 
          assertTrue(gr2.Compare(g));
 
@@ -570,23 +570,23 @@ public class GraphTest
 
          GraphRecord gr1 = new GraphRecord(g);
 
-         IGraphRestore igr1 = g.CreateRestorePoint();
+         IGraphRestore igr1 = g.createRestorePoint();
 
-         INode n1 = g.AddNode("", "", "", 0);
-         INode n2 = g.AddNode("", "", "", 0);
+         INode n1 = g.addNode("", "", "", 0);
+         INode n2 = g.addNode("", "", "", 0);
 
-         g.Connect(n1, n2, 0, 0, 0);
+         g.connect(n1, n2, 0, 0, 0);
 
-         IGraphRestore igr2 = g.CreateRestorePoint();
+         IGraphRestore igr2 = g.createRestorePoint();
 
-         INode n3 = g.AddNode("", "", "", 0);
-         INode n4 = g.AddNode("", "", "", 0);
+         INode n3 = g.addNode("", "", "", 0);
+         INode n4 = g.addNode("", "", "", 0);
 
-         g.Connect(n3, n4, 0, 0, 0);
+         g.connect(n3, n4, 0, 0, 0);
 
          igr1.Restore();
          assertFalse(igr2.CanBeRestored());
-         assertEquals(null, g.CurrentRestore());
+         assertEquals(null, g.currentRestore());
 
          assertTrue(gr1.Compare(g));
       }
@@ -597,27 +597,27 @@ public class GraphTest
 
          GraphRecord gr1 = new GraphRecord(g);
 
-         IGraphRestore igr1 = g.CreateRestorePoint();
+         IGraphRestore igr1 = g.createRestorePoint();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
          GraphRecord gr2 = new GraphRecord(g);
 
-         IGraphRestore igr2 = g.CreateRestorePoint();
+         IGraphRestore igr2 = g.createRestorePoint();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
          igr2.Restore();
 
-         assertEquals(igr1, g.CurrentRestore());
+         assertEquals(igr1, g.currentRestore());
          assertFalse(igr2.CanBeRestored());
          assertTrue(igr1.CanBeRestored());
 
          assertTrue(gr2.Compare(g));
 
-         IGraphRestore igr3 = g.CreateRestorePoint();
+         IGraphRestore igr3 = g.createRestorePoint();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
          igr1.Restore();
 
@@ -625,7 +625,7 @@ public class GraphTest
 
          assertFalse(igr1.CanBeRestored());
          assertFalse(igr3.CanBeRestored());
-         assertEquals(null, g.CurrentRestore());
+         assertEquals(null, g.currentRestore());
       }
 
       // keep a restore but then abandon it, committing to all our changes
@@ -634,21 +634,21 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         IGraphRestore igr1 = g.CreateRestorePoint();
+         IGraphRestore igr1 = g.createRestorePoint();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
-         IGraphRestore igr2 = g.CreateRestorePoint();
+         IGraphRestore igr2 = g.createRestorePoint();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
-         IGraphRestore igr3 = g.CreateRestorePoint();
+         IGraphRestore igr3 = g.createRestorePoint();
 
-         g.AddNode("", "", "", 0);
+         g.addNode("", "", "", 0);
 
          GraphRecord gr1 = new GraphRecord(g);
 
-         g.ClearRestore();
+         g.clearRestore();
 
          // should still have all our changes
          assertTrue(gr1.Compare(g));
@@ -664,23 +664,23 @@ public class GraphTest
    {
       Graph g = new Graph();
 
-      assertTrue(g.XYBounds().equals(new Box()));
+      assertTrue(g.bounds().equals(new Box()));
 
-      INode n1 = g.AddNode("", "", "", 1.0);
+      INode n1 = g.addNode("", "", "", 1.0);
 
-      assertTrue(g.XYBounds().equals(new Box(new XY(-1, -1), new XY(1, 1))));
+      assertTrue(g.bounds().equals(new Box(new XY(-1, -1), new XY(1, 1))));
 
-      INode n2 = g.AddNode("", "", "", 2.0);
+      INode n2 = g.addNode("", "", "", 2.0);
 
-      assertTrue(g.XYBounds().equals(new Box(new XY(-2, -2), new XY(2, 2))));
+      assertTrue(g.bounds().equals(new Box(new XY(-2, -2), new XY(2, 2))));
 
       n1.setPos(new XY(-2, 0));
 
-      assertTrue(g.XYBounds().equals(new Box(new XY(-3, -2), new XY(2, 2))));
+      assertTrue(g.bounds().equals(new Box(new XY(-3, -2), new XY(2, 2))));
 
       n2.setPos(new XY(10, 10));
 
-      assertTrue(g.XYBounds().equals(new Box(new XY(-3, -1), new XY(12, 12))));
+      assertTrue(g.bounds().equals(new Box(new XY(-3, -1), new XY(12, 12))));
    }
 
    @Test
@@ -689,10 +689,10 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         g.AddNode("xx", "yy", "zz", 1.0);
-         g.AddNode("aa", "bb", "cc", 1.0);
+         g.addNode("xx", "yy", "zz", 1.0);
+         g.addNode("aa", "bb", "cc", 1.0);
 
-         String s = g.Print();
+         String s = g.print();
 
          assertTrue(s.contains("xx"));
          assertTrue(s.contains("yy"));
@@ -707,11 +707,11 @@ public class GraphTest
       {
          Graph g = new Graph();
 
-         INode n1 = g.AddNode("xx", "yy", "zz", 1.0);
-         INode n2 = g.AddNode("aa", "bb", "cc", 1.0);
-         g.Connect(n1, n2, 0, 0, 0);
+         INode n1 = g.addNode("xx", "yy", "zz", 1.0);
+         INode n2 = g.addNode("aa", "bb", "cc", 1.0);
+         g.connect(n1, n2, 0, 0, 0);
 
-         String s = g.Print();
+         String s = g.print();
 
          String splits[] = s.split("[\\{\\}]");
 
@@ -755,12 +755,12 @@ public class GraphTest
       Graph g = new Graph();
 
       // cannot connect two nodes we never neard of
-      testCatchUnsupported(() -> g.Connect(new Node("", "", "", 0),
+      testCatchUnsupported(() -> g.connect(new Node("", "", "", 0),
             new Node("", "", "", 0), 0, 0, 0));
 
-      INode n = g.AddNode("n", "x", "y", 10);
+      INode n = g.addNode("n", "x", "y", 10);
 
       // cannot connect a node we know and one we don't
-      testCatchUnsupported(() -> g.Connect(n, new Node("", "", "", 0), 0, 0, 0));
+      testCatchUnsupported(() -> g.connect(n, new Node("", "", "", 0), 0, 0, 0));
    }
 }

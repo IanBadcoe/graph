@@ -5,6 +5,11 @@ abstract class GeomLayout
       GeomLayout create(INode n);
    }
 
+   interface IGeomLayoutCreateFromDirectedEdge
+   {
+      GeomLayout create(DirectedEdge de);
+   }
+
    GeomLayout()
    {
    }

@@ -41,13 +41,13 @@ class Node implements INode
    @Override
    public boolean connectsForwards(INode n)
    {
-      return m_connections.contains(new DirectedEdge(this, n, 0, 0, 0));
+      return m_connections.contains(new DirectedEdge(this, n, 0, 0, 0, null));
    }
 
    @Override
    public boolean connectsBackwards(INode n)
    {
-      return m_connections.contains(new DirectedEdge(n, this, 0, 0, 0));
+      return m_connections.contains(new DirectedEdge(n, this, 0, 0, 0, null));
    }
 
    void disconnect(Node n)
@@ -56,21 +56,22 @@ class Node implements INode
          return;
 
       // simplest just to try removing the forward and reverse edges
-      m_connections.remove(new DirectedEdge(this, n, 0, 0, 0));
-      m_connections.remove(new DirectedEdge(n, this, 0, 0, 0));
+      // only the nodes are part of the edge identity
+      m_connections.remove(new DirectedEdge(this, n, 0, 0, 0, null));
+      m_connections.remove(new DirectedEdge(n, this, 0, 0, 0, null));
 
       n.disconnect(this);
    }
 
-   // must have an empty slot available to take the new connection
-   DirectedEdge connect(Node n, double min_distance, double max_distance, double width)
+   DirectedEdge connect(Node n, double min_distance, double max_distance, double width,
+         GeomLayout.IGeomLayoutCreateFromDirectedEdge layoutCreator)
    {
       // cannot multiply connect the same node, forwards or backwards
       if (connects(n))
          throw new IllegalArgumentException("Cannot multiply connect from '" + m_name +
                "' to '" + n.getName() + "'");
 
-      DirectedEdge e = new DirectedEdge(this, n, min_distance, max_distance, width);
+      DirectedEdge e = new DirectedEdge(this, n, min_distance, max_distance, width, layoutCreator);
 
       connect(e);
       n.connect(e);

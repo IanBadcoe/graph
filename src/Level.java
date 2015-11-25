@@ -14,10 +14,9 @@ class Level
    {
       Box bounds = new Box();
 
-      for(INode n : m_graph.AllGraphNodes())
+      for(INode n : m_graph.allGraphNodes())
       {
          GeomLayout gl = n.geomLayoutCreator().create(n);
-         m_layouts.put(n, gl);
 
          Loop base = gl.makeBaseGeometry();
 
@@ -40,17 +39,18 @@ class Level
          }
       }
 
-      for(DirectedEdge de : m_graph.AllGraphEdges())
+      for(DirectedEdge de : m_graph.allGraphEdges())
       {
-         // TODO : store this on the edge to allow corridor geometry options
-         GeomLayout gl = new RectangularGeomLayout(de.Start.getPos(), de.End.getPos(), de.HalfWidth);
+         GeomLayout gl = de.LayoutCreator.create(de);
+
          Loop l = gl.makeBaseGeometry();
 
-         // may one day have corridors w/o geometry, but for the moment not
+         if (l != null)
+         {
+            bounds = bounds.union(l.getBounds());
 
-         bounds = bounds.union(l.getBounds());
-
-         m_base_loops.add(l);
+            m_base_loops.add(l);
+         }
       }
 
       m_bounds = bounds;
@@ -211,8 +211,6 @@ class Level
 
    private final Graph m_graph;
 
-   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-   private final HashMap<INode, GeomLayout> m_layouts = new HashMap<>();
    private final ArrayList<Loop> m_base_loops = new ArrayList<>();
    private final ArrayList<LoopSet> m_detail_loop_sets = new ArrayList<>();
 

@@ -151,16 +151,16 @@ public class LevelGenerator
    private Graph MakeSeed()
    {
       Graph ret = new Graph();
-      INode start = ret.AddNode("Start", "<", "Seed", 55f);
-      INode expander = ret.AddNode("StepperController", "e", "Seed", 55f);
-      INode end = ret.AddNode("End", ">", "Seed", 55f);
+      INode start = ret.addNode("Start", "<", "Seed", 55f);
+      INode expander = ret.addNode("StepperController", "e", "Seed", 55f);
+      INode end = ret.addNode("End", ">", "Seed", 55f);
 
       start.setPos(new XY(-100, 0));
       expander.setPos(new XY(0, 0));
       end.setPos(new XY(0, 100));
 
-      ret.Connect(start, expander, 90, 110, 10);
-      ret.Connect(expander, end, 90, 110, 10);
+      ret.connect(start, expander, 90, 110, 10);
+      ret.connect(expander, end, 90, 110, 10);
 
       //not expandable, which simplifies expansion as start won't need replacing
       return ret;

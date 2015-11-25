@@ -15,7 +15,7 @@ public class TryAllNodesExpandStepper implements IStepper
    {
       m_graph = graph;
       m_templates = templates;
-      m_all_nodes = graph.AllGraphNodes().stream().filter(n -> n.getCodes().contains("e"))
+      m_all_nodes = graph.allGraphNodes().stream().filter(n -> n.getCodes().contains("e"))
             .collect(Collectors.toCollection(ArrayList::new));
       m_config = c;
    }

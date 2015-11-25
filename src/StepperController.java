@@ -92,7 +92,7 @@ public class StepperController
    private void PushStepper(IStepper stepper)
    {
       m_stack.push(
-            new OrderedPair<>(stepper, m_graph != null ? m_graph.CreateRestorePoint() : null));
+            new OrderedPair<>(stepper, m_graph != null ? m_graph.createRestorePoint() : null));
    }
 
    private IStepper CurrentStepper()

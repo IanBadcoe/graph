@@ -20,12 +20,12 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("x", "", "", 0);
+            INode a = g.addNode("x", "", "", 0);
             a.setPos(new XY(-4, 3));
 
             assertTrue(t.Expand(g, a, new Random(1)));
-            assertEquals(1, g.NumNodes());
-            INode new_n = g.AllGraphNodes().get(0);
+            assertEquals(1, g.numNodes());
+            INode new_n = g.allGraphNodes().get(0);
             assertEquals("a", new_n.getName());
             assertEquals(new XY(-4, 3), new_n.getPos());
         }
@@ -43,12 +43,12 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode n = g.AddNode("x", "", "", 0);
+            INode n = g.addNode("x", "", "", 0);
             n.setPos(new XY(-4, 3));
 
             assertTrue(t.Expand(g, n, new Random(1)));
-            assertEquals(1, g.NumNodes());
-            INode new_n = g.AllGraphNodes().get(0);
+            assertEquals(1, g.numNodes());
+            INode new_n = g.allGraphNodes().get(0);
             assertEquals("a", new_n.getName());
 
             // we offset by 5 in a random direction
@@ -72,15 +72,15 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("x", "", "", 0);
+            INode a = g.addNode("x", "", "", 0);
             a.setPos(new XY(-4, 3));
-            INode in = g.AddNode("in", "", "", 0);
+            INode in = g.addNode("in", "", "", 0);
             in.setPos(new XY(10, 9));
 
-            g.Connect(in, a, 0, 0, 0);
+            g.connect(in, a, 0, 0, 0);
 
             assertTrue(t.Expand(g, a, new Random(1)));
-            assertEquals(2, g.NumNodes());
+            assertEquals(2, g.numNodes());
             assertNotNull(FindNode(g, "in"));
             INode new_n = FindNode(g, "a");
             assertNotNull(new_n != null);
@@ -102,15 +102,15 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("x", "", "", 0);
+            INode a = g.addNode("x", "", "", 0);
             a.setPos(new XY(-4, 3));
-            INode in = g.AddNode("in", "", "", 0);
+            INode in = g.addNode("in", "", "", 0);
             in.setPos(new XY(10, 9));
 
-            g.Connect(in, a, 0, 0, 0);
+            g.connect(in, a, 0, 0, 0);
 
             assertTrue(t.Expand(g, a, new Random(1)));
-            assertEquals(2, g.NumNodes());
+            assertEquals(2, g.numNodes());
             assertNotNull(FindNode(g, "in"));
             INode new_n = FindNode(g, "a");
             assertNotNull(new_n != null);
@@ -135,15 +135,15 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("x", "", "", 0);
+            INode a = g.addNode("x", "", "", 0);
             a.setPos(new XY(-4, 3));
-            INode in = g.AddNode("in", "", "", 0);
+            INode in = g.addNode("in", "", "", 0);
             in.setPos(new XY(-14, -7));
 
-            g.Connect(in, a, 0, 0, 0);
+            g.connect(in, a, 0, 0, 0);
 
             assertTrue(t.Expand(g, a, new Random(1)));
-            assertEquals(2, g.NumNodes());
+            assertEquals(2, g.numNodes());
             assertNotNull(FindNode(g, "in"));
             INode new_n = FindNode(g, "a");
             assertNotNull(new_n != null);
@@ -167,15 +167,15 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("x", "", "", 0);
+            INode a = g.addNode("x", "", "", 0);
             a.setPos(new XY(-4, 3));
-            INode in = g.AddNode("in", "", "", 0);
+            INode in = g.addNode("in", "", "", 0);
             in.setPos(new XY(-14, -7));
 
-            g.Connect(in, a, 0, 0, 0);
+            g.connect(in, a, 0, 0, 0);
 
             assertTrue(t.Expand(g, a, new Random(1)));
-            assertEquals(2, g.NumNodes());
+            assertEquals(2, g.numNodes());
             assertNotNull(FindNode(g, "in"));
             INode new_n = FindNode(g, "a");
             assertNotNull(new_n != null);
@@ -201,18 +201,18 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("x", "", "", 0);
+            INode a = g.addNode("x", "", "", 0);
             a.setPos(new XY(10, 10));
-            INode in = g.AddNode("in", "", "", 0);
+            INode in = g.addNode("in", "", "", 0);
             in.setPos(new XY(20, 10));
-            INode out = g.AddNode("out", "", "", 0);
+            INode out = g.addNode("out", "", "", 0);
             out.setPos(new XY(10, 20));
 
-            g.Connect(in, a, 0, 0, 0);
-            g.Connect(a, out, 0, 0, 0);
+            g.connect(in, a, 0, 0, 0);
+            g.connect(a, out, 0, 0, 0);
 
             assertTrue(t.Expand(g, a, new Random(1)));
-            assertEquals(3, g.NumNodes());
+            assertEquals(3, g.numNodes());
             assertNotNull(FindNode(g, "in"));
             INode new_n = FindNode(g, "a");
             assertNotNull(new_n != null);
@@ -241,20 +241,20 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("a", "", "", 0);
-            INode b = g.AddNode("b", "", "", 0);
-            INode c = g.AddNode("c", "", "", 0);
-            INode d = g.AddNode("d", "", "", 0);
+            INode a = g.addNode("a", "", "", 0);
+            INode b = g.addNode("b", "", "", 0);
+            INode c = g.addNode("c", "", "", 0);
+            INode d = g.addNode("d", "", "", 0);
 
             a.setPos(new XY(10, 0));
             b.setPos(new XY(-10, 0));
             c.setPos(new XY(0, 10));
             d.setPos(new XY(0, -10));
 
-            g.Connect(a, b, 0, 0, 0);
-            g.Connect(c, d, 0, 0, 0);
+            g.connect(a, b, 0, 0, 0);
+            g.connect(c, d, 0, 0, 0);
 
-            IGraphRestore igr = g.CreateRestorePoint();
+            IGraphRestore igr = g.createRestorePoint();
 
             // cannot succeed as want to re-connect c and d
             // but that line has to hit the a -> b edge
@@ -264,7 +264,7 @@ public class TemplateTest {
             igr.Restore();
 
             // just to prove this is why we are failing
-            g.Disconnect(a, b);
+            g.disconnect(a, b);
 
             assertTrue(t.Expand(g, d, new Random(1)));
         }
@@ -283,14 +283,14 @@ public class TemplateTest {
 
             Graph g = new Graph();
 
-            INode a = g.AddNode("a", "", "", 0);
-            INode b = g.AddNode("b", "", "", 0);
-            INode c = g.AddNode("c", "", "", 0);
-            INode d = g.AddNode("d", "", "", 0);
-            INode x = g.AddNode("x", "", "", 0);
+            INode a = g.addNode("a", "", "", 0);
+            INode b = g.addNode("b", "", "", 0);
+            INode c = g.addNode("c", "", "", 0);
+            INode d = g.addNode("d", "", "", 0);
+            INode x = g.addNode("x", "", "", 0);
 
             {
-                IGraphRestore igr = g.CreateRestorePoint();
+                IGraphRestore igr = g.createRestorePoint();
 
                 // no ins or outs
                 assertFalse(t.Expand(g, x, new Random(1)));
@@ -299,10 +299,10 @@ public class TemplateTest {
                 igr.Restore();
             }
 
-            g.Connect(a, x, 0, 0, 0);
+            g.connect(a, x, 0, 0, 0);
 
             {
-                IGraphRestore igr = g.CreateRestorePoint();
+                IGraphRestore igr = g.createRestorePoint();
 
                 // still no outs
                 assertFalse(t.Expand(g, x, new Random(1)));
@@ -311,10 +311,10 @@ public class TemplateTest {
                 igr.Restore();
             }
 
-            g.Connect(x, b, 0, 0, 0);
+            g.connect(x, b, 0, 0, 0);
 
             {
-                IGraphRestore igr = g.CreateRestorePoint();
+                IGraphRestore igr = g.createRestorePoint();
 
                 // 1 in 1 out
                 assertTrue(t.Expand(g, x, new Random(1)));
@@ -323,10 +323,10 @@ public class TemplateTest {
                 igr.Restore();
             }
 
-            g.Connect(c, x, 0, 0, 0);
+            g.connect(c, x, 0, 0, 0);
 
             {
-                IGraphRestore igr = g.CreateRestorePoint();
+                IGraphRestore igr = g.createRestorePoint();
 
                 // two ins 1 out
                 assertFalse(t.Expand(g, x, new Random(1)));
@@ -335,10 +335,10 @@ public class TemplateTest {
                 igr.Restore();
             }
 
-            g.Connect(x, d, 0, 0, 0);
+            g.connect(x, d, 0, 0, 0);
 
             {
-                IGraphRestore igr = g.CreateRestorePoint();
+                IGraphRestore igr = g.createRestorePoint();
 
                 // 2 ins 2 outs
                 assertFalse(t.Expand(g, x, new Random(1)));
@@ -347,10 +347,10 @@ public class TemplateTest {
                 igr.Restore();
             }
 
-            g.Disconnect(b, x);
+            g.disconnect(b, x);
 
             {
-                IGraphRestore igr = g.CreateRestorePoint();
+                IGraphRestore igr = g.createRestorePoint();
 
                 // 0 ins 2 outs
                 assertFalse(t.Expand(g, x, new Random(1)));
@@ -359,10 +359,10 @@ public class TemplateTest {
                 igr.Restore();
             }
 
-            g.Disconnect(x, c);
+            g.disconnect(x, c);
 
             {
-                IGraphRestore igr = g.CreateRestorePoint();
+                IGraphRestore igr = g.createRestorePoint();
 
                 // 0 ins 1 out
                 assertFalse(t.Expand(g, x, new Random(1)));
@@ -434,7 +434,7 @@ public class TemplateTest {
     // but that isn't a requirement of graphs generally
     private static INode FindNode(Graph g, String name)
     {
-        for(INode n : g.AllGraphNodes())
+        for(INode n : g.allGraphNodes())
         {
             if (n.getName().equals(name))
                 return n;

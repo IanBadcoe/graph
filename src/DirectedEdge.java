@@ -4,10 +4,19 @@ class DirectedEdge {
    public final double MinLength;
    public final double MaxLength;
    public final double HalfWidth;
+   public final GeomLayout.IGeomLayoutCreateFromDirectedEdge LayoutCreator;
 
    public DirectedEdge(INode start, INode end,
-                       double min_length, double max_length,
-                       double half_width) {
+         double min_length, double max_length,
+         double half_width)
+   {
+      this(start, end, min_length, max_length, half_width, null);
+   }
+
+   public DirectedEdge(INode start, INode end,
+         double min_length, double max_length,
+         double half_width,
+         GeomLayout.IGeomLayoutCreateFromDirectedEdge layout_creator) {
       assert start != null;
       assert end != null;
 
@@ -16,6 +25,13 @@ class DirectedEdge {
       MinLength = min_length;
       MaxLength = max_length;
       HalfWidth = half_width;
+      LayoutCreator = layout_creator;
+   }
+
+   public static GeomLayout makeDefaultCorridor(DirectedEdge de)
+   {
+      return new RectangularGeomLayout(de.Start.getPos(),
+            de.End.getPos(), de.HalfWidth);
    }
 
    @Override

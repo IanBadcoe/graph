@@ -37,7 +37,7 @@ public class ExpandToSizeStepperTest
       @Override
       public StepperController.StatusReportInner step(StepperController.Status status)
       {
-         m_graph.AddNode("", "", "", 0);
+         m_graph.addNode("", "", "", 0);
 
          return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                null, "");
@@ -65,7 +65,7 @@ public class ExpandToSizeStepperTest
       while(!ret.Complete);
 
       assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
-      assertEquals(10, g.NumNodes());
+      assertEquals(10, g.numNodes());
    }
 
    @Test
