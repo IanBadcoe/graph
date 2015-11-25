@@ -208,6 +208,7 @@ class GridWalker
       return gridCellToPos(cell, m_cell_size);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public static XY gridCellToPos(CC cell, double cellSize)
    {
       return new XY(cell.First * cellSize, cell.Second * cellSize);
@@ -247,6 +248,7 @@ class GridWalker
    private State m_state = State.InProgress;
 
    private final double m_cell_size;
+   @SuppressWarnings("FieldCanBeLocal")
    private final double m_feature_radius;
 
    private final XY m_begin;

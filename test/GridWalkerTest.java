@@ -21,8 +21,6 @@ public class GridWalkerTest
 
          CC cell;
 
-         XY dir = end.minus(begin).makeUnit();
-
          while((cell = gw.nextCell()) != null && count < 10)
          {
             cells.add(cell);
@@ -50,8 +48,6 @@ public class GridWalkerTest
          int count = 0;
 
          CC cell;
-
-         XY dir = end.minus(begin).makeUnit();
 
          while((cell = gw.nextCell()) != null && count < 10)
          {
@@ -81,8 +77,6 @@ public class GridWalkerTest
 
          CC cell;
 
-         XY dir = end.minus(begin).makeUnit();
-
          while((cell = gw.nextCell()) != null && count < 10)
          {
             cells.add(cell);
@@ -111,8 +105,6 @@ public class GridWalkerTest
 
          CC cell;
 
-         XY dir = end.minus(begin).makeUnit();
-
          while((cell = gw.nextCell()) != null && count < 10)
          {
             cells.add(cell);
@@ -140,8 +132,6 @@ public class GridWalkerTest
          int count = 0;
 
          CC cell;
-
-         XY dir = end.minus(begin).makeUnit();
 
          while((cell = gw.nextCell()) != null && count < 10)
          {
@@ -172,8 +162,6 @@ public class GridWalkerTest
 
          CC cell;
 
-         XY dir = end.minus(begin).makeUnit();
-
          while((cell = gw.nextCell()) != null && count < 10)
          {
             cells.add(cell);
@@ -203,8 +191,6 @@ public class GridWalkerTest
 
          CC cell;
 
-         XY dir = end.minus(begin).makeUnit();
-
          while((cell = gw.nextCell()) != null && count < 10)
          {
             cells.add(cell);
@@ -233,8 +219,6 @@ public class GridWalkerTest
          int count = 0;
 
          CC cell;
-
-         XY dir = end.minus(begin).makeUnit();
 
          while((cell = gw.nextCell()) != null && count < 10)
          {
@@ -285,8 +269,6 @@ public class GridWalkerTest
          int count = 0;
 
          CC cell;
-
-         XY dir = end.minus(begin).makeUnit();
 
          while((cell = gw.nextCell()) != null && count < 10)
          {

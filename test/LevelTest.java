@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class LevelTest
 {
-   HashSet<Object> m_seen_things = new HashSet<>();
+   private final HashSet<Object> m_seen_things = new HashSet<>();
 
    private class ThingNoticer extends GeomLayout
    {
