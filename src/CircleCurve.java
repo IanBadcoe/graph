@@ -23,7 +23,7 @@ class CircleCurve extends Curve
    }
 
    CircleCurve(XY position, double radius,
-               @SuppressWarnings("SameParameterValue") RotationDirection rotation)
+               RotationDirection rotation)
    {
       this (position, radius, 0, Math.PI * 2, rotation);
    }

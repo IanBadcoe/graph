@@ -25,7 +25,7 @@ class Level
          {
             bounds = bounds.union(base.getBounds());
 
-            m_base_loops.add(base);
+            addBaseLoop(base);
          }
 
          LoopSet details = gl.makeDetailGeometry();
@@ -35,7 +35,7 @@ class Level
          {
             // bounds of details no-bigger than base, so can ignore
 
-            m_detail_loop_sets.add(details);
+            addDetailLoops(details);
          }
       }
 
@@ -49,22 +49,47 @@ class Level
          {
             bounds = bounds.union(l.getBounds());
 
-            m_base_loops.add(l);
+            addBaseLoop(l);
          }
       }
 
       m_bounds = bounds;
    }
 
+   // exposed for testing but there could be cases where client code wants to reach-in
+   // and add some special piece of geometry
+   public void addBaseLoop(Loop l)
+   {
+      m_base_loops.add(l);
+   }
+
+   // exposed for testing but there could be cases where client code wants to reach-in
+   // and add some special piece of geometry
+   void addDetailLoops(LoopSet ls)
+   {
+      m_detail_loop_sets.add(ls);
+   }
+
+   public Collection<Loop> getBaseLoops()
+   {
+      return Collections.unmodifiableCollection(m_base_loops);
+   }
+
+   public Collection<LoopSet> getDetailLoopSets()
+   {
+      return Collections.unmodifiableCollection(m_detail_loop_sets);
+   }
+
+   // returns true when all complete
    boolean unionOne(Random r)
    {
       if (m_base_loops.size() > 0)
       {
          Loop l = m_base_loops.remove(0);
 
-         m_level = Intersector.union(m_level, new LoopSet(l), 1e-6, r, false);
+         m_merged_loops = Intersector.union(m_merged_loops, new LoopSet(l), 1e-6, r, false);
 
-         assert m_level != null;
+         assert m_merged_loops != null;
 
          return false;
       }
@@ -73,9 +98,9 @@ class Level
       {
          LoopSet ls = m_detail_loop_sets.remove(0);
 
-         m_level = Intersector.union(m_level, ls, 1e-6, r, false);
+         m_merged_loops = Intersector.union(m_merged_loops, ls, 1e-6, r, false);
 
-         assert m_level != null;
+         assert m_merged_loops != null;
 
          return false;
       }
@@ -88,7 +113,7 @@ class Level
       Loop temp =
             m_base_loops.stream().findFirst().get();
 
-      Intersector.union(m_level, new LoopSet(temp), 1e-6, m_union_random, true);
+      Intersector.union(m_merged_loops, new LoopSet(temp), 1e-6, m_union_random, true);
    }
 
    Collection<WallLoop> getWallLoops()
@@ -98,7 +123,7 @@ class Level
 
    public void finalise()
    {
-      for(Loop l : m_level)
+      for(Loop l : m_merged_loops)
       {
          ArrayList<OrderedPair<XY, XY>> loop_pnts = l.facetWithNormals(m_wall_facet_length);
 
@@ -199,14 +224,9 @@ class Level
       return ret;
    }
 
-   private XY cellCentre(CC cell)
+   Collection<Loop> getMergedLoops()
    {
-      return cellOrigin(cell).plus(new XY(m_cell_size / 2, m_cell_size / 2));
-   }
-
-   private XY cellOrigin(CC cell)
-   {
-      return new XY(cell.First * m_cell_size, cell.Second * m_cell_size);
+      return Collections.unmodifiableCollection(m_merged_loops);
    }
 
    private final Graph m_graph;
@@ -217,7 +237,7 @@ class Level
    private final HashMap<CC, ArrayList<Wall>> m_wall_map
          = new HashMap<>();
 
-   private LoopSet m_level = new LoopSet();
+   private LoopSet m_merged_loops = new LoopSet();
 
    private Box m_bounds;
 
@@ -226,4 +246,5 @@ class Level
    private final double m_wall_facet_length;
 
    private final WallLoopSet m_wall_loops = new WallLoopSet();
+
 }
