@@ -1,18 +1,137 @@
 class GridWalker
 {
-   GridWalker(double cell_size, XY begin, XY end, double feature_radius)
+   GridWalker(double cell_size, XY begin, XY end, double feature_diameter)
    {
       m_cell_size = cell_size;
       m_begin = begin;
       m_end = end;
+      m_feature_diameter = feature_diameter;
+   }
 
+   private void calculateLineParams()
+   {
+      XY diff = m_end.minus(m_begin);
+
+      if (m_major_axis == MajorAxis.X)
+      {
+         m_line_slope = diff.Y / diff.X;
+         m_line_offset = m_begin.Y - m_begin.X * m_line_slope;
+      }
+      else
+      {
+         m_line_slope = diff.X / diff.Y;
+         m_line_offset = m_begin.X - m_begin.Y * m_line_slope;
+      }
+   }
+
+   private void calculateMinorLimits()
+   {
+      double cell_edge_before = cellEdgeOrdinate(m_curr_major_cell);
+      double cell_edge_after = cellEdgeOrdinate(m_curr_major_cell + 1);
+
+      // this can make the two edges the same, this is not a problem
+
+      double minor_pos_before = calculateLine(cell_edge_before);
+      double minor_pos_after = calculateLine(cell_edge_after);
+
+      // we're going to interpolate on the infinite line through start and end
+      // however the edges of this cell might be beyond start or end position
+      // this can lead to us finding cells we don't need (they are within range
+      // of the infinite line but not the finite segment
+      //
+      // if we just clamp to the minor-axis-range of the segment
+      // we clip these away
+
+      minor_pos_before = Math.max(minor_pos_before, m_low_minor);
+      minor_pos_before = Math.min(minor_pos_before, m_high_minor);
+      minor_pos_after = Math.max(minor_pos_after, m_low_minor);
+      minor_pos_after = Math.min(minor_pos_after, m_high_minor);
+
+      double higher_lim = minor_pos_after > minor_pos_before ? minor_pos_after : minor_pos_before;
+      double lower_lim = minor_pos_after < minor_pos_before ? minor_pos_after : minor_pos_before;
+
+      m_curr_minor_cell =  adjustCellLimit(lower_lim, -1);
+      m_minor_axis_end = adjustCellLimit(higher_lim, 1);
+   }
+
+   // calculates a position on the minor axis, given on one the major axis
+   private double calculateLine(double major)
+   {
+      return m_line_slope * major + m_line_offset;
+   }
+
+   CC nextCell()
+   {
+      next();
+
+      if (m_state == State.Done)
+      {
+         return null;
+      }
+
+      CC ret;
+
+      if (m_major_axis == MajorAxis.X)
+      {
+         ret = new CC(m_curr_major_cell, m_curr_minor_cell);
+      }
+      else
+      {
+         ret = new CC(m_curr_minor_cell, m_curr_major_cell);
+      }
+
+      return ret;
+   }
+
+   private void next()
+   {
+      if (m_state == State.Init)
+      {
+         init();
+
+         return;
+      }
+      else if (m_curr_minor_cell == m_minor_axis_end)
+      {
+         if (offMajorEnd())
+         {
+            m_state = State.Done;
+
+            return;
+         }
+
+         m_curr_major_cell += m_major_axis_dir;
+         calculateMinorLimits();
+
+         return;
+      }
+
+      m_curr_minor_cell++;
+   }
+
+   private void init()
+   {
       m_dir = m_end.minus(m_begin).makeUnit();
-
-      m_feature_radius = feature_radius;
 
       // this is how far we have to get (orthogonally) from a cell centre, before
       // any wall in that cell cannot possibly hit us
-      m_range = (m_cell_size + m_feature_radius) / 2;
+      //
+      // however increase feature diameter by root(2), because if we pass a corner at 45 degrees
+      // we can be rad * root(2) on the two adjoining orthogonal axes, but only
+      // r away at the closest approach, e.g. in the following:
+      //
+      //              /\
+      //         (r) /  \
+      //            /    \
+      // _________ /      \
+      //          | <-x->  \
+      //          |         \
+      //          |
+      //          |
+      //          |
+      //
+      // "x" is root(2) larger than r
+      m_range = (m_cell_size + m_feature_diameter * Math.sqrt(2)) / 2;
 
       m_major_axis = Math.abs(m_dir.X) > Math.abs(m_dir.Y) ? MajorAxis.X : MajorAxis.Y;
       calculateLineParams();
@@ -37,101 +156,8 @@ class GridWalker
       m_high_minor = min_ord_start > min_ord_end ? min_ord_start : min_ord_end;
 
       calculateMinorLimits();
-   }
 
-   private void calculateLineParams()
-   {
-      XY diff = m_end.minus(m_begin);
-
-      if (m_major_axis == MajorAxis.X)
-      {
-         m_line_slope = diff.Y / diff.X;
-         m_line_offset = m_begin.Y - m_begin.X * m_line_slope;
-      }
-      else
-      {
-         m_line_slope = diff.X / diff.Y;
-         m_line_offset = m_begin.X - m_begin.Y * m_line_slope;
-      }
-   }
-
-   private void calculateMinorLimits()
-   {
-      double cell_edge_before = cellEdge(m_curr_major_cell);
-      double cell_edge_after = cellEdge(m_curr_major_cell + 1);
-
-      // we're going to interpolate on the infinite line through start and end
-      // however the edges of this cell might be beyond start or end position
-      // this can lead to us finding cells we don't need (they are within range
-      // of the infinite line but not the finite segment
-      //
-      // if we just clamp to the minor-axis-range of the segment
-      // we clip these away
-
-      cell_edge_before = Math.max(cell_edge_before, m_low_minor);
-      cell_edge_before = Math.min(cell_edge_before, m_high_minor);
-      cell_edge_after = Math.max(cell_edge_after, m_low_minor);
-      cell_edge_after = Math.min(cell_edge_after, m_high_minor);
-
-      // this can make the two edges the same, this is not a problem
-
-      double minor_pos_before = calculateLine(cell_edge_before);
-      double minor_pos_after = calculateLine(cell_edge_after);
-
-      double higher_lim = minor_pos_after > minor_pos_before ? minor_pos_after : minor_pos_before;
-      double lower_lim = minor_pos_after < minor_pos_before ? minor_pos_after : minor_pos_before;
-
-      m_curr_minor_cell =  adjustCellLimit(lower_lim, -1);
-      m_minor_axis_end = adjustCellLimit(higher_lim, 1);
-   }
-
-   // calculates a position on the minor axis, given on one the major axis
-   private double calculateLine(double major)
-   {
-      return m_line_slope * major + m_line_offset;
-   }
-
-   CC nextCell()
-   {
-      if (m_state != State.InProgress)
-      {
-         return null;
-      }
-
-      CC ret;
-
-      if (m_major_axis == MajorAxis.X)
-      {
-         ret = new CC(m_curr_major_cell, m_curr_minor_cell);
-      }
-      else
-      {
-         ret = new CC(m_curr_minor_cell, m_curr_major_cell);
-      }
-
-      next();
-
-      return ret;
-   }
-
-   private void next()
-   {
-      if (m_curr_minor_cell == m_minor_axis_end)
-      {
-         if (offMajorEnd())
-         {
-            m_state = State.Done;
-
-            return;
-         }
-
-         m_curr_major_cell += m_major_axis_dir;
-         calculateMinorLimits();
-
-         return;
-      }
-
-      m_curr_minor_cell++;
+      m_state = State.InProgress;
    }
 
    private boolean offMajorEnd()
@@ -155,7 +181,7 @@ class GridWalker
       // easy way to do this is by distance from cell centres
       // (because we can measure to center in either direction, but examining an edge would rely
       // on working out which edge (before or after) for the way we were going...)
-      if (Math.abs(cellCentre(cell + dir) - ord) <= m_range)
+      if (Math.abs(cellCentreOrdinate(cell + dir) - ord) <= m_range)
       {
          cell += dir;
       }
@@ -163,27 +189,27 @@ class GridWalker
       return cell;
    }
 
-   private double cellEdge(double cellIndex)
+   public double cellEdgeOrdinate(double cellIndex)
    {
-      return cellEdge(cellIndex, m_cell_size);
+      return cellEdgeOrdinate(cellIndex, m_cell_size);
    }
 
-   private static double cellEdge(double cellIndex, double cellSize)
+   public static double cellEdgeOrdinate(double cellIndex, double cellSize)
    {
       return cellIndex * cellSize;
    }
 
-   private double cellCentre(int cellIndex)
+   public double cellCentreOrdinate(int cellIndex)
    {
-      return cellCentre(cellIndex, m_cell_size);
+      return cellCentreOrdinate(cellIndex, m_cell_size);
    }
 
-   private static double cellCentre(int cellIndex, double cellSize)
+   public static double cellCentreOrdinate(int cellIndex, double cellSize)
    {
-      return cellEdge(cellIndex, cellSize) + cellSize * 0.5;
+      return cellEdgeOrdinate(cellIndex, cellSize) + cellSize * 0.5;
    }
 
-   private int ordinateToCell(double ord)
+   public int ordinateToCell(double ord)
    {
       return ordinateToCell(ord, m_cell_size);
    }
@@ -193,25 +219,37 @@ class GridWalker
       return (int)Math.floor(ord / cellSize);
    }
 
-   private CC posToGridCell(XY pos)
+   private CC positionToCell(XY pos)
    {
-      return posToGridCell(pos, m_cell_size);
+      return positionToCell(pos, m_cell_size);
    }
 
-   public static CC posToGridCell(XY pos, double cellSize)
+   public static CC positionToCell(XY pos, double cellSize)
    {
       return new CC((int)(pos.X / cellSize), (int)(pos.Y / cellSize));
    }
 
-   private XY gridCellToPos(CC cell)
+   public XY cellToEdgePosition(CC cell)
    {
-      return gridCellToPos(cell, m_cell_size);
+      return cellToEdgePosition(cell, m_cell_size);
    }
 
    @SuppressWarnings("WeakerAccess")
-   public static XY gridCellToPos(CC cell, double cellSize)
+   public static XY cellToEdgePosition(CC cell, double cellSize)
    {
       return new XY(cell.First * cellSize, cell.Second * cellSize);
+   }
+
+   public XY cellToCentrePosition(CC cell)
+   {
+      return cellToCentrePosition(cell, m_cell_size);
+   }
+
+   @SuppressWarnings("WeakerAccess")
+   public static XY cellToCentrePosition(CC cell, double cellSize)
+   {
+      return new XY(cell.First * cellSize + cellSize * 0.5,
+            cell.Second * cellSize + cellSize * 0.5);
    }
 
    public void resetRayEnd(XY end)
@@ -241,15 +279,16 @@ class GridWalker
 
    enum State
    {
+      Init,
       InProgress,
       Done
    }
 
-   private State m_state = State.InProgress;
+   private State m_state = State.Init;
 
    private final double m_cell_size;
    @SuppressWarnings("FieldCanBeLocal")
-   private final double m_feature_radius;
+   private final double m_feature_diameter;
 
    private final XY m_begin;
    // when our client finds a candidate result at some point along our line
@@ -264,16 +303,16 @@ class GridWalker
    private XY m_end;
 
    // only used for asserting any changed end is in the same direction
-   private final XY m_dir;
+   private XY m_dir;
    private double m_line_slope;
    private double m_line_offset;
 
-   private final MajorAxis m_major_axis;
+   private MajorAxis m_major_axis;
 
    private int m_major_axis_end;
-   private final int m_major_axis_dir;
+   private int m_major_axis_dir;
 
-   private final double m_range;
+   private double m_range;
 
    private int m_minor_axis_end;
 

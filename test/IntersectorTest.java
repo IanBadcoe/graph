@@ -105,13 +105,14 @@ public class IntersectorTest
 
       HashMap<Curve, Intersector.AnnotatedCurve> forward_annotations_map = new HashMap<>();
 
-      Intersector.buildAnnotationChains(curves,
+      Intersector.buildAnnotationChains(curves, 1,
             forward_annotations_map);
 
       for(Curve c : curves)
       {
          assertNotNull(forward_annotations_map.get(c));
          assertNotNull(forward_annotations_map.get(c));
+         assertEquals(1, forward_annotations_map.get(c).LoopNumber);
       }
 
       assertEquals(cb, forward_annotations_map.get(ca).Next.Curve);
@@ -254,10 +255,10 @@ public class IntersectorTest
 
       HashMap<Curve, Intersector.AnnotatedCurve> forward_annotations_map = new HashMap<>();
 
-      Intersector.buildAnnotationChains(curves1,
+      Intersector.buildAnnotationChains(curves1, 1,
             forward_annotations_map);
 
-      Intersector.buildAnnotationChains(curves2,
+      Intersector.buildAnnotationChains(curves2, 2,
             forward_annotations_map);
 
       HashMap<Curve, Intersector.Splice> endSpliceMap = new HashMap<>();

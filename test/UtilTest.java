@@ -264,7 +264,7 @@ public class UtilTest
       XY h_ee = mat.Multiply(ee.plus(offset));
       XY h_exp_targ = mat.Multiply(exp_targ.plus(offset));
       XY h_exp_dir = mat.Multiply(exp_dir);
-      Util.NEDRet vals = Util.nodeEdgeDist(h_n, h_es, h_ee);
+      Util.NEDRet vals = Util.nodeEdgeForceDist(h_n, h_es, h_ee);
 
       assertEquals(exp_dist, vals.Dist, 1e-5);
       assertEquals(h_exp_targ.X, vals.Target.X, 1e-6);

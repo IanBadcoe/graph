@@ -208,7 +208,7 @@ class RelaxerStepper implements IStepper
 
    private double AddNodeEdgeForces(DirectedEdge e, INode n)
    {
-      Util.NEDRet vals = Util.nodeEdgeDist(n.getPos(), e.Start.getPos(), e.End.getPos());
+      Util.NEDRet vals = Util.nodeEdgeForceDist(n.getPos(), e.Start.getPos(), e.End.getPos());
 
       if (vals == null)
          return 1.0;

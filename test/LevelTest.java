@@ -60,7 +60,7 @@ public class LevelTest
    public void testUnionOne() throws Exception
    {
       {
-         // if we don't call generateGeometry, a null level is fine
+         // if we don't call generateGeometry, a null graph is fine
          Level l = new Level(null, 0, 0);
 
          Loop l1 = new Loop(new CircleCurve(new XY(0, 0), 10));
@@ -101,7 +101,7 @@ public class LevelTest
       }
 
       {
-         // if we don't call generateGeometry, a null level is fine
+         // if we don't call generateGeometry, a null graph is fine
          Level l = new Level(null, 0, 0);
 
          Loop l1 = new Loop(new CircleCurve(new XY(0, 0), 10));
@@ -136,7 +136,7 @@ public class LevelTest
       }
 
       {
-         // if we don't call generateGeometry, a null level is fine
+         // if we don't call generateGeometry, a null graph is fine
          Level l = new Level(null, 0, 0);
 
          Loop l1 = new Loop(new CircleCurve(new XY(0, 0), 10));
@@ -182,21 +182,83 @@ public class LevelTest
       }
    }
 
-   @Test
-   public void testGetWallLoops() throws Exception
+   private static void hitTest(Level l, XY dir)
    {
-
-   }
-
-   @Test
-   public void testGetBounds() throws Exception
-   {
-
+      Wall w = l.nearestWall(new XY(), dir, 110);
+      assertNotNull(w);
+      assertNotNull(Util.edgeIntersect(new XY(), dir.multiply(110), w.Start, w.End));
    }
 
    @Test
    public void testNearestWall() throws Exception
    {
+      {
+         Level l = new Level(null, 20, 10);
 
+         Loop l1 = new Loop(new CircleCurve(new XY(), 100));
+         l.addBaseLoop(l1);
+
+         l.unionOne(new Random(1));
+
+         l.finalise();
+
+         // probe variously angles from origin
+         // circle subtends a touch more than +/- 11.5 degrees, so if we scan by whole degrees
+         // we ought to see a sudden step out to a distance of 100 when we pass that
+
+         for(double d = 0; d < 360; d++)
+         {
+            XY dir = new XY(Math.sin(d * Math.PI / 180), Math.cos(d * Math.PI / 180));
+
+            Wall w = l.nearestWall(new XY(0, 0), dir, 110);
+
+            assertNotNull(w);
+
+            double dist = Math.min(w.Start.length(), w.End.length());
+            assertTrue(dist > 98);
+         }
+      }
+
+      {
+         Level l = new Level(null, 20, 10);
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 100));
+         l.addBaseLoop(l1);
+         LoopSet ls = new LoopSet();
+         Loop l2 = new Loop(new CircleCurve(new XY(50, 0), 10, CircleCurve.RotationDirection.Reverse));
+         ls.add(l2);
+         l.addDetailLoops(ls);
+
+         l.unionOne(new Random(1));
+         l.unionOne(new Random(1));
+
+         l.finalise();
+
+         // probe variously angles from origin
+         // circle subtends a touch more than +/- 11.5 degrees, so if we scan by whole degrees
+         // we ought to see a sudden step out to a distance of 100 when we pass that
+
+         for(double d = 0; d < 360; d++)
+         {
+            XY dir = new XY(Math.sin(d * Math.PI / 180), Math.cos(d * Math.PI / 180));
+
+            Wall w = l.nearestWall(new XY(0, 0), dir, 110);
+
+            assertNotNull(w);
+
+            double dist = Math.min(w.Start.length(), w.End.length());
+
+            // hitting small circle
+            if (d >= 79 && d <= 101)
+            {
+               // cannot hit beyond small circle half-way line
+               assertTrue(dist < 50);
+            }
+            else
+            {
+               assertTrue(dist > 98);
+            }
+         }
+      }
    }
 }

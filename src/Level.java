@@ -165,7 +165,7 @@ class Level
    {
       // using centre point halves the effective length of the facet,
       // making our cell-search distances smaller
-      CC cell = GridWalker.posToGridCell(w.Start.plus(w.End).divide(2), m_cell_size);
+      CC cell = GridWalker.positionToCell(w.Start.plus(w.End).divide(2), m_cell_size);
 
       ArrayList<Wall> walls = m_wall_map.get(cell);
 

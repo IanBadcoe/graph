@@ -404,9 +404,11 @@ class Util
       }
    }
 
-   static NEDRet nodeEdgeDist(XY n,
-                              XY es,
-                              XY ee)
+   // specialised version returning extra data for use in force calculations
+   // force calculation cannot  handle zero distances so returns null for that
+   static NEDRet nodeEdgeForceDist(XY n,
+                                   XY es,
+                                   XY ee)
    {
       // direction and length of edge
       XY de = ee.minus(es);
@@ -451,6 +453,48 @@ class Util
       d = d.divide(l);
 
       return new NEDRet(l, t, d);
+   }
+
+   static double nodeEdgeDist(XY n,
+                              XY es,
+                              XY ee)
+   {
+      // direction and length of edge
+      XY de = ee.minus(es);
+
+      // don't expect to see and hope other forces will pull the ends apart
+      if (de.isZero())
+         throw new UnsupportedOperationException("zero length edge");
+
+      double le = de.length();
+      de = de.divide(le);
+
+      // line from n to edge start
+      XY dnes = n.minus(es);
+
+      // project that line onto the edge direction
+      double proj = de.dot(dnes);
+
+      XY t;
+      if (proj < 0)
+      {
+         // closest approach before edge start
+         t = es;
+      }
+      else if (proj < le)
+      {
+         // closest approach between edges
+         t = es.plus(de.multiply(proj));
+      }
+      else
+      {
+         // closest approach beyond edge end
+         t = ee;
+      }
+
+      XY d = t.minus(n);
+
+      return d.length();
    }
 
    static <T> T removeRandom(Random random, Collection<T> col)
