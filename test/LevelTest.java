@@ -192,30 +192,30 @@ public class LevelTest
    @Test
    public void testNearestWall() throws Exception
    {
+      for(double rad = 90; rad < 200; rad *= 1.1)
       {
          Level l = new Level(null, 20, 10);
 
-         Loop l1 = new Loop(new CircleCurve(new XY(), 100));
+         Loop l1 = new Loop(new CircleCurve(new XY(), rad));
          l.addBaseLoop(l1);
 
          l.unionOne(new Random(1));
 
          l.finalise();
 
-         // probe variously angles from origin
-         // circle subtends a touch more than +/- 11.5 degrees, so if we scan by whole degrees
-         // we ought to see a sudden step out to a distance of 100 when we pass that
-
+         // probe various angles from origin
          for(double d = 0; d < 360; d++)
          {
             XY dir = new XY(Math.sin(d * Math.PI / 180), Math.cos(d * Math.PI / 180));
 
-            Wall w = l.nearestWall(new XY(0, 0), dir, 110);
+            Wall w = l.nearestWall(new XY(0, 0), dir, rad * 1.1);
 
             assertNotNull(w);
 
             double dist = Math.min(w.Start.length(), w.End.length());
-            assertTrue(dist > 98);
+            // circle is facetted, but for this size we expect to find a point within
+            // 1% of real radius
+            assertEquals(1, dist/rad, 0.01);
          }
       }
 
@@ -234,7 +234,7 @@ public class LevelTest
 
          l.finalise();
 
-         // probe variously angles from origin
+         // probe various angles from origin
          // circle subtends a touch more than +/- 11.5 degrees, so if we scan by whole degrees
          // we ought to see a sudden step out to a distance of 100 when we pass that
 
@@ -256,7 +256,7 @@ public class LevelTest
             }
             else
             {
-               assertTrue(dist > 98);
+               assertTrue(dist > 99);
             }
          }
       }

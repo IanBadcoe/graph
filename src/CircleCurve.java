@@ -54,7 +54,7 @@ class CircleCurve extends Curve
    }
 
    @Override
-   public XY computePos(double param)
+   public XY computePosInner(double param)
    {
       if (Rotation == RotationDirection.Forwards)
       {
@@ -130,7 +130,7 @@ class CircleCurve extends Curve
       // use whole circle here as the use I have for the moment doesn't need anything
       // tighter
       //
-      // proper solution is to union together startPos, EndPos and whichever of
+      // full solution is to union together startPos, EndPos and whichever of
       // 0, pi/2, pi and 3pi/2 points are within param range
       return new Box(Position.minus(new XY(Radius, Radius)),
             Position.plus(new XY(Radius, Radius)));

@@ -22,7 +22,7 @@ class LineCurve extends Curve
    }
 
    @Override
-   public XY computePos(double param)
+   public XY computePosInner(double param)
    {
       return Position.plus(Direction.multiply(param));
    }

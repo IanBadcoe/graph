@@ -443,12 +443,12 @@ public class Intersector
    // non-private for unit-testing only
    static ArrayList<OrderedPair<Curve, Integer>>
          tryFindIntersections(
-         XY mid_point,
-         HashSet<Curve> all_curves,
-         HashSet<XY> curve_joints,
-         double diameter, double tol,
-         Random random,
-         boolean visualise)
+            XY mid_point,
+            HashSet<Curve> all_curves,
+            HashSet<XY> curve_joints,
+            double diameter, double tol,
+            Random random,
+            boolean visualise)
    {
       // don't keep eating random numbers if we're visualising the same frame over and over
       if (visualise && m_visualisation_line != null)
@@ -459,7 +459,7 @@ public class Intersector
          return null;
       }
 
-      for(int i = 0; i < 5; i++)
+      for(int i = 0; i < 25; i++)
       {
          double rand_ang = random.nextDouble() * Math.PI * 2;
          double dx = Math.sin(rand_ang);
@@ -471,7 +471,10 @@ public class Intersector
 
          LineCurve lc = new LineCurve(start, direction, 2 * diameter);
 
-         if (!lineClearsPoints(lc, curve_joints, tol))
+         // must use a smaller tolerance here as our curve splitting can
+         // give us curves < 2 * tol long, and if we are on the midpoint of one of those
+         // we can't cleat both ends by tol...
+         if (!lineClearsPoints(lc, curve_joints, tol / 10))
             continue;
 
          ArrayList<OrderedPair<Curve, Integer>> ret =

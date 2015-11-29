@@ -20,7 +20,7 @@ public class IntersectorTest
       public final String Name;
 
       @Override
-      public XY computePos(double m_start_param)
+      public XY computePosInner(double m_start_param)
       {
          return null;
       }

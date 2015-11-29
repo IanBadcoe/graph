@@ -7,11 +7,14 @@ abstract class Curve
    {
       StartParam = start_param;
       EndParam = end_param;
+
+      if (EndParam - StartParam < 1e-12)
+         throw new UnsupportedOperationException("StartParam must be < EndParam");
    }
 
    // exquisite abstractions
 
-   public abstract XY computePos(double param);
+   protected abstract XY computePosInner(double param);
 
    public abstract Double findParamForPoint(XY pnt, @SuppressWarnings("SameParameterValue") double tol);
 
@@ -78,5 +81,17 @@ abstract class Curve
    public double paramCoordinateDist(double p1, double p2)
    {
       return computePos(p1).minus(computePos(p2)).length();
+   }
+
+   public XY computePos(double p)
+   {
+      p = clampToParamRange(p);
+
+      return computePosInner(p);
+   }
+
+   private double clampToParamRange(double p)
+   {
+      return Math.min(Math.max(p, StartParam), EndParam);
    }
 }

@@ -226,7 +226,7 @@ class GridWalker
 
    public static CC positionToCell(XY pos, double cellSize)
    {
-      return new CC((int)(pos.X / cellSize), (int)(pos.Y / cellSize));
+      return new CC((int)Math.floor(pos.X / cellSize), (int)Math.floor(pos.Y / cellSize));
    }
 
    public XY cellToEdgePosition(CC cell)
