@@ -521,10 +521,12 @@ public class UtilTest
       assertEquals(2, ret.size());
 
       checkParamsUnknownOrder("testCurveCurveIntersect_Circles : 1",
+            cc1,
             ret.get(0).First, ret.get(1).First,
             Math.PI * 2 * 5 / 12, Math.PI * 2 * 1 / 12);
 
       checkParamsUnknownOrder("testCurveCurveIntersect_Circles : 2",
+            cc2,
             ret.get(0).Second, ret.get(1).Second,
             Math.PI * 2 * 11 / 12, Math.PI * 2 * 7 / 12);
    }
@@ -686,13 +688,64 @@ public class UtilTest
    }
 
    @Test
+   public void testCircleCircleIntersect_One_SelectedReverse()
+   {
+      // one point of contact
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1, CircleCurve.RotationDirection.Reverse);
+         CircleCurve cc2 = new CircleCurve(new XY(0, 3), 2);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.curveCurveIntersect(cc1, cc2);
+
+         assertEquals(1, ret.size());
+         assertEquals(0, ret.get(0).First, 0);
+         assertEquals(Math.PI, ret.get(0).Second, 0);
+      }
+
+      // one point of contact
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1);
+         CircleCurve cc2 = new CircleCurve(new XY(0, 3), 2, CircleCurve.RotationDirection.Reverse);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.curveCurveIntersect(cc1, cc2);
+
+         assertEquals(1, ret.size());
+         assertEquals(0, ret.get(0).First, 0);
+         assertEquals(Math.PI, ret.get(0).Second, 0);
+      }
+
+      // one point of contact
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1, CircleCurve.RotationDirection.Reverse);
+         CircleCurve cc2 = new CircleCurve(new XY(0, 3), 2, CircleCurve.RotationDirection.Reverse);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.curveCurveIntersect(cc1, cc2);
+
+         assertEquals(1, ret.size());
+         assertEquals(0, ret.get(0).First, 0);
+         assertEquals(Math.PI, ret.get(0).Second, 0);
+      }
+   }
+
+   @Test
    public void testCircleCircleIntersect_Two()
+   {
+      cci_two(CircleCurve.RotationDirection.Forwards, CircleCurve.RotationDirection.Forwards);
+      cci_two(CircleCurve.RotationDirection.Forwards, CircleCurve.RotationDirection.Reverse);
+      cci_two(CircleCurve.RotationDirection.Reverse, CircleCurve.RotationDirection.Forwards);
+      cci_two(CircleCurve.RotationDirection.Reverse, CircleCurve.RotationDirection.Reverse);
+   }
+
+   private void cci_two(CircleCurve.RotationDirection r1, CircleCurve.RotationDirection r2)
    {
       for(double ang = 0.0; ang < Math.PI * 2; ang += 0.01)
       {
          // two circles separated by their common radius intersect at +/- 60 degrees
-         CircleCurve cc1 = new CircleCurve(new XY(), 1);
-         CircleCurve cc2 = new CircleCurve(new XY(Math.sin(ang), Math.cos(ang)), 1);
+         CircleCurve cc1 = new CircleCurve(new XY(), 1, r1);
+         CircleCurve cc2 = new CircleCurve(new XY(Math.sin(ang), Math.cos(ang)), 1, r2);
 
          ArrayList<OrderedPair<Double, Double>> ret =
                Util.curveCurveIntersect(cc1, cc2);
@@ -701,17 +754,22 @@ public class UtilTest
 
          assertEquals(2, ret.size());
 
-         double exp_ang = fixAngle(ang - Math.PI / 3);
-         double other_exp_ang = fixAngle(ang + Math.PI / 3);
+         double ang1 = r1 == CircleCurve.RotationDirection.Forwards ? ang : -ang;
+         double ang2 = r2 == CircleCurve.RotationDirection.Forwards ? ang : -ang;
+
+         double exp_ang = fixAngle(ang1 - Math.PI / 3);
+         double other_exp_ang = fixAngle(ang1 + Math.PI / 3);
 
          checkParamsUnknownOrder("ang: " + ang,
+               cc1,
                ret.get(0).First, ret.get(1).First,
                exp_ang, other_exp_ang);
 
-         exp_ang = fixAngle(exp_ang + Math.PI);
-         other_exp_ang = fixAngle(other_exp_ang + Math.PI);
+         exp_ang = fixAngle(ang2 - Math.PI * 4 / 3);
+         other_exp_ang = fixAngle(ang2 + Math.PI * 4 / 3);
 
          checkParamsUnknownOrder("ang: " + ang,
+               cc2,
                ret.get(0).Second, ret.get(1).Second,
                exp_ang, other_exp_ang);
       }
@@ -773,7 +831,7 @@ public class UtilTest
                Util.curveCurveIntersect(cc1, cc2);
 
          assertEquals(1, ret.size());
-         assertEquals(Math.PI * 2 * 1 / 12, ret.get(0).First, 1e-6);
+         assertEquals(Math.PI * 2 * 13 / 12, ret.get(0).First, 1e-6);
          assertEquals(Math.PI * 2 * 11 / 12, ret.get(0).Second, 1e-6);
       }
 
@@ -789,10 +847,12 @@ public class UtilTest
          assertEquals(2, ret.size());
 
          checkParamsUnknownOrder("RespectParams 1.1",
+               cc1,
                ret.get(0).First, ret.get(1).First,
-               Math.PI * 2 * 1 / 12, Math.PI * 2 * 5 / 12);
+               Math.PI * 2 * 13 / 12, Math.PI * 2 * 17 / 12);
 
          checkParamsUnknownOrder("RespectParams 1.2",
+               cc2,
                ret.get(0).Second, ret.get(1).Second,
                Math.PI * 2 * 7 / 12, Math.PI * 2 * 11 / 12);
       }
@@ -809,10 +869,12 @@ public class UtilTest
          assertEquals(2, ret.size());
 
          checkParamsUnknownOrder("RespectParams 2.1",
+               cc1,
                ret.get(0).First, ret.get(1).First,
                Math.PI * 2 * 1 / 12, Math.PI * 2 * 5 / 12);
 
          checkParamsUnknownOrder("RespectParams 2.2",
+               cc2,
                ret.get(0).Second, ret.get(1).Second,
                Math.PI * 2 * 7 / 12, Math.PI * 2 * 11 / 12);
       }
@@ -828,6 +890,63 @@ public class UtilTest
                Util.curveCurveIntersect(cc1, cc2);
 
          assertNull(ret);
+      }
+   }
+
+   @Test
+   public void testCircleCircleIntersect_RespectParams_SelectedReverse()
+   {
+      // full circle on right, 3/4 on left with upper-right missing
+      // should hit once at 150 degrees, 270 degrees resp.
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1, 0, Math.PI * 3 / 2, CircleCurve.RotationDirection.Reverse);
+         CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, 0, Math.PI * 2, CircleCurve.RotationDirection.Reverse);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.curveCurveIntersect(cc1, cc2);
+
+         assertEquals(1, ret.size());
+         assertEquals(Math.PI * 2 * 7 / 12, ret.get(0).First, 0);
+         assertEquals(Math.PI * 2 * 5 / 12, ret.get(0).Second, 0);
+      }
+
+      // 3/4 circle on left with upper right missing,
+      // 3/4 on right with lower-left missing
+      // should miss
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1, 0, Math.PI * 3 / 2,
+               CircleCurve.RotationDirection.Reverse);
+         CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, Math.PI, Math.PI / 2,
+               CircleCurve.RotationDirection.Reverse);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.curveCurveIntersect(cc1, cc2);
+
+         assertNull(ret);
+      }
+
+      // full circle on left, 3/4 on right with lower-right missing
+      // should hit twice at both points mentioned above
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 1, 0, Math.PI * 2,
+               CircleCurve.RotationDirection.Reverse);
+         CircleCurve cc2 = new CircleCurve(new XY(1, 0), 1, Math.PI * 3 / 2, Math.PI,
+               CircleCurve.RotationDirection.Reverse);
+
+         ArrayList<OrderedPair<Double, Double>> ret =
+               Util.curveCurveIntersect(cc1, cc2);
+
+         assertEquals(2, ret.size());
+
+         checkParamsUnknownOrder("RespectParams 2.1",
+               cc1,
+               ret.get(0).First, ret.get(1).First,
+               Math.PI * 2 * 11 / 12, Math.PI * 2 * 7 / 12);
+
+         checkParamsUnknownOrder("RespectParams 2.2",
+               cc2,
+               ret.get(0).Second, ret.get(1).Second,
+               Math.PI * 2 * 17 / 12, Math.PI * 2 * 13 / 12);
       }
    }
 
@@ -1235,6 +1354,7 @@ public class UtilTest
    }
 
    private static void checkParamsUnknownOrder(String msg,
+                                               Curve c,
                                                double pa, double pb,
                                                double expa, double expb)
    {
@@ -1245,5 +1365,8 @@ public class UtilTest
       double lower_seen = Math.min(pa, pb);
       assertEquals(msg, higher_expected, higher_seen, 1e-6);
       assertEquals(msg, lower_expected, lower_seen, 1e-6);
+
+      assertTrue(c.withinParams(pa, 1e-6));
+      assertTrue(c.withinParams(pb, 1e-6));
    }
 }

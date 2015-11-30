@@ -196,32 +196,45 @@ public class Intersector
          Random r = new Random(1);
 
          Main.clear(255);
-         XY b = working_loops2.get(0).get(2).endPos();
-         Box size = new Box(b.minus(new XY(.01, .01)),
-               b.plus(new XY(.01, .01)));
+         XY pnt = working_loops1.get(0).get(2).startPos();
+         Box size = new Box(pnt.minus(new XY(.001, .001)),
+               pnt.plus(new XY(.001, .001)));
+//         Box size = bounds;
          Main.scaleTo(size);
 
+         Main.fill(r.nextInt(256), r.nextInt(256), 256);
          for(Splice s : endSpliceMap.values())
          {
-            Main.fill(r.nextInt(256), r.nextInt(256), r.nextInt(256));
             Main.circle(s.Loop1Out.Curve.startPos().X,
                   s.Loop1Out.Curve.startPos().Y,
-                  size.DX() * 0.002);
+                  size.DX() * 0.004);
          }
 
          for(ArrayList<Curve> alc1 : working_loops1.values())
          {
             Main.strokeWidth(size.DX() * 0.001);
-            Main.stroke(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+            Main.stroke(256, r.nextInt(128), r.nextInt(128));
             Loop l = new Loop(alc1);
             Main.drawLoopPoints(l.facet(.3));
+
+            for(Curve c : l.getCurves())
+            {
+               XY end = c.endPos();
+               Main.circle(end.X, end.Y, size.DX() * 0.002);
+            }
          }
 
          for (ArrayList<Curve> alc2 : working_loops2.values())
          {
-            Main.stroke(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+            Main.stroke(r.nextInt(128), 256, r.nextInt(128));
             Loop l = new Loop(alc2);
             Main.drawLoopPoints(l.facet(.3));
+
+            for(Curve c : l.getCurves())
+            {
+               XY end = c.endPos();
+               Main.circle(end.X, end.Y, size.DX() * 0.002);
+            }
          }
       }
 
@@ -368,7 +381,7 @@ public class Intersector
                   || splice.Loop2Out== start_ac)
                break;
 
-            // at every splice, only one of the two possible exits should be still open
+            // at every splice, at least one of the two possible exits should be still open
             assert open.contains(splice.Loop1Out) || open.contains(splice.Loop2Out);
 
             if (!open.contains(splice.Loop1Out))

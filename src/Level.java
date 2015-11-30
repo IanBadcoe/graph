@@ -85,11 +85,21 @@ class Level
    {
       if (m_base_loops.size() > 0)
       {
-         Loop l = m_base_loops.remove(0);
+         Loop l = m_base_loops.get(0);
+         LoopSet ls = new LoopSet(l);
 
-         m_merged_loops = Intersector.union(m_merged_loops, new LoopSet(l), 1e-6, r, false);
+         if (m_base_loops.size() == 11)
+         {
+            Intersector.union(m_merged_loops, ls, 1e-6, r, true);
+         }
+         else
+         {
+            m_merged_loops = Intersector.union(m_merged_loops, ls, 1e-6, r, false);
 
-         assert m_merged_loops != null;
+            assert m_merged_loops != null;
+
+            m_base_loops.remove(0);
+         }
 
          return false;
       }

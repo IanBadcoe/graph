@@ -51,6 +51,10 @@ class CircleCurve extends Curve
 
       if (Radius <= 0)
          throw new IllegalArgumentException("-ve or zero radius");
+
+      if (StartParam > Math.PI * 2 ||
+            paramRange() > Math.PI * 2)
+         throw new IllegalArgumentException("out-of-range parameter(s)");
    }
 
    @Override
@@ -110,7 +114,8 @@ class CircleCurve extends Curve
 
       // atan2 returns between -pi and + pi
       // we use 0 -> 2pi
-      if (ang < 0.0) ang += 2 * Math.PI;
+      // BUT, we also require EndParam > StartParam
+      while (ang < StartParam) ang += 2 * Math.PI;
 
       if (!withinParams(ang, tol))
          return null;

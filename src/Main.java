@@ -143,7 +143,7 @@ public class Main extends processing.core.PApplet
 
       if (m_level != null)
       {
-         drawLevel(m_level);
+//         drawLevel(m_level);
       }
 
       if (m_show_notes)
@@ -301,6 +301,10 @@ public class Main extends processing.core.PApplet
       double shorter_display = Math.min(s_app.width, s_app.height);
 
       double larger_box = Math.max(b.DX(), b.DY());
+
+      larger_box *= 1.1;
+
+      s_app.translate(s_app.width / 2, s_app.height / 2);
 
       s_app.scale((float)(shorter_display / larger_box));
 
