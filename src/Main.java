@@ -45,6 +45,13 @@ public class Main extends processing.core.PApplet
    @Override
    public void keyPressed()
    {
+      if (m_playing)
+      {
+         playKeyPress();
+
+         return;
+      }
+
       if (key == 'a')
          m_auto_scale = !m_auto_scale;
 
@@ -92,9 +99,39 @@ public class Main extends processing.core.PApplet
       }
    }
 
+   private void playKeyPress()
+   {
+      if (key == 'x')
+      {
+         m_player_pos = m_player_pos.minus(new XY(-5, 0));
+      }
+
+      if (key == 'z')
+      {
+         m_player_pos = m_player_pos.minus(new XY(5, 0));
+      }
+
+      if (key == '/')
+      {
+         m_player_pos = m_player_pos.minus(new XY(0, -5));
+      }
+
+      if (key == '\'')
+      {
+         m_player_pos = m_player_pos.minus(new XY(0, 5));
+      }
+   }
+
    @Override
    public void draw()
    {
+      if (m_playing)
+      {
+         play();
+
+         return;
+      }
+
       background(128);
       strokeWeight(0.0f);
 //      textSize(0.01f);
@@ -117,6 +154,8 @@ public class Main extends processing.core.PApplet
 
             m_generator = null;
             m_config = null;
+
+            startPlay();
          }
       }
 
@@ -141,17 +180,30 @@ public class Main extends processing.core.PApplet
                m_arrows);
       }
 
-      if (m_level != null)
-      {
-//         drawLevel(m_level);
-      }
-
       if (m_show_notes)
       {
          m_notes.forEach(Annotation::Draw);
       }
 
 //      saveFrame("..\\graph non-git\\Frame####.jpg");
+   }
+
+   private void play()
+   {
+      translate((float)(width / 2), (float)(height / 2));
+
+      scale(2);
+
+      translate((float)(-m_player_pos.X), (float)(-m_player_pos.Y));
+
+      drawLevel(m_level, m_player_pos);
+   }
+
+   private void startPlay()
+   {
+      m_player_pos = m_level.startPos();
+
+      m_playing = true;
    }
 
    private void autoScale(Graph g, double low, double high)
@@ -239,9 +291,11 @@ public class Main extends processing.core.PApplet
       }
    }
 
-   static void drawLevel(Level level)
+   static void drawLevel(Level level, XY visibility_pos)
    {
-      s_app.stroke(0xffffffff);
+      s_app.background(0xff201010);
+
+      s_app.stroke(0xff808080);
       s_app.strokeWeight(1);
 
       s_app.stroke(240);
@@ -256,6 +310,14 @@ public class Main extends processing.core.PApplet
       s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
 
       level.getWallLoops().forEach(Main::drawWallLoop);
+      s_app.endShape(CLOSE);
+
+      s_app.stroke(0xffc0c0c0);
+      s_app.strokeWeight(2);
+      s_app.fill(0xff606060);
+
+      s_app.beginShape();
+      level.getVisibilityPolygon(visibility_pos).forEach(x -> s_app.vertex((float)x.X, (float)x.Y));
       s_app.endShape(CLOSE);
    }
 
@@ -339,4 +401,7 @@ public class Main extends processing.core.PApplet
    private LevelGeneratorConfiguration m_config = new LevelGeneratorConfiguration(85);
    private LevelGenerator m_generator = new LevelGenerator(m_config);
    private Level m_level;
+
+   boolean m_playing = false;
+   private XY m_player_pos;
 }

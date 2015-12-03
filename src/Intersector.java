@@ -609,6 +609,9 @@ public class Intersector
                      forward_annotations_map.get(l1curr),
                      forward_annotations_map.get(l2curr));
 
+               assert !endSpliceMap.containsKey(l1prev);
+               assert !endSpliceMap.containsKey(l2prev);
+
                endSpliceMap.put(l1prev, s);
                endSpliceMap.put(l2prev, s);
             }
@@ -649,9 +652,11 @@ public class Intersector
                {
                   OrderedPair<Double, Double> split_points = ret.get(k);
 
+                  double start_dist = c1.paramCoordinateDist(c1.StartParam, split_points.First);
+                  double end_dist = c1.paramCoordinateDist(c1.EndParam, split_points.First);
+
                   // if we are far enough from existing splits
-                  if (c1.paramCoordinateDist(c1.StartParam, split_points.First) > tol
-                        && c1.paramCoordinateDist(c1.EndParam, split_points.First) > tol)
+                  if (start_dist > tol && end_dist > tol)
                   {
                      any_splits = true;
 
@@ -673,9 +678,11 @@ public class Intersector
                      c1 = c1split1;
                   }
 
+                  start_dist = c2.paramCoordinateDist(c2.StartParam, split_points.Second);
+                  end_dist = c2.paramCoordinateDist(c2.EndParam, split_points.Second);
+
                   // if we are far enough from existing splits
-                  if (c2.paramCoordinateDist(c2.StartParam, split_points.Second) > tol
-                        && c2.paramCoordinateDist(c2.EndParam, split_points.Second) > tol)
+                  if (start_dist > tol && end_dist > tol)
                   {
                      any_splits = true;
 

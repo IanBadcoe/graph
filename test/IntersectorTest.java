@@ -587,4 +587,45 @@ public class IntersectorTest
          checkLoop(ret.get(2), 2);
       }
    }
+
+// This reproduces a numerical precision problem I had when I was placing the rectangle for a corridor
+// so that it's corners exactly hit the perimeter of the circle at the corridor junctions
+// this meant (I believe) that intersection tests could detect one, both or neither of the rectangle edges
+// adjoining the corner as hitting the circle, with hillarious consequences
+//
+// It would be great to fix this, and feel there should be a simple (ish) algorithm that would take into
+// account whether the _loops_ cross (rather than just constituent curves) but I didn't figure that out yet
+// and am instead just trying to avoid the scenario by shrinking the rectangle width slightly so its corner falls
+// inside the circle...
+//
+//   @Test
+//   public void testPrecisionProblem()
+//   {
+//      Curve circle = new CircleCurve(new XY(340.5690029832473, -103.41524432252388), 10.0,
+//            0.0, Math.PI * 2, CircleCurve.RotationDirection.Forwards);
+//
+//      ArrayList<Curve> alc1 = new ArrayList<>();
+//      alc1.add(circle);
+//
+//      Curve l1 = new LineCurve(new XY(345.5653898846735, -112.07758337910997),
+//            new XY(-0.8662339056586087, -0.49963869014261947),
+//            0.0, 122.2096167831618);
+//      Curve l2 = new LineCurve(new XY(239.70327622955338, -173.13823623148042),
+//            new XY(-0.49963869014261947, 0.8662339056586087),
+//            0.0, 20.0);
+//      Curve l3 = new LineCurve(new XY(229.71050242670097, -155.81355811830824),
+//            new XY(0.8662339056586087, 0.49963869014261947),
+//            0.0, 122.2096167831618);
+//      Curve l4 = new LineCurve(new XY(335.5726160818211, -94.75290526593778),
+//            new XY(0.49963869014261947, -0.8662339056586087),
+//            0, 20);
+//
+//      ArrayList alc2 = new ArrayList();
+//      alc2.add(l1);
+//      alc2.add(l2);
+//      alc2.add(l3);
+//      alc2.add(l4);
+//
+//      Intersector.splitCurvesAtIntersections(alc1, alc2, 1e-6);
+//   }
 }

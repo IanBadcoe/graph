@@ -54,6 +54,8 @@ class Level
       }
 
       m_bounds = bounds;
+
+      m_start_pos = m_graph.allGraphNodes().stream().filter(x -> x.getName() == "Start").findFirst().get().getPos();
    }
 
    // exposed for testing but there could be cases where client code wants to reach-in
@@ -88,18 +90,11 @@ class Level
          Loop l = m_base_loops.get(0);
          LoopSet ls = new LoopSet(l);
 
-         if (m_base_loops.size() == 11)
-         {
-            Intersector.union(m_merged_loops, ls, 1e-6, r, true);
-         }
-         else
-         {
-            m_merged_loops = Intersector.union(m_merged_loops, ls, 1e-6, r, false);
+         m_merged_loops = Intersector.union(m_merged_loops, ls, 1e-6, r, false);
 
-            assert m_merged_loops != null;
+         assert m_merged_loops != null;
 
-            m_base_loops.remove(0);
-         }
+         m_base_loops.remove(0);
 
          return false;
       }
@@ -239,6 +234,34 @@ class Level
       return Collections.unmodifiableCollection(m_merged_loops);
    }
 
+   public XY startPos()
+   {
+      return m_start_pos;
+   }
+
+   public Collection<XY> getVisibilityPolygon(XY visibility_pos)
+   {
+//      // lazy, could trim closer to bbox extents seen from visibility_pos
+//      double max_l = m_bounds.diagonal().length();
+//
+//      Wall first_w = nearestWall(visibility_pos, new XY(0, 1), max_l);
+//      Wall wl = first_w;
+//
+//      boolean wl_dir = true;
+//
+//      double angle = 0;
+//
+//      ArrayList<XY> ret = new ArrayList<>();
+//
+//      do
+//      {
+//         ret.add(wl.End
+//      }
+//      while(wl != first_w);
+
+      return null;
+   }
+
    private final Graph m_graph;
 
    private final ArrayList<Loop> m_base_loops = new ArrayList<>();
@@ -257,4 +280,5 @@ class Level
 
    private final WallLoopSet m_wall_loops = new WallLoopSet();
 
+   private XY m_start_pos;
 }

@@ -30,8 +30,12 @@ class DirectedEdge {
 
    public static GeomLayout makeDefaultCorridor(DirectedEdge de)
    {
+      // scale the corridor rectangle's width down slightly
+      // so that it doesn't precisely hit at a tangent to any adjoining junction-node's circle
+      // -- that causes awkward numerical precision problems in the curve-curve intersection routines
+      // which can throw out the union operation
       return new RectangularGeomLayout(de.Start.getPos(),
-            de.End.getPos(), de.HalfWidth);
+            de.End.getPos(), de.HalfWidth * 0.99);
    }
 
    @Override
@@ -91,4 +95,4 @@ class DirectedEdge {
    }
 
    private int m_colour = 0xff4b4b4b;
-} 
+}
