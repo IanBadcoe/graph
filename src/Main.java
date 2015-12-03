@@ -386,7 +386,7 @@ public class Main extends processing.core.PApplet
    private static PApplet s_app;
 
    // UI data
-   private boolean m_auto_scale = true;
+   private boolean m_auto_scale = false;
    private boolean m_labels = true;
    private boolean m_arrows = false;
    private boolean m_show_notes = true;

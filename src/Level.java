@@ -241,23 +241,23 @@ class Level
 
    public Collection<XY> getVisibilityPolygon(XY visibility_pos)
    {
-//      // lazy, could trim closer to bbox extents seen from visibility_pos
-//      double max_l = m_bounds.diagonal().length();
-//
-//      Wall first_w = nearestWall(visibility_pos, new XY(0, 1), max_l);
-//      Wall wl = first_w;
-//
-//      boolean wl_dir = true;
-//
-//      double angle = 0;
-//
-//      ArrayList<XY> ret = new ArrayList<>();
-//
-//      do
-//      {
-//         ret.add(wl.End
-//      }
-//      while(wl != first_w);
+      // lazy, could trim closer to bbox extents seen from visibility_pos
+      double max_l = m_bounds.diagonal().length();
+
+      Wall first_w = nearestWall(visibility_pos, new XY(0, 1), max_l);
+      Wall wl = first_w;
+
+      boolean wl_dir = true;
+
+      double angle = 0;
+
+      ArrayList<XY> ret = new ArrayList<>();
+
+      do
+      {
+         ret.add(wl.End
+      }
+      while(wl != first_w);
 
       return null;
    }

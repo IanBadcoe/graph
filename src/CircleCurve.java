@@ -104,8 +104,7 @@ class CircleCurve extends Curve
       if (Math.abs(relative.length() - Radius) > tol)
          return null;
 
-      @SuppressWarnings("SuspiciousNameCombination")
-      double ang = Math.atan2(relative.X, relative.Y);
+      double ang = Util.atan2(relative);
 
       if (Rotation == RotationDirection.Reverse)
       {

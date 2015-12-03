@@ -402,6 +402,11 @@ class Util
       return false;
    }
 
+   public static double atan2(XY vec)
+   {
+      return Math.atan2(vec.X, vec.Y);
+   }
+
    static class NEDRet
    {
       final double Dist;
