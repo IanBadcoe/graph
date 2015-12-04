@@ -55,7 +55,13 @@ class Level
 
       m_bounds = bounds;
 
-      m_start_pos = m_graph.allGraphNodes().stream().filter(x -> x.getName().equals("Start")).findFirst().get().getPos();
+      Optional<INode> start = m_graph.allGraphNodes().stream().filter(
+            x -> x.getName().equals("Start")).findFirst();
+
+      if (start.isPresent())
+      {
+         m_start_pos = start.get().getPos();
+      }
    }
 
    // exposed for testing but there could be cases where client code wants to reach-in
