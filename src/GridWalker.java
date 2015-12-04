@@ -189,26 +189,31 @@ class GridWalker
       return cell;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public double cellEdgeOrdinate(double cellIndex)
    {
       return cellEdgeOrdinate(cellIndex, m_cell_size);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public static double cellEdgeOrdinate(double cellIndex, double cellSize)
    {
       return cellIndex * cellSize;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public double cellCentreOrdinate(int cellIndex)
    {
       return cellCentreOrdinate(cellIndex, m_cell_size);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public static double cellCentreOrdinate(int cellIndex, double cellSize)
    {
       return cellEdgeOrdinate(cellIndex, cellSize) + cellSize * 0.5;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public int ordinateToCell(double ord)
    {
       return ordinateToCell(ord, m_cell_size);

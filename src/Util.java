@@ -404,6 +404,7 @@ class Util
 
    public static double atan2(XY vec)
    {
+      //noinspection SuspiciousNameCombination
       return Math.atan2(vec.X, vec.Y);
    }
 

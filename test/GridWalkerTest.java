@@ -302,8 +302,6 @@ public class GridWalkerTest
       double cell_size = 20;
       double feature_diameter = 10;
 
-      double cell_diag = Math.sqrt(cell_size * cell_size * 2);
-
       // probe variously angles from origin
       for(double d = 0; d < 360; d++)
       {

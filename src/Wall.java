@@ -32,6 +32,11 @@ class Wall
       return m_prev;
    }
 
+   public XY midPoint()
+   {
+      return End.plus(Start).divide(2);
+   }
+
    private Wall m_next;
    private Wall m_prev;
 }

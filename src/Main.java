@@ -1,5 +1,7 @@
+import com.sun.javafx.embed.AbstractEvents;
 import processing.core.PApplet;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 @SuppressWarnings("WeakerAccess")
@@ -101,24 +103,24 @@ public class Main extends processing.core.PApplet
 
    private void playKeyPress()
    {
-      if (key == 'x')
+      if (keyCode == KeyEvent.VK_LEFT)
       {
-         m_player_pos = m_player_pos.minus(new XY(-5, 0));
+         m_player_pos = m_player_pos.plus(new XY(-5, 0));
       }
 
-      if (key == 'z')
+      if (keyCode == KeyEvent.VK_RIGHT)
       {
-         m_player_pos = m_player_pos.minus(new XY(5, 0));
+         m_player_pos = m_player_pos.plus(new XY(5, 0));
       }
 
-      if (key == '/')
+      if (keyCode == KeyEvent.VK_UP)
       {
-         m_player_pos = m_player_pos.minus(new XY(0, -5));
+         m_player_pos = m_player_pos.plus(new XY(0, -5));
       }
 
-      if (key == '\'')
+      if (keyCode == KeyEvent.VK_DOWN)
       {
-         m_player_pos = m_player_pos.minus(new XY(0, 5));
+         m_player_pos = m_player_pos.plus(new XY(0, 5));
       }
    }
 
@@ -298,7 +300,7 @@ public class Main extends processing.core.PApplet
       s_app.stroke(0xff808080);
       s_app.strokeWeight(1);
 
-      s_app.stroke(240);
+      s_app.stroke(0xff808080);
       s_app.fill(180, 120, 120);
 
       Box bounds = level.getBounds();
@@ -312,13 +314,14 @@ public class Main extends processing.core.PApplet
       level.getWallLoops().forEach(Main::drawWallLoop);
       s_app.endShape(CLOSE);
 
-      s_app.stroke(0xffc0c0c0);
+      s_app.stroke(0xfff0f0f0);
       s_app.strokeWeight(2);
-      s_app.fill(0xff606060);
 
-      s_app.beginShape();
-      level.getVisibilityPolygon(visibility_pos).forEach(x -> s_app.vertex((float)x.X, (float)x.Y));
-      s_app.endShape(CLOSE);
+      for(Wall w : level.getVisibleWalls(visibility_pos))
+      {
+         s_app.line((float)w.Start.X, (float)w.Start.Y,
+               (float)w.End.X, (float)w.End.Y);
+      }
    }
 
    static void drawWallLoop(WallLoop wl)
@@ -386,7 +389,7 @@ public class Main extends processing.core.PApplet
    private static PApplet s_app;
 
    // UI data
-   private boolean m_auto_scale = false;
+   private boolean m_auto_scale = true;
    private boolean m_labels = true;
    private boolean m_arrows = false;
    private boolean m_show_notes = true;

@@ -55,7 +55,7 @@ class Level
 
       m_bounds = bounds;
 
-      m_start_pos = m_graph.allGraphNodes().stream().filter(x -> x.getName() == "Start").findFirst().get().getPos();
+      m_start_pos = m_graph.allGraphNodes().stream().filter(x -> x.getName().equals("Start")).findFirst().get().getPos();
    }
 
    // exposed for testing but there could be cases where client code wants to reach-in
@@ -239,27 +239,30 @@ class Level
       return m_start_pos;
    }
 
-   public Collection<XY> getVisibilityPolygon(XY visibility_pos)
+   public Collection<Wall> getVisibleWalls(XY visibility_pos)
    {
-      // lazy, could trim closer to bbox extents seen from visibility_pos
-      double max_l = m_bounds.diagonal().length();
+      HashSet<Wall> ret = new HashSet<>();
 
-      Wall first_w = nearestWall(visibility_pos, new XY(0, 1), max_l);
-      Wall wl = first_w;
-
-      boolean wl_dir = true;
-
-      double angle = 0;
-
-      ArrayList<XY> ret = new ArrayList<>();
-
-      do
+      for(WallLoop wl : m_wall_loops)
       {
-         ret.add(wl.End
-      }
-      while(wl != first_w);
+         //noinspection Convert2streamapi
+         for(Wall w : wl)
+         {
+            if (!ret.contains(w))
+            {
+               XY rel = w.midPoint().minus(visibility_pos);
+               double l = rel.length();
+               XY dir = rel.divide(l);
 
-      return null;
+               Wall c = nearestWall(visibility_pos,
+                     dir, l + 1);
+
+               ret.add(c);
+            }
+         }
+      }
+
+      return ret;
    }
 
    private final Graph m_graph;

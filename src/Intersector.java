@@ -1,7 +1,7 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Intersector
+class Intersector
 {
    // only non-private for unit-testing
    static class AnnotatedCurve
@@ -248,11 +248,9 @@ public class Intersector
          if (!open.contains(ac_c))
             continue;
 
-         ArrayList<OrderedPair<Curve, Integer>> intervals = null;
-
          XY mid_point = c.computePos((c.StartParam + c.EndParam) / 2);
 
-         intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random, visualise);
+         ArrayList<OrderedPair<Curve, Integer>> intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random, visualise);
 
          // failure, don't really expect this has have had multiple tries and it
          // shouldn't be so hard to find a good cutting line
@@ -290,8 +288,7 @@ public class Intersector
          ret.add(extractLoop(
                open,
                ac_current,
-               endSpliceMap,
-               LoopMode.Keep));
+               endSpliceMap));
       }
 
       if (ret.size() == 0)
@@ -332,25 +329,14 @@ public class Intersector
             // won't need the bounds of this again, either
             bound_map.remove(alc1);
          }
-         else
-         {
-            i++;
-         }
       }
-   }
-
-   enum LoopMode
-   {
-      Discard,    // turn as sharply right as possible at each splice, do not return found loop
-      Keep        // turn as sharply left as possible at each splice, tidy and return found loop
    }
 
    @SuppressWarnings("WeakerAccess")
    static Loop extractLoop(
          HashSet<AnnotatedCurve> open,
          AnnotatedCurve start_ac,
-         HashMap<Curve, Splice> endSpliceMap,
-         LoopMode loop_mode)
+         HashMap<Curve, Splice> endSpliceMap)
    {
       AnnotatedCurve curr_ac = start_ac;
 
@@ -404,9 +390,6 @@ public class Intersector
             }
          }
       }
-
-      if (loop_mode == LoopMode.Discard)
-         return null;
 
       // because input cyclic curves have a joint at 12 o'clock
       // and nothing before here removes that, we can have splits we don't need
