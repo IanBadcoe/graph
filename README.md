@@ -4,11 +4,11 @@ Proceedural Content Generation prototype for creating DOOM-like level maps
 Uses simple graph-rewrite and iterative force relaxation to generate game-like levels which make topological
 (e.g. playable) sense.
 
-### Graph Rewrite
+### engine.Graph Rewrite
 
 Retains meaningful topology by applying re-writes which by definition do not alter any constrains that were already
 added.  e.g. if a corridor joins two rooms, the corridor can be rewriten into a more-complex construct (say an
-obstacle of some sort) with the proviso that the corridor remains passable.  Similarly two rooms which are 
+obstacle of some sort) with the proviso that the corridor remains passable.  Similarly two rooms which are
 not directly joined cannot become joined as a result of a rewrite.
 
 Example:
@@ -55,14 +55,14 @@ more relaxation to fit these tightly together...
 e.g.
 
     ROOM -> ROOM  (graph)
-    
+
       N1----e1------N2  (ball and stick, N1, N2 have radii, e1 has a width)
-      
+
         _       ______
      __| |_____|      |
     |_   x_____x      |  (full geometry, the "x"s may indicate where doors should be,
       |__|     |______|   there may also be some geometry associated with doors)
-      
+
 ### State of development
 
 1. rewrite mechanism created and working
@@ -88,10 +88,10 @@ e.g.
 1. more types of expandable node as in 1-iii
 2. some sort of measure of difficulty of created level above just "size"
 3. different discriptions of edge directions as in 1-ii (if required)
-4. edges serving roles other than "corridor", e.g. an area can be wrapped in edges of type "fortified wall" and edges 
+4. edges serving roles other than "corridor", e.g. an area can be wrapped in edges of type "fortified wall" and edges
    of type "corridor" pass through that only at nodes of type "gate"...
 5. one-way edges can be introduced, as long as the output of a rewrite always leaves some an overall connectivity
    the same as it started with
 6. teleporters are easy, they are just a pair of nodes tagged as having that property, this can be leveraged in
    re-write rules if we want to add some new "remote" area
-   
+
