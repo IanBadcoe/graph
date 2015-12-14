@@ -182,13 +182,6 @@ public class LevelTest
       }
    }
 
-   private static void hitTest(Level l, XY dir)
-   {
-      Wall w = l.nearestWall(new XY(), dir, 110);
-      assertNotNull(w);
-      assertNotNull(Util.edgeIntersect(new XY(), dir.multiply(110), w.Start, w.End));
-   }
-
    @Test
    public void testNearestWall() throws Exception
    {
@@ -208,14 +201,17 @@ public class LevelTest
          {
             XY dir = new XY(Math.sin(d * Math.PI / 180), Math.cos(d * Math.PI / 180));
 
-            Wall w = l.nearestWall(new XY(0, 0), dir, rad * 1.1);
+            Level.WallCollideRet wcr = l.nearestWall(new XY(0, 0), dir, rad * 1.1);
 
-            assertNotNull(w);
+            assertNotNull(wcr);
 
-            double dist = Math.min(w.Start.length(), w.End.length());
+            double dist = Math.min(wcr.WallHit.Start.length(), wcr.WallHit.End.length());
             // circle is facetted, but for this size we expect to find a point within
             // 1% of real radius
             assertEquals(1, dist/rad, 0.01);
+
+            // expect dist reported similar
+            assertEquals(1, dist/wcr.DistanceTo, 0.02);
          }
       }
 
@@ -242,21 +238,27 @@ public class LevelTest
          {
             XY dir = new XY(Math.sin(d * Math.PI / 180), Math.cos(d * Math.PI / 180));
 
-            Wall w = l.nearestWall(new XY(0, 0), dir, 110);
+            Level.WallCollideRet wcr = l.nearestWall(new XY(0, 0), dir, 110);
 
-            assertNotNull(w);
+            assertNotNull(wcr);
 
-            double dist = Math.min(w.Start.length(), w.End.length());
+            double len1 = wcr.WallHit.Start.length();
+            double len2 = wcr.WallHit.End.length();
+            double dist = Math.min(len1, len2);
 
             // hitting small circle
             if (d >= 79 && d <= 101)
             {
                // cannot hit beyond small circle half-way line
                assertTrue(dist < 50);
+               // OK, can hit slightly beyond due to finite facets
+               // but previous OK a nearer end of facet must always still be closer
+               assertTrue(wcr.DistanceTo < 51);
             }
             else
             {
                assertTrue(dist > 99);
+               assertTrue(wcr.DistanceTo > 99);
             }
          }
       }

@@ -111,7 +111,7 @@ class GridWalker
 
    private void init()
    {
-      m_dir = m_end.minus(m_begin).makeUnit();
+      m_dir = m_end.minus(m_begin).asUnit();
 
       // this is how far we have to get (orthogonally) from a cell centre, before
       // any wall in that cell cannot possibly hit us

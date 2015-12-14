@@ -111,7 +111,7 @@ class XY
       return Math.abs(length() - 1) < 1e-6;
    }
 
-   public XY makeUnit()
+   public XY asUnit()
    {
       return this.divide(this.length());
    }

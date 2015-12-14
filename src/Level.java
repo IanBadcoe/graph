@@ -147,7 +147,7 @@ class Level
          for(OrderedPair<XY, XY> curr : loop_pnts)
          {
             Wall w = new Wall(prev.First, curr.First,
-                  prev.Second.plus(curr.Second).makeUnit());
+                  prev.Second.plus(curr.Second).asUnit());
 
             if (prev_w != null)
             {
@@ -195,17 +195,40 @@ class Level
       return m_bounds;
    }
 
+   public static class WallCollideRet
+   {
+      public WallCollideRet(Wall w, double dist, XY point)
+      {
+         WallHit = w;
+         DistanceTo = dist;
+         ImpactPoint = point;
+      }
+
+      public final Wall WallHit;
+      public final double DistanceTo;
+      public final XY ImpactPoint;
+   }
+
+   public WallCollideRet nearestWall(XY nearest_to, XY step)
+   {
+      double len = step.length();
+      XY dir = step.divide(len);
+      return nearestWall(nearest_to, dir, len);
+   }
+
    // place probe_to beyond edge of level to definitely find something
    // however far
-   public Wall nearestWall(XY nearest_to, XY dir, double length)
+   public WallCollideRet nearestWall(XY nearest_to, XY dir, double length)
    {
+      assert dir.isUnit();
+
       XY end = nearest_to.plus(dir.multiply(length));
 
       GridWalker ge = new GridWalker(m_cell_size, nearest_to, end, m_wall_facet_length);
 
       CC cell;
 
-      Wall ret = null;
+      Wall hit = null;
 
       while((cell = ge.nextCell()) != null)
       {
@@ -220,7 +243,7 @@ class Level
 
                if (intersect != null)
                {
-                  ret = w;
+                  hit = w;
 
                   // shorten length by the proportional position of the intersection
                   length *= intersect.First;
@@ -232,7 +255,7 @@ class Level
          }
       }
 
-      return ret;
+      return new WallCollideRet(hit, length, nearest_to.plus(dir.multiply(length)));
    }
 
    Collection<Loop> getMergedLoops()
@@ -260,10 +283,10 @@ class Level
                double l = rel.length();
                XY dir = rel.divide(l);
 
-               Wall c = nearestWall(visibility_pos,
+               WallCollideRet wcr = nearestWall(visibility_pos,
                      dir, l + 1);
 
-               ret.add(c);
+               ret.add(wcr.WallHit);
             }
          }
       }
