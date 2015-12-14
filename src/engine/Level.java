@@ -2,7 +2,7 @@ package engine;
 
 import java.util.*;
 
-public class Level
+public class Level implements IPhysicalLevel
 {
    Level(Graph graph, double cell_size, double wall_facet_length)
    {
