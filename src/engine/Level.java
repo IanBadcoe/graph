@@ -197,17 +197,40 @@ public class Level implements IPhysicalLevel
       return m_bounds;
    }
 
+   public static class WallCollideRet
+   {
+      public WallCollideRet(Wall w, double dist, XY point)
+      {
+         WallHit = w;
+         DistanceTo = dist;
+         ImpactPoint = point;
+      }
+
+      public final Wall WallHit;
+      public final double DistanceTo;
+      public final XY ImpactPoint;
+   }
+
+   public WallCollideRet nearestWall(XY nearest_to, XY step)
+   {
+      double len = step.length();
+      XY dir = step.divide(len);
+      return nearestWall(nearest_to, dir, len);
+   }
+
    // place probe_to beyond edge of level to definitely find something
    // however far
-   public Wall nearestWall(XY nearest_to, XY dir, double length)
+   public WallCollideRet nearestWall(XY nearest_to, XY dir, double length)
    {
+      assert dir.isUnit();
+
       XY end = nearest_to.plus(dir.multiply(length));
 
       GridWalker ge = new GridWalker(m_cell_size, nearest_to, end, m_wall_facet_length);
 
       CC cell;
 
-      Wall ret = null;
+      Wall hit = null;
 
       while((cell = ge.nextCell()) != null)
       {
@@ -222,7 +245,7 @@ public class Level implements IPhysicalLevel
 
                if (intersect != null)
                {
-                  ret = w;
+                  hit = w;
 
                   // shorten length by the proportional position of the intersection
                   length *= intersect.First;
@@ -234,7 +257,7 @@ public class Level implements IPhysicalLevel
          }
       }
 
-      return ret;
+      return new WallCollideRet(hit, length, nearest_to.plus(dir.multiply(length)));
    }
 
    Collection<Loop> getMergedLoops()
@@ -262,10 +285,10 @@ public class Level implements IPhysicalLevel
                double l = rel.length();
                XY dir = rel.divide(l);
 
-               Wall c = nearestWall(visibility_pos,
+               WallCollideRet wcr = nearestWall(visibility_pos,
                      dir, l + 1);
 
-               ret.add(c);
+               ret.add(wcr.WallHit);
             }
          }
       }
