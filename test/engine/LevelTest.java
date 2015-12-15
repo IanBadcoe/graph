@@ -187,9 +187,9 @@ public class LevelTest
 
    private static void hitTest(Level l, XY dir)
    {
-      Wall w = l.nearestWall(new XY(), dir, 110);
-      assertNotNull(w);
-      assertNotNull(Util.edgeIntersect(new XY(), dir.multiply(110), w.Start, w.End));
+      Level.WallCollideRet wcr = l.nearestWall(new XY(), dir, 110);
+      assertNotNull(wcr);
+      assertNotNull(Util.edgeIntersect(new XY(), dir.multiply(110), wcr.WallHit.Start, wcr.WallHit.End));
    }
 
    @Test

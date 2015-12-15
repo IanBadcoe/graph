@@ -2,7 +2,7 @@ package engine;
 
 public class PhysicalSimulator
 {
-   public void step(Moveable m, IPhysicalLevel level)
+   public void step(Movable m, IPhysicalLevel level)
    {
    }
 }

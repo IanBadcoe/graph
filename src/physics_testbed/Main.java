@@ -225,5 +225,5 @@ public class Main extends PApplet
 
    private static PApplet s_app;
 
-   private Level m_level = new Level();
+//   private Level m_level = new Level();
 }
