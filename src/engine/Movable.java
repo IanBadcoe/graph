@@ -3,7 +3,7 @@ package engine;
 // for the moment, not separating physically simulated from movable, but if required later, could split this
 // into a base class of Movable and a derived class of PhysicallyMovable, giving us scope for other derived
 // classes such as NonPhysicallyMoving for unstoppable things
-public class Movable
+public abstract class Movable implements ICollidable
 {
    public void setPosition(XY pos)
    {
@@ -13,22 +13,6 @@ public class Movable
    public XY getPosition()
    {
       return m_position;
-   }
-
-   public void addForce(XY f)
-   {
-   }
-
-   public static class AppliedForce
-   {
-      public final XY RelativePositionOfApplication;
-      public final XY Force;
-
-      public AppliedForce(XY relativePos, XY force)
-      {
-         RelativePositionOfApplication = relativePos;
-         Force = force;
-      }
    }
 
    public void applyForceAbsolute(XY position, XY force)
@@ -50,6 +34,18 @@ public class Movable
       m_angle += m_spin * timeStep;
 
 
+   }
+
+   public static class DynamicsState
+   {
+      public XY Position;
+      public double Orientation;
+
+      public DynamicsState(XY position, double orientation)
+      {
+         Position = position;
+         Orientation = orientation;
+      }
    }
 
    double m_mass;

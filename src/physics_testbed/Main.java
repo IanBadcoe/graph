@@ -24,26 +24,19 @@ public class Main extends PApplet
       fullScreen();
 
       s_app = this;
-
-      // configure our crude IoC system
-      TryAllNodesExpandStepper.SetChildFactory(
-            TryAllTemplatesOnOneNodeStepper::new);
-      TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            TryTemplateExpandStepper::new);
-      ExpandToSizeStepper.SetChildFactory(
-            TryAllNodesExpandStepper::new);
-      EdgeAdjusterStepper.SetChildFactory(
-            RelaxerStepper::new);
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            RelaxerStepper::new);
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            EdgeAdjusterStepper::new);
    }
 
    @Override
    public void setup()
    {
       ellipseMode(RADIUS);
+
+      m_level.addWall(new Wall(new XY(0, height - 100), new XY(width, height - 100), new XY(0, -1)));
+
+      PhysicsTestObject pto = new PhysicsTestObject(100, 100);
+      pto.setPosition(new XY(width / 2, 0));
+
+      m_objects.add(pto);
    }
 
    @Override
@@ -51,13 +44,10 @@ public class Main extends PApplet
    {
    }
 
-   private void playKeyPress()
-   {
-   }
-
    @Override
    public void draw()
    {
+      drawLevel(m_level);
    }
 
    static void line(XY from, XY to)
@@ -130,7 +120,7 @@ public class Main extends PApplet
       }
    }
 
-   static void drawLevel(Level level, XY visibility_pos)
+   static void drawLevel(PhysicsTestLevel level)
    {
       s_app.background(0xff201010);
 
@@ -140,25 +130,7 @@ public class Main extends PApplet
       s_app.stroke(0xff808080);
       s_app.fill(180, 120, 120);
 
-      Box bounds = level.getBounds();
-
-      s_app.beginShape();
-      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Max.Y + 1000);
-      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Max.Y + 1000);
-      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
-      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
-
-      level.getWallLoops().forEach(Main::drawWallLoop);
-      s_app.endShape(CLOSE);
-
-      s_app.stroke(0xfff0f0f0);
-      s_app.strokeWeight(2);
-
-      for(Wall w : level.getVisibleWalls(visibility_pos))
-      {
-         s_app.line((float)w.Start.X, (float)w.Start.Y,
-               (float)w.End.X, (float)w.End.Y);
-      }
+      level.getWalls().forEach(x -> line(x.Start, x.End));
    }
 
    static void drawWallLoop(WallLoop wl)
@@ -225,5 +197,6 @@ public class Main extends PApplet
 
    private static PApplet s_app;
 
-//   private Level m_level = new Level();
+   private PhysicsTestLevel m_level = new PhysicsTestLevel();
+   private ArrayList<PhysicsTestObject> m_objects = new ArrayList<>();
 }

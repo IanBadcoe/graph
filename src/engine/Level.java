@@ -151,11 +151,11 @@ public class Level implements IPhysicalLevel
             Wall w = new Wall(prev.First, curr.First,
                   prev.Second.plus(curr.Second).makeUnit());
 
-            if (prev_w != null)
-            {
-               w.setPrev(prev_w);
-               prev_w.setNext(w);
-            }
+//            if (prev_w != null)
+//            {
+//               w.setPrev(prev_w);
+//               prev_w.setNext(w);
+//            }
 
             addWallToMap(w);
             wl.add(w);
@@ -165,9 +165,9 @@ public class Level implements IPhysicalLevel
             prev = curr;
          }
 
-         //noinspection ConstantConditions
-         prev_w.setNext(wl.get(0));
-         wl.get(0).setPrev(prev_w);
+//         //noinspection ConstantConditions
+//         prev_w.setNext(wl.get(0));
+//         wl.get(0).setPrev(prev_w);
 
          m_wall_loops.add(wl);
       }
