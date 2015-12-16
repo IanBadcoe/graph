@@ -40,12 +40,8 @@ public abstract class Movable implements ICollidable
    {
       public XY Position;
       public double Orientation;
-
-      public DynamicsState(XY position, double orientation)
-      {
-         Position = position;
-         Orientation = orientation;
-      }
+      public XY Velocity;
+      public double Spin;
    }
 
    double m_mass;
