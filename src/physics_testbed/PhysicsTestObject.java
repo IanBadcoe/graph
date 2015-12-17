@@ -38,17 +38,6 @@ public class PhysicsTestObject extends Movable
    }
 
    @Override
-   public Level.Collision findFirstCollision(DynamicsPosition oldState, DynamicsPosition newState,
-                                             IPhysicalLevel level, double resolution)
-   {
-      // we're looking for the first sub-interval of this movement where
-      // the interval is shorter than resolution and the end is colliding but the start is not
-      //
-      // when we get this we'll return start as the collision point
-      double d2 = newState.Position.minus(newState.Position).length2();
-   }
-
-   @Override
    public XY transformedCorner(int idx, DynamicsState where)
    {
       Matrix2D rot = new Matrix2D(where.Orientation);

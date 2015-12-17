@@ -15,23 +15,25 @@ public class PhysicalSimulator
    // steps until first collision, returns fraction of the time-step consumed
    public double partStep(Movable m, IPhysicalLevel level, double timeStep)
    {
-      Movable.DynamicsState new_state = m.step(timeStep);
+//      Movable.DynamicsState new_state = m.step(timeStep);
+//
+//      Level.RayCollision c = m.findFirstCollision(m.getState(), new_state, level);
+//
+//      if (c == null)
+//      {
+//         m.setState(new_state);
+//
+//         return timeStep;
+//      }
+//
+//      resolveCollision(m, c);
+//
+//      return timeStep * c.FractionThrough;
 
-      Level.Collision c = m.findFirstCollision(m.getState(), new_state, level);
-
-      if (c == null)
-      {
-         m.setState(new_state);
-
-         return timeStep;
-      }
-
-      resolveCollision(m, c);
-
-      return timeStep * c.FractionThrough;
+      return 0;
    }
 
-   private void resolveCollision(Movable m, Level.Collision cr)
+   private void resolveCollision(Movable m, Level.RayCollision cr)
    {
 
    }

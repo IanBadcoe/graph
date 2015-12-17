@@ -33,7 +33,7 @@ public class Main extends PApplet
 
       m_level.addWall(new Wall(new XY(0, height - 100), new XY(width, height - 100), new XY(0, -1)));
 
-      PhysicsTestObject pto = new PhysicsTestObject(100, 100);
+      PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.1);
       pto.setPosition(new XY(width / 2, 0));
 
       m_objects.add(pto);

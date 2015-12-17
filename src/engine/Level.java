@@ -197,23 +197,21 @@ public class Level implements IPhysicalLevel
       return m_bounds;
    }
 
-   public static class Collision
+   public static class RayCollision
    {
-      public Collision(Wall w, double dist, XY point, double fractionThrough)
+      public RayCollision(Wall w, double dist, XY point)
       {
          WallHit = w;
          DistanceTo = dist;
          ImpactPoint = point;
-         FractionThrough = fractionThrough;
       }
 
       public final Wall WallHit;
       public final double DistanceTo;
       public final XY ImpactPoint;
-      public final double FractionThrough;
    }
 
-   public Collision nearestWall(XY nearest_to, XY step)
+   public RayCollision nearestWall(XY nearest_to, XY step)
    {
       double len = step.length();
       XY dir = step.divide(len);
@@ -222,7 +220,7 @@ public class Level implements IPhysicalLevel
 
    // place probe_to beyond edge of level to definitely find something
    // however far
-   public Collision nearestWall(XY nearest_to, XY dir, double length)
+   public RayCollision nearestWall(XY nearest_to, XY dir, double length)
    {
       assert dir.isUnit();
 
@@ -233,7 +231,6 @@ public class Level implements IPhysicalLevel
       CC cell;
 
       Wall hit = null;
-      double fraction = 1.0;
 
       while((cell = ge.nextCell()) != null)
       {
@@ -251,8 +248,6 @@ public class Level implements IPhysicalLevel
                   hit = w;
 
                   // shorten length by the proportional position of the intersection
-                  // shorten fraction (progressively for if we hit more than one candidate)
-                  fraction *= intersect.First;
                   length *= intersect.First;
                   end = nearest_to.plus(dir.multiply(length));
 
@@ -262,7 +257,75 @@ public class Level implements IPhysicalLevel
          }
       }
 
-      return new Collision(hit, length, nearest_to.plus(dir.multiply(length)), fraction);
+      return new RayCollision(hit, length, nearest_to.plus(dir.multiply(length)));
+   }
+
+   public static class MovableCollision
+   {
+      MovableCollision(XY worldPoint, double fractionTravelled, XY normal)
+      {
+         WorldPoint = worldPoint;
+         FractionTravelled = fractionTravelled;
+         Normal = normal;
+      }
+
+      final XY WorldPoint;
+      final double FractionTravelled;
+      final XY Normal;
+   }
+
+   MovableCollision collide(Movable m,
+         Movable.DynamicsPosition start, Movable.DynamicsPosition end,
+         double resolution)
+   {
+      // we're looking for the first interval within the overall movement
+      // that is of length at most "resolution" and where the start has no
+      // collision and the end does have a collision
+      //
+      // we'll stop the movable at the start of this interval and calculate the
+      // collision params for the collision that would be about to occur
+
+      assert colliding(m, start) == null;
+
+      double s_frac = 0;
+      double e_frac = 1;
+
+      MovableCollision ret = colliding(m, end);
+
+      if (ret == null)
+         return null;
+
+      double iLength2 = end.Position.minus(start.Position).length2();
+
+      resolution *= resolution;
+
+      while(iLength2 > resolution)
+      {
+         double m_frac = (s_frac + e_frac) / 2;
+
+         Movable.DynamicsPosition mid = start.interpolate(end, m_frac);
+
+         MovableCollision m_col = colliding(m, mid);
+
+         if (m_col != null)
+         {
+            e_frac = m_frac;
+            ret = m_col;
+         }
+         else
+         {
+            s_frac = m_frac;
+         }
+
+         iLength2 = end.Position.minus(start.Position).length2();
+      }
+
+      return ret;
+   }
+
+   private MovableCollision colliding(Movable m, Movable.DynamicsPosition start)
+   {
+      return null;
    }
 
    Collection<Loop> getMergedLoops()
@@ -290,7 +353,7 @@ public class Level implements IPhysicalLevel
                double l = rel.length();
                XY dir = rel.divide(l);
 
-               Collision wcr = nearestWall(visibility_pos,
+               RayCollision wcr = nearestWall(visibility_pos,
                      dir, l + 1);
 
                ret.add(wcr.WallHit);

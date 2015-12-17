@@ -203,7 +203,7 @@ public class LevelTest
          {
             XY dir = new XY(Math.sin(d * Math.PI / 180), Math.cos(d * Math.PI / 180));
 
-            Level.Collision wcr = l.nearestWall(new XY(0, 0), dir, rad * 1.1);
+            Level.RayCollision wcr = l.nearestWall(new XY(0, 0), dir, rad * 1.1);
 
             assertNotNull(wcr);
 
@@ -214,8 +214,6 @@ public class LevelTest
 
             // expect dist reported similar
             assertEquals(1, dist/wcr.DistanceTo, 0.02);
-
-            assertEquals(1/1.1, wcr.FractionThrough, 0.01);
          }
       }
 
@@ -242,7 +240,7 @@ public class LevelTest
          {
             XY dir = new XY(Math.sin(d * Math.PI / 180), Math.cos(d * Math.PI / 180));
 
-            Level.Collision wcr = l.nearestWall(new XY(0, 0), dir, 110);
+            Level.RayCollision wcr = l.nearestWall(new XY(0, 0), dir, 110);
 
             assertNotNull(wcr);
 
