@@ -1,10 +1,10 @@
 package engine;
 
-class Matrix2D
+public class Matrix2D
 {
    private final double[][] M = new double[2][2];
 
-   Matrix2D(double angle)
+   public Matrix2D(double angle)
    {
       double sa = Math.sin(angle);
       double ca = Math.cos(angle);
@@ -14,7 +14,7 @@ class Matrix2D
       M[1][0] = sa;
    }
 
-   XY Multiply(XY rhs)
+   public XY multiply(XY rhs)
    {
       // haven't thought much about wether matrix is row major or column major
       // or wether this is pre or post multiplication

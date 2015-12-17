@@ -1,6 +1,5 @@
 package engine;
 
-import engine.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -262,11 +261,11 @@ public class UtilTest
                                      Matrix2D mat, XY offset,
                                      double exp_dist, XY exp_targ, XY exp_dir)
    {
-      XY h_n = mat.Multiply(n.plus(offset));
-      XY h_es = mat.Multiply(es.plus(offset));
-      XY h_ee = mat.Multiply(ee.plus(offset));
-      XY h_exp_targ = mat.Multiply(exp_targ.plus(offset));
-      XY h_exp_dir = mat.Multiply(exp_dir);
+      XY h_n = mat.multiply(n.plus(offset));
+      XY h_es = mat.multiply(es.plus(offset));
+      XY h_ee = mat.multiply(ee.plus(offset));
+      XY h_exp_targ = mat.multiply(exp_targ.plus(offset));
+      XY h_exp_dir = mat.multiply(exp_dir);
       Util.NEDRet vals = Util.nodeEdgeForceDist(h_n, h_es, h_ee);
 
       assertEquals(exp_dist, vals.Dist, 1e-5);

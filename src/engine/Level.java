@@ -197,21 +197,23 @@ public class Level implements IPhysicalLevel
       return m_bounds;
    }
 
-   public static class WallCollideRet
+   public static class Collision
    {
-      public WallCollideRet(Wall w, double dist, XY point)
+      public Collision(Wall w, double dist, XY point, double fractionThrough)
       {
          WallHit = w;
          DistanceTo = dist;
          ImpactPoint = point;
+         FractionThrough = fractionThrough;
       }
 
       public final Wall WallHit;
       public final double DistanceTo;
       public final XY ImpactPoint;
+      public final double FractionThrough;
    }
 
-   public WallCollideRet nearestWall(XY nearest_to, XY step)
+   public Collision nearestWall(XY nearest_to, XY step)
    {
       double len = step.length();
       XY dir = step.divide(len);
@@ -220,7 +222,7 @@ public class Level implements IPhysicalLevel
 
    // place probe_to beyond edge of level to definitely find something
    // however far
-   public WallCollideRet nearestWall(XY nearest_to, XY dir, double length)
+   public Collision nearestWall(XY nearest_to, XY dir, double length)
    {
       assert dir.isUnit();
 
@@ -231,6 +233,7 @@ public class Level implements IPhysicalLevel
       CC cell;
 
       Wall hit = null;
+      double fraction = 1.0;
 
       while((cell = ge.nextCell()) != null)
       {
@@ -248,6 +251,8 @@ public class Level implements IPhysicalLevel
                   hit = w;
 
                   // shorten length by the proportional position of the intersection
+                  // shorten fraction (progressively for if we hit more than one candidate)
+                  fraction *= intersect.First;
                   length *= intersect.First;
                   end = nearest_to.plus(dir.multiply(length));
 
@@ -257,7 +262,7 @@ public class Level implements IPhysicalLevel
          }
       }
 
-      return new WallCollideRet(hit, length, nearest_to.plus(dir.multiply(length)));
+      return new Collision(hit, length, nearest_to.plus(dir.multiply(length)), fraction);
    }
 
    Collection<Loop> getMergedLoops()
@@ -285,7 +290,7 @@ public class Level implements IPhysicalLevel
                double l = rel.length();
                XY dir = rel.divide(l);
 
-               WallCollideRet wcr = nearestWall(visibility_pos,
+               Collision wcr = nearestWall(visibility_pos,
                      dir, l + 1);
 
                ret.add(wcr.WallHit);

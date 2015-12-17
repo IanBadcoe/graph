@@ -153,11 +153,11 @@ public class TemplateBuilder
 
    public void Connect(String from, String to,
                        double min_length, double max_length,
-                       double width) throws IllegalArgumentException
+                       double half_width) throws IllegalArgumentException
    {
       Connect(from, to,
             min_length, max_length,
-            width,
+            half_width,
             0xffb4b4b4);
    }
 
