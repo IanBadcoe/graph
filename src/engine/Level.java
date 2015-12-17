@@ -1,6 +1,7 @@
 package engine;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Level implements IPhysicalLevel
 {
@@ -323,8 +324,61 @@ public class Level implements IPhysicalLevel
       return ret;
    }
 
-   private MovableCollision colliding(Movable m, Movable.DynamicsPosition start)
+   private static class Line
    {
+      Line(XY start, XY end)
+      {
+         Start = start;
+         End = end;
+      }
+
+      final XY Start;
+      final XY End;
+   }
+
+   private class Transformer
+   {
+      Transformer(Movable.DynamicsPosition pos)
+      {
+         m_translate = pos.Position;
+         m_rotate = new Matrix2D(pos.Orientation);
+      }
+
+      XY transform(XY in)
+      {
+         return m_rotate.multiply(in).plus(m_translate);
+      }
+
+      final XY m_translate;
+      final Matrix2D m_rotate;
+   }
+
+   ArrayList<Line> makeEdges(Movable m, Movable.DynamicsPosition pos)
+   {
+      Transformer t = new Transformer(pos);
+
+      ArrayList<XY> transformed_corners
+            = m.getCorners().stream().map(x -> t.transform(x)).collect(Collectors.toCollection(ArrayList::new));
+
+      XY prev = transformed_corners.get(transformed_corners.size() - 1);
+
+      ArrayList<Line> ret = new ArrayList<>();
+
+      for(XY curr : transformed_corners)
+      {
+         ret.add(new Line(prev, curr));
+         prev = curr;
+      }
+
+      return ret;
+   }
+
+   private MovableCollision colliding(Movable m, Movable.DynamicsPosition pos)
+   {
+      GridWalker gw = new GridWalker(m_cell_size, pos.Position, pos.Position, m.getRadius());
+
+      ArrayList<Line> edges = makeEdges(m, pos);
+
       return null;
    }
 
