@@ -1,17 +1,20 @@
 package engine;
 
-import javafx.geometry.Pos;
+import java.util.Collection;
 
 // for the moment, not separating physically simulated from movable, but if required later, could split this
 // into a base class of Movable and a derived class of PhysicallyMovable, giving us scope for other derived
 // classes such as NonPhysicallyMoving for unstoppable things
-public abstract class Movable implements ICollidable
+//
+// also for the moment, not separating Movable from "ICollidable" (which non-movable things, such as walls, could
+// also implement...
+public abstract class Movable
 {
-   public Movable(double mass, double momentOfIntertia, double coefficientOfRestitution)
+   protected Movable(double mass, double momentOfIntertia, double coefficientOfRestitution)
    {
-      m_mass = mass;
-      m_momentOfInertia = momentOfIntertia;
-      m_coefficientOfRestitution = coefficientOfRestitution;
+      Mass = mass;
+      MomentOfInertia = momentOfIntertia;
+      CoefficientOfRestitution = coefficientOfRestitution;
    }
 
    public void setPosition(XY pos)
@@ -29,6 +32,7 @@ public abstract class Movable implements ICollidable
       applyForceRelative(position.minus(m_state.Position), force);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public void applyForceRelative(XY relativePosition, XY force)
    {
       m_force = m_force.plus(force);
@@ -43,8 +47,8 @@ public abstract class Movable implements ICollidable
 
       ret.Position = m_state.Position.plus(m_state.Velocity.multiply(timeStep));
       ret.Orientation = m_state.Spin + m_state.Spin * timeStep;
-      ret.Velocity = m_state.Velocity.plus(m_force.multiply(timeStep / m_mass));
-      ret.Spin = m_state.Spin + m_torque * timeStep / m_momentOfInertia;
+      ret.Velocity = m_state.Velocity.plus(m_force.multiply(timeStep / Mass));
+      ret.Spin = m_state.Spin + m_torque * timeStep / MomentOfInertia;
 
       return ret;
    }
@@ -57,6 +61,12 @@ public abstract class Movable implements ICollidable
    public void setState(DynamicsState state)
    {
       m_state = state;
+   }
+
+   public void applyImpulseRelative(XY impulse, XY relPoint)
+   {
+      m_state.Velocity = m_state.Velocity.plus(impulse.divide(Mass));
+      m_state.Spin += relPoint.rot90().dot(impulse) / MomentOfInertia;
    }
 
    public static class DynamicsPosition
@@ -80,13 +90,24 @@ public abstract class Movable implements ICollidable
       public double Spin;
    }
 
+   // sum the combined effewct of translation and rotation for a point on the body
+   // relativePoint is the offset from the mass centre
+   public XY pointVelocity(XY relativePoint)
+   {
+      return m_state.Velocity.plus(relativePoint.rot90().multiply(m_state.Spin));
+   }
+
+   public abstract Collection<XY> getCorners();
+   public abstract XY transformedCorner(int idx, DynamicsState where);
+   public abstract double getRadius();
+
    // these final more as a way of letting the compiler
    // check they got assigned, no absolute reason why they can't be changed later
-   final double m_mass;
-   final double m_momentOfInertia;
-   final double m_coefficientOfRestitution;
+   final public double Mass;
+   final public double MomentOfInertia;
+   final public double CoefficientOfRestitution;
 
-   DynamicsState m_state = new DynamicsState();
+   private DynamicsState m_state = new DynamicsState();
 
    private XY m_force;
    private double m_torque;

@@ -2,12 +2,12 @@ package engine;
 
 public class Wall
 {
-   @SuppressWarnings("WeakerAccess")
    public final XY Start;
-   @SuppressWarnings("WeakerAccess")
    public final XY End;
-   @SuppressWarnings("WeakerAccess")
    public final XY Normal;
+
+   private Wall m_prev;
+   private Wall m_next;
 
    public Wall(XY start, XY end, XY normal)
    {
@@ -19,5 +19,26 @@ public class Wall
    public XY midPoint()
    {
       return End.plus(Start).divide(2);
+   }
+
+   public void setPrev(Wall prev)
+   {
+      this.m_prev = prev;
+   }
+
+   public Wall getPrev()
+   {
+      return m_prev;
+   }
+
+
+   public void setNext(Wall next)
+   {
+      this.m_next = next;
+   }
+
+   public Wall getNext()
+   {
+      return m_next;
    }
 }

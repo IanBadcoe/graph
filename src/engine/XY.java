@@ -113,8 +113,13 @@ public class XY
       return Math.abs(length() - 1) < 1e-6;
    }
 
-   public XY makeUnit()
+   public XY asUnit()
    {
       return this.divide(this.length());
+   }
+
+   public static XY interpolate(XY start, XY end, double fraction)
+   {
+      return start.plus(end.minus(start).multiply(fraction));
    }
 }

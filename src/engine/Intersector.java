@@ -1,7 +1,5 @@
 package engine;
 
-import game.Main;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,8 +50,7 @@ class Intersector
    }
 
    public static LoopSet union(LoopSet ls1, LoopSet ls2, @SuppressWarnings("SameParameterValue") double tol,
-                               Random random,
-                               boolean visualise)
+                               Random random)
    {
       if (ls1.size() == 0 && ls2.size() == 0)
          return null;
@@ -254,7 +251,7 @@ class Intersector
 
          XY mid_point = c.computePos((c.StartParam + c.EndParam) / 2);
 
-         ArrayList<OrderedPair<Curve, Integer>> intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random, visualise);
+         ArrayList<OrderedPair<Curve, Integer>> intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random);
 
          // failure, don't really expect this has have had multiple tries and it
          // shouldn't be so hard to find a good cutting line
@@ -443,12 +440,11 @@ class Intersector
    // non-private for unit-testing only
    static ArrayList<OrderedPair<Curve, Integer>>
          tryFindIntersections(
-            XY mid_point,
-            HashSet<Curve> all_curves,
-            HashSet<XY> curve_joints,
-            double diameter, double tol,
-            Random random,
-            boolean visualise)
+         XY mid_point,
+         HashSet<Curve> all_curves,
+         HashSet<XY> curve_joints,
+         double diameter, double tol,
+         Random random)
    {
 //      // don't keep eating random numbers if we're visualising the same frame over and over
 //      if (visualise && m_visualisation_line != null)

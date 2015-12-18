@@ -1,6 +1,5 @@
 package engine;
 
-import engine.*;
 import org.junit.Test;
 
 import java.util.*;
@@ -331,8 +330,8 @@ public class IntersectorTest
                      all_curves,
                      curve_joints,
                      10, 1e-6,
-                     new Random(1),
-                     false);
+                     new Random(1)
+               );
 
          assertNotNull(ret);
          assertEquals(2, ret.size());
@@ -386,8 +385,8 @@ public class IntersectorTest
                      all_curves,
                      curve_joints,
                      10, 1e-6,
-                     new Random(1),
-                     false);
+                     new Random(1)
+               );
 
          assertNotNull(ret);
          assertEquals(4, ret.size());
@@ -420,8 +419,8 @@ public class IntersectorTest
                      all_curves,
                      curve_joints,
                      10, 1e-6,
-                     new Random(1),
-                     false);
+                     new Random(1)
+               );
 
          assertNotNull(ret);
          assertEquals(4, ret.size());
@@ -459,7 +458,7 @@ public class IntersectorTest
          LoopSet ls1 = new LoopSet();
          LoopSet ls2 = new LoopSet();
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1), false);
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNull(ret);
       }
@@ -472,7 +471,7 @@ public class IntersectorTest
          Loop l1 = new Loop(new CircleCurve(new XY(), 1));
          ls1.add(l1);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1), false);
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -487,7 +486,7 @@ public class IntersectorTest
          Loop l2 = new Loop(new CircleCurve(new XY(), 1));
          ls2.add(l2);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1), false);
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -508,7 +507,7 @@ public class IntersectorTest
          // paranoia
          assertEquals(ls1, ls2);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1), false);
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -526,7 +525,7 @@ public class IntersectorTest
          Loop l2 = new Loop(new CircleCurve(new XY(1, 0), 1));
          ls2.add(l2);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1), false);
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -580,7 +579,7 @@ public class IntersectorTest
          ls2.add(l2a);
          ls2.add(l2b);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1), false);
+         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(3, ret.size());

@@ -8,6 +8,7 @@ import java.util.Collections;
 
 public class PhysicsTestObject extends Movable
 {
+   @SuppressWarnings("SameParameterValue")
    PhysicsTestObject(double width, double height, double mass, double coefficientOfRestitution)
    {
       super(
@@ -19,6 +20,8 @@ public class PhysicsTestObject extends Movable
 
       width /= 2;
       height /= 2;
+
+      m_radius = Math.sqrt(width * width + height * height);
 
       XY tl = new XY(width, height);
       XY bl = new XY(width, -height);
@@ -45,5 +48,12 @@ public class PhysicsTestObject extends Movable
       return rot.multiply(m_corners.get(idx)).plus(where.Position);
    }
 
-   ArrayList<XY> m_corners = new ArrayList<>();
+   @Override
+   public double getRadius()
+   {
+      return m_radius;
+   }
+
+   private final ArrayList<XY> m_corners = new ArrayList<>();
+   private final double m_radius;
 }

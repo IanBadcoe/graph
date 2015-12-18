@@ -3,7 +3,6 @@ package physics_testbed;
 import engine.*;
 import processing.core.PApplet;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 @SuppressWarnings("WeakerAccess")
@@ -31,7 +30,10 @@ public class Main extends PApplet
    {
       ellipseMode(RADIUS);
 
-      m_level.addWall(new Wall(new XY(0, height - 100), new XY(width, height - 100), new XY(0, -1)));
+//      LevelGeneratorConfiguration lgc = new LevelGeneratorConfiguration(0);
+//      LevelGenerator lg = new LevelGenerator(lgc);
+//      lgc.
+//      m_level.addWall(new Wall(new XY(0, height - 100), new XY(width, height - 100), new XY(0, -1)));
 
       PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.1);
       pto.setPosition(new XY(width / 2, 0));
@@ -47,7 +49,7 @@ public class Main extends PApplet
    @Override
    public void draw()
    {
-      drawLevel(m_level);
+      drawLevel(m_level, null);
    }
 
    static void line(XY from, XY to)
@@ -120,7 +122,7 @@ public class Main extends PApplet
       }
    }
 
-   static void drawLevel(PhysicsTestLevel level)
+   static void drawLevel(Level level, @SuppressWarnings("SameParameterValue") XY visibility_pos)
    {
       s_app.background(0xff201010);
 
@@ -130,7 +132,28 @@ public class Main extends PApplet
       s_app.stroke(0xff808080);
       s_app.fill(180, 120, 120);
 
-      level.getWalls().forEach(x -> line(x.Start, x.End));
+      Box bounds = level.getBounds();
+
+      s_app.beginShape();
+      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Max.Y + 1000);
+      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Max.Y + 1000);
+      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
+      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
+
+      level.getWallLoops().forEach(Main::drawWallLoop);
+      s_app.endShape(CLOSE);
+
+      s_app.stroke(0xfff0f0f0);
+      s_app.strokeWeight(2);
+
+      if (visibility_pos != null)
+      {
+         for (Wall w : level.getVisibleWalls(visibility_pos))
+         {
+            s_app.line((float) w.Start.X, (float) w.Start.Y,
+                  (float) w.End.X, (float) w.End.Y);
+         }
+      }
    }
 
    static void drawWallLoop(WallLoop wl)
@@ -197,6 +220,9 @@ public class Main extends PApplet
 
    private static PApplet s_app;
 
-   private PhysicsTestLevel m_level = new PhysicsTestLevel();
+   @SuppressWarnings("CanBeFinal")
+   private Level m_level;
+   @SuppressWarnings("CanBeFinal")
    private ArrayList<PhysicsTestObject> m_objects = new ArrayList<>();
+   private PhysicalSimulator m_sim = new PhysicalSimulator();
 }

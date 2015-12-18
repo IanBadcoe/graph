@@ -10,6 +10,14 @@ class GridWalker
       m_feature_diameter = feature_diameter;
    }
 
+   public GridWalker(GridWalker old)
+   {
+      m_cell_size = old.m_cell_size;
+      m_begin = old.m_begin;
+      m_end = old.m_end;
+      m_feature_diameter = old.m_feature_diameter;
+   }
+
    private void calculateLineParams()
    {
       XY diff = m_end.minus(m_begin);
@@ -113,7 +121,7 @@ class GridWalker
 
    private void init()
    {
-      m_dir = m_end.minus(m_begin).makeUnit();
+      m_dir = m_end.minus(m_begin).asUnit();
 
       // this is how far we have to get (orthogonally) from a cell centre, before
       // any wall in that cell cannot possibly hit us
