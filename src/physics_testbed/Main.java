@@ -220,9 +220,7 @@ public class Main extends PApplet
 
    private static PApplet s_app;
 
-   @SuppressWarnings("CanBeFinal")
    private Level m_level;
-   @SuppressWarnings("CanBeFinal")
-   private ArrayList<PhysicsTestObject> m_objects = new ArrayList<>();
-   private PhysicalSimulator m_sim = new PhysicalSimulator();
+   private final ArrayList<PhysicsTestObject> m_objects = new ArrayList<>();
+   private final PhysicalSimulator m_sim = new PhysicalSimulator();
 }

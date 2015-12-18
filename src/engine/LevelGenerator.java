@@ -1,6 +1,6 @@
 package engine;
 
-import java.util.Random;
+import java.util.*;
 
 public class LevelGenerator
 {
@@ -39,7 +39,9 @@ public class LevelGenerator
 
    private StepperController.StatusReport doneStep()
    {
-      m_level.finalise();
+      m_level = m_union_helper.makeLevel(m_config.CellSize, m_config.WallFacetLength);
+
+      m_union_helper = null;
 
       return new StepperController.StatusReport(
             StepperController.Status.StepOutSuccess,
@@ -116,11 +118,9 @@ public class LevelGenerator
 
    private StepperController.StatusReport baseGeometryStep()
    {
-      m_level = new Level(m_graph,
-            m_config.CellSize,
-            m_config.WallFacetLength);
+      m_union_helper = new UnionHelper();
 
-      m_level.generateGeometry();
+      m_union_helper.generateGeometry(m_graph);
 
       m_phase = Phase.Union;
 
@@ -132,7 +132,7 @@ public class LevelGenerator
 
    private StepperController.StatusReport unionStep()
    {
-      boolean done = m_level.unionOne(m_config.Rand);
+      boolean done = m_union_helper.unionOne(m_config.Rand);
 
       if (done)
       {
@@ -215,4 +215,6 @@ public class LevelGenerator
    private final LevelGeneratorConfiguration m_config;
 
    private Level m_level;
+
+   private UnionHelper m_union_helper;
 }
