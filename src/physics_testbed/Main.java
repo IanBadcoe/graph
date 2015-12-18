@@ -4,12 +4,13 @@ import engine.*;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 @SuppressWarnings("WeakerAccess")
 public class Main extends PApplet
 {
    public static void main(String[] args) {
-      PApplet.main("game.Main", args);
+      PApplet.main("physics_testbed.Main", args);
    }
 
    public Main()
@@ -30,13 +31,20 @@ public class Main extends PApplet
    {
       ellipseMode(RADIUS);
 
-//      LevelGeneratorConfiguration lgc = new LevelGeneratorConfiguration(0);
-//      LevelGenerator lg = new LevelGenerator(lgc);
-//      lgc.
-//      m_level.addWall(new Wall(new XY(0, height - 100), new XY(width, height - 100), new XY(0, -1)));
+      UnionHelper uh = new UnionHelper();
+      GeomLayout rect
+            = new RectangularGeomLayout(new XY(5, height / 2 - 55), new XY(width - 5, height / 2 - 55), height / 2 - 50);
+      Loop l = rect.makeBaseGeometry();
+
+      uh.addBaseLoop(l);
+
+      uh.unionOne(new Random(1));
+
+      m_level = uh.makeLevel(20, 10);
 
       PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.1);
-      pto.setPosition(new XY(width / 2, 0));
+      pto.setPosition(new XY(width / 2, 100));
+      pto.applyForceRelative(new XY(50, 0), new XY(0, 10));
 
       m_objects.add(pto);
    }
@@ -49,7 +57,20 @@ public class Main extends PApplet
    @Override
    public void draw()
    {
+      m_objects.forEach(x -> m_sim.partStep(x, m_level, 0.1));
+
       drawLevel(m_level, null);
+      m_objects.forEach(Main::drawObject);
+   }
+
+   static void drawObject(PhysicsTestObject pto)
+   {
+      s_app.beginShape();
+      for(XY pnt : pto.getTransformedCorners())
+      {
+         s_app.vertex((float)pnt.X, (float)pnt.Y);
+      }
+      s_app.endShape(CLOSE);
    }
 
    static void line(XY from, XY to)
@@ -221,6 +242,7 @@ public class Main extends PApplet
    private static PApplet s_app;
 
    private Level m_level;
+   @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
    private final ArrayList<PhysicsTestObject> m_objects = new ArrayList<>();
    private final PhysicalSimulator m_sim = new PhysicalSimulator();
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 @SuppressWarnings("WeakerAccess")
 public class RectangularGeomLayout extends GeomLayout
 {
-   RectangularGeomLayout(XY start, XY end, double half_width)
+   public RectangularGeomLayout(XY start, XY end, double half_width)
    {
       m_start = start;
       m_end = end;
@@ -13,7 +13,7 @@ public class RectangularGeomLayout extends GeomLayout
    }
 
    @Override
-   Loop makeBaseGeometry()
+   public Loop makeBaseGeometry()
    {
       XY dir = m_end.minus(m_start);
       double length = dir.length();
@@ -42,7 +42,7 @@ public class RectangularGeomLayout extends GeomLayout
    }
 
    @Override
-   LoopSet makeDetailGeometry()
+   public LoopSet makeDetailGeometry()
    {
       return null;
    }

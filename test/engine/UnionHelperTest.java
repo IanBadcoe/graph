@@ -24,13 +24,13 @@ public class UnionHelperTest
       }
 
       @Override
-      Loop makeBaseGeometry()
+      public Loop makeBaseGeometry()
       {
          return null;
       }
 
       @Override
-      LoopSet makeDetailGeometry()
+      public LoopSet makeDetailGeometry()
       {
          return null;
       }

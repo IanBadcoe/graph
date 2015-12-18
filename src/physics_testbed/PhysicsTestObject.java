@@ -41,14 +41,6 @@ public class PhysicsTestObject extends Movable
    }
 
    @Override
-   public XY transformedCorner(int idx, DynamicsState where)
-   {
-      Matrix2D rot = new Matrix2D(where.Orientation);
-
-      return rot.multiply(m_corners.get(idx)).plus(where.Position);
-   }
-
-   @Override
    public double getRadius()
    {
       return m_radius;

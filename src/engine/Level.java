@@ -1,7 +1,6 @@
 package engine;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Level
 {
@@ -306,29 +305,9 @@ public class Level
       }
    }
 
-   private class Transformer
-   {
-      Transformer(Movable.DynamicsPosition pos)
-      {
-         m_translate = pos.Position;
-         m_rotate = new Matrix2D(pos.Orientation);
-      }
-
-      XY transform(XY in)
-      {
-         return m_rotate.multiply(in).plus(m_translate);
-      }
-
-      final XY m_translate;
-      final Matrix2D m_rotate;
-   }
-
    private ArrayList<Edge> makeEdges(Movable m, Movable.DynamicsPosition pos)
    {
-      Transformer t = new Transformer(pos);
-
-      ArrayList<XY> transformed_corners
-            = m.getCorners().stream().map(t::transform).collect(Collectors.toCollection(ArrayList::new));
+      ArrayList<XY> transformed_corners = m.getTransformedCorners(pos);
 
       XY prev = transformed_corners.get(transformed_corners.size() - 1);
 
@@ -377,7 +356,9 @@ public class Level
 
    private ColRet collide(Movable m, Movable.DynamicsPosition pos)
    {
-      GridWalker gw = new GridWalker(m_cell_size, pos.Position, pos.Position, m.getRadius());
+      // HACK HACK HACK -- grid-walker cannot cope with a zero-length line
+      // should either give it a point mode, or else write a different class for this case
+      GridWalker gw = new GridWalker(m_cell_size, pos.Position, pos.Position.plus(new XY(0.0001, 0.0001)), m.getRadius());
 
       ArrayList<Edge> edges = null;
 

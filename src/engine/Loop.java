@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class Loop
+public class Loop
 {
    Loop(Curve c)
    {

@@ -2,7 +2,7 @@ package engine;
 
 import java.util.*;
 
-class UnionHelper
+public class UnionHelper
 {
    // exposed for testing but there could be cases where client code wants to reach-in
    // and add some special piece of geometry
@@ -29,7 +29,7 @@ class UnionHelper
    }
 
    // returns true when all complete
-   boolean unionOne(Random r)
+   public boolean unionOne(Random r)
    {
       if (m_base_loops.size() > 0)
       {
@@ -61,19 +61,15 @@ class UnionHelper
 
    void generateGeometry(Graph graph)
    {
-      Box bounds = new Box();
-
       for (INode n : graph.allGraphNodes())
       {
          GeomLayout gl = n.geomLayoutCreator().create(n);
 
          Loop base = gl.makeBaseGeometry();
 
-         // could have node with no geometry?
+         // can have node with no geometry...  at least in unit-tests
          if (base != null)
          {
-            bounds = bounds.union(base.getBounds());
-
             addBaseLoop(base);
          }
 
@@ -96,13 +92,9 @@ class UnionHelper
 
          if (l != null)
          {
-            bounds = bounds.union(l.getBounds());
-
             addBaseLoop(l);
          }
       }
-
-      m_bounds = bounds;
 
       Optional<INode> start = graph.allGraphNodes().stream().filter(
             x -> x.getName().equals("Start")).findFirst();
@@ -113,8 +105,22 @@ class UnionHelper
       }
    }
 
+   private void calculateBounds()
+   {
+      Box bounds = new Box();
+
+      for (Loop l : m_merged_loops)
+      {
+         bounds = bounds.union(l.getBounds());
+      }
+
+      m_bounds = bounds;
+   }
+
    public Level makeLevel(double cell_size, double wall_facet_length)
    {
+      calculateBounds();
+
       Level ret = new Level(cell_size, wall_facet_length, m_bounds, m_start_pos);
 
       for (Loop l : m_merged_loops)

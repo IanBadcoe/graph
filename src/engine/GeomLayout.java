@@ -1,6 +1,6 @@
 package engine;
 
-abstract class GeomLayout
+abstract public class GeomLayout
 {
    interface IGeomLayoutCreateFromNode
    {
@@ -12,18 +12,10 @@ abstract class GeomLayout
       GeomLayout create(DirectedEdge de);
    }
 
-   GeomLayout()
-   {
-   }
-
    // one +ve loop that cuts the outer envelope of the space the node will occupy
-   abstract Loop makeBaseGeometry();
+   public abstract Loop makeBaseGeometry();
 
    // one of more -ve loops that put things like pillar back inside
    // the base geometry
-   abstract LoopSet makeDetailGeometry();
-
-   // we cut all edges up into fragments shorter than this
-   // is this a good idea?
-   static double MaxEdgeLength = 10;
+   public abstract LoopSet makeDetailGeometry();
 }

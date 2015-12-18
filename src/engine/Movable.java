@@ -1,6 +1,8 @@
 package engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 // for the moment, not separating physically simulated from movable, but if required later, could split this
 // into a base class of Movable and a derived class of PhysicallyMovable, giving us scope for other derived
@@ -69,10 +71,22 @@ public abstract class Movable
       m_state.Spin += relPoint.rot90().dot(impulse) / MomentOfInertia;
    }
 
+   public ArrayList<XY> getTransformedCorners()
+   {
+      return getTransformedCorners(m_state);
+   }
+
+   public ArrayList<XY> getTransformedCorners(DynamicsPosition pos)
+   {
+      Transform t = new Transform(pos);
+
+      return getCorners().stream().map(t::transform).collect(Collectors.toCollection(ArrayList::new));
+   }
+
    public static class DynamicsPosition
    {
-      public XY Position;
-      public double Orientation;
+      public XY Position = new XY();
+      public double Orientation = 0;
 
       DynamicsPosition interpolate(DynamicsPosition towards, double amount)
       {
@@ -86,8 +100,8 @@ public abstract class Movable
 
    public static class DynamicsState extends DynamicsPosition
    {
-      public XY Velocity;
-      public double Spin;
+      public XY Velocity = new XY();
+      public double Spin = 0;
    }
 
    // sum the combined effewct of translation and rotation for a point on the body
@@ -97,8 +111,9 @@ public abstract class Movable
       return m_state.Velocity.plus(relativePoint.rot90().multiply(m_state.Spin));
    }
 
+   @SuppressWarnings("WeakerAccess")
    public abstract Collection<XY> getCorners();
-   public abstract XY transformedCorner(int idx, DynamicsState where);
+
    public abstract double getRadius();
 
    // these final more as a way of letting the compiler
@@ -109,6 +124,6 @@ public abstract class Movable
 
    private DynamicsState m_state = new DynamicsState();
 
-   private XY m_force;
-   private double m_torque;
+   private XY m_force = new XY();
+   private double m_torque = 0;
 }
