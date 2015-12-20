@@ -33,7 +33,7 @@ public class Main extends PApplet
 
       UnionHelper uh = new UnionHelper();
       GeomLayout rect
-            = new RectangularGeomLayout(new XY(5, height / 2 - 55), new XY(width - 5, height / 2 - 55), height / 2 - 50);
+            = new RectangularGeomLayout(new XY(5, height / 2 - 55), new XY(width - 5, height / 2 - 55), height / 2 - 60);
       Loop l = rect.makeBaseGeometry();
 
       uh.addBaseLoop(l);
@@ -44,7 +44,10 @@ public class Main extends PApplet
 
       PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.1);
       pto.setPosition(new XY(width / 2, 100));
-      pto.applyForceRelative(new XY(50, 0), new XY(0, 10));
+      // gravity
+      pto.applyForceRelative(new XY(0, 10), new XY(0, 0));
+      // kick it off centre to give some spin...
+      pto.applyImpulseRelative(new XY(0, 100), new XY(50, 0));
 
       m_objects.add(pto);
    }

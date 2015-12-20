@@ -62,7 +62,7 @@ public class PhysicalSimulator
       double den = 1 / m1.Mass;
 
       {
-         double m1_rot_factor = col_point_on_m1.rot90().dot(mc.Normal);
+         double m1_rot_factor = col_point_on_m1.rot270().dot(mc.Normal);
          m1_rot_factor *= m1_rot_factor;
          m1_rot_factor /= m1.MomentOfInertia;
 
@@ -80,7 +80,7 @@ public class PhysicalSimulator
          den += 1 / m2.Mass;
 
          {
-            double m2_rot_factor = col_point_on_m2.rot90().dot(mc.Normal);
+            double m2_rot_factor = col_point_on_m2.rot270().dot(mc.Normal);
             m2_rot_factor *= m2_rot_factor;
             m2_rot_factor /= m2.MomentOfInertia;
 

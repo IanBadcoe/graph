@@ -7,6 +7,7 @@ public class Level
    Level(double cell_size, double wall_facet_length, Box bounds, XY start_pos)
    {
       m_cell_size = cell_size;
+      m_cell_radius = Math.sqrt(cell_size * cell_size) / 2;
       m_wall_facet_length = wall_facet_length;
       m_bounds = bounds;
       m_start_pos = start_pos;
@@ -138,9 +139,6 @@ public class Level
 
       assert collide(m, start) == null;
 
-      double s_frac = 0;
-      double e_frac = 1;
-
       ColRet col = collide(m, end);
 
       if (col == null)
@@ -150,11 +148,14 @@ public class Level
 
       resolution *= resolution;
 
+      // we only need *_frac for tracking s_frac which is eventually the fraction we succeeded in moving
+      double s_frac = 0;
+      double e_frac = 1;
+
       while(iLength2 > resolution)
       {
          double m_frac = (s_frac + e_frac) / 2;
-
-         Movable.DynamicsPosition mid = start.interpolate(end, m_frac);
+         Movable.DynamicsPosition mid = start.interpolate(end, 0.5);
 
          ColRet m_col = collide(m, mid);
 
@@ -162,10 +163,12 @@ public class Level
          {
             e_frac = m_frac;
             col = m_col;
+            end = mid;
          }
          else
          {
             s_frac = m_frac;
+            start = mid;
          }
 
          iLength2 = end.Position.minus(start.Position).length2();
@@ -231,7 +234,27 @@ public class Level
       XY normal;
       XY collision_point;
 
-      if (!moving_corner && !stationary_corner)
+      if (moving_corner && stationary_corner)
+      {
+         // corner - corner
+         normal = wall.Normal.plus(next_wall.Normal).minus(edge.normal()).minus(next_edge.normal()).asUnit();
+         // arbitrary, we have two points, each slightly penetrating the other body
+         // but again hope "resolution" is small enough not to make any difference
+         collision_point = edge.End;
+      }
+      else if (moving_corner)
+      {
+         // moving-corner - stationary-edge
+         normal = wall.Normal;
+         collision_point = edge.End;
+      }
+      else if (stationary_corner)
+      {
+         // stationary-corner - moving-edge
+         normal = edge.normal();
+         collision_point = wall.End;
+      }
+      else
       {
          // edge - edge use average normal
          normal = wall.Normal.minus(edge.normal()).asUnit();
@@ -239,26 +262,6 @@ public class Level
          // this is post-collision, could back-step to point on pre-collision movable position
          // but hopefully "resolution" can be set small enough for that not to matter
          collision_point = XY.interpolate(edge.Start, edge.End, col.EdgeFrac);
-      }
-      else if (!moving_corner)
-      {
-         // stationary-corner - moving-edge
-         normal = edge.normal();
-         collision_point = edge.End;
-      }
-      else if (!stationary_corner)
-      {
-         // moving-corner - stationary-edge
-         normal = wall.Normal;
-         collision_point = wall.End;
-      }
-      else
-      {
-         // corner - corner
-         normal = wall.Normal.plus(next_wall.Normal).minus(edge.normal()).minus(next_edge.normal()).asUnit();
-         // arbitrary, we have two points, each slightly penetrating the other body
-         // but again hope "resolution" is small enough not to make any difference
-         collision_point = edge.End;
       }
 
       return new MovableCollision(collision_point, s_frac, normal);
@@ -356,41 +359,47 @@ public class Level
 
    private ColRet collide(Movable m, Movable.DynamicsPosition pos)
    {
-      // HACK HACK HACK -- grid-walker cannot cope with a zero-length line
-      // should either give it a point mode, or else write a different class for this case
-      GridWalker gw = new GridWalker(m_cell_size, pos.Position, pos.Position.plus(new XY(0.0001, 0.0001)), m.getRadius());
+      ArrayList<Wall> walls = wallsInRangeOfPoint(pos.Position, m.getRadius());
 
-      ArrayList<Edge> edges = null;
-
-      CC cell;
-
-      while((cell = gw.nextCell()) != null)
+      if (walls != null)
       {
-         ArrayList<Wall> walls = m_wall_map.get(cell);
+         ArrayList<Edge> edges = makeEdges(m, pos);
 
-         if (walls != null)
+         for(Wall w : walls)
          {
-            if (edges == null)
+            for(Edge e : edges)
             {
-               edges = makeEdges(m, pos);
-            }
+               OrderedPair<Double, Double> intr = Util.edgeIntersect(w.Start, w.End, e.Start, e.End);
 
-            for(Wall w : walls)
-            {
-               for(Edge e : edges)
+               if (intr != null)
                {
-                  OrderedPair<Double, Double> intr = Util.edgeIntersect(w.Start, w.End, e.Start, e.End);
-
-                  if (intr != null)
-                  {
-                     return new ColRet(e, w, intr.Second, intr.First);
-                  }
+                  return new ColRet(e, w, intr.Second, intr.First);
                }
             }
          }
       }
 
       return null;
+   }
+
+   private ArrayList<Wall> wallsInRangeOfPoint(XY position, double radius)
+   {
+      Collection<CC> cells = GridWalker.pointSample(m_cell_size, m_cell_radius,
+         position, radius + m_wall_facet_length / 2);
+
+      ArrayList<Wall> ret = new ArrayList<>();
+
+      for(CC cell : cells)
+      {
+         ArrayList<Wall> walls = m_wall_map.get(cell);
+
+         if (walls != null)
+         {
+            ret.addAll(walls);
+         }
+      }
+
+      return ret;
    }
 
    public XY startPos()
@@ -430,6 +439,7 @@ public class Level
    private final Box m_bounds;
 
    private final double m_cell_size;
+   private final double m_cell_radius;
    private final double m_wall_facet_length;
 
    private final WallLoopSet m_wall_loops = new WallLoopSet();

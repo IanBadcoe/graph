@@ -1,5 +1,6 @@
 package engine;
 
+@SuppressWarnings("WeakerAccess")
 public class Matrix2D
 {
    private final double[][] M = new double[2][2];

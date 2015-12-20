@@ -29,17 +29,17 @@ public abstract class Movable
       return m_state.Position;
    }
 
-   public void applyForceAbsolute(XY position, XY force)
+   public void applyForceAbsolute(XY force, XY position)
    {
-      applyForceRelative(position.minus(m_state.Position), force);
+      applyForceRelative(force, position.minus(m_state.Position));
    }
 
    @SuppressWarnings("WeakerAccess")
-   public void applyForceRelative(XY relativePosition, XY force)
+   public void applyForceRelative(XY force, XY relativePosition)
    {
       m_force = m_force.plus(force);
 
-      double torque = relativePosition.rot90().dot(force);
+      double torque = relativePosition.rot270().dot(force);
       m_torque += torque;
    }
 
@@ -48,7 +48,7 @@ public abstract class Movable
       DynamicsState ret = new DynamicsState();
 
       ret.Position = m_state.Position.plus(m_state.Velocity.multiply(timeStep));
-      ret.Orientation = m_state.Spin + m_state.Spin * timeStep;
+      ret.Orientation = m_state.Orientation + m_state.Spin * timeStep;
       ret.Velocity = m_state.Velocity.plus(m_force.multiply(timeStep / Mass));
       ret.Spin = m_state.Spin + m_torque * timeStep / MomentOfInertia;
 
@@ -68,7 +68,7 @@ public abstract class Movable
    public void applyImpulseRelative(XY impulse, XY relPoint)
    {
       m_state.Velocity = m_state.Velocity.plus(impulse.divide(Mass));
-      m_state.Spin += relPoint.rot90().dot(impulse) / MomentOfInertia;
+      m_state.Spin += relPoint.rot270().dot(impulse) / MomentOfInertia;
    }
 
    public ArrayList<XY> getTransformedCorners()
@@ -88,11 +88,13 @@ public abstract class Movable
       public XY Position = new XY();
       public double Orientation = 0;
 
+      @SuppressWarnings("SameParameterValue")
       DynamicsPosition interpolate(DynamicsPosition towards, double amount)
       {
          DynamicsPosition ret = new DynamicsPosition();
 
          ret.Position = Position.plus(towards.Position.minus(Position).multiply(amount));
+         ret.Orientation = Orientation + (towards.Orientation - Orientation) * amount;
 
          return ret;
       }
@@ -108,7 +110,7 @@ public abstract class Movable
    // relativePoint is the offset from the mass centre
    public XY pointVelocity(XY relativePoint)
    {
-      return m_state.Velocity.plus(relativePoint.rot90().multiply(m_state.Spin));
+      return m_state.Velocity.plus(relativePoint.rot270().multiply(m_state.Spin));
    }
 
    @SuppressWarnings("WeakerAccess")

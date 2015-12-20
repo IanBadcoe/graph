@@ -1,5 +1,8 @@
 package engine;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 class GridWalker
 {
    GridWalker(double cell_size, XY begin, XY end, double feature_diameter)
@@ -10,12 +13,37 @@ class GridWalker
       m_feature_diameter = feature_diameter;
    }
 
-   public GridWalker(GridWalker old)
+   // if we're examining around a point, then there's no point "walking" as we'll have to look at
+   // everything around that point -- there's no ordering
+   public static Collection<CC> pointSample(double cell_size, double cell_radius,
+         XY point, double feature_radius)
    {
-      m_cell_size = old.m_cell_size;
-      m_begin = old.m_begin;
-      m_end = old.m_end;
-      m_feature_diameter = old.m_feature_diameter;
+      ArrayList<CC> ret = new ArrayList<>();
+
+      int x_min_cell = ordinateToCell(point.X - feature_radius, cell_size);
+      int x_max_cell = ordinateToCell(point.X + feature_radius, cell_size);
+      int y_min_cell = ordinateToCell(point.Y - feature_radius, cell_size);
+      int y_max_cell = ordinateToCell(point.Y + feature_radius, cell_size);
+
+      double range = cell_radius + feature_radius;
+      double range2 = range * range;
+
+      for(int xc = x_min_cell; xc <= x_max_cell; xc++)
+      {
+         for(int yc = y_min_cell; yc <= y_max_cell; yc++)
+         {
+            CC cell = new CC(xc, yc);
+
+            XY cell_centre = cellToCentrePosition(cell, cell_size);
+
+            if (cell_centre.minus(point).length2() <= range2)
+            {
+               ret.add(cell);
+            }
+         }
+      }
+
+      return ret;
    }
 
    private void calculateLineParams()
