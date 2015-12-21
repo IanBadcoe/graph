@@ -206,14 +206,14 @@ public class PhysicalSimulator
       else if (moving_corner)
       {
          // moving-corner - stationary-edge
-         normal = moving_edge.Normal;
-         collision_point = stationary_edge.End;
+         normal = stationary_edge.Normal;
+         collision_point = moving_edge.End;
       }
       else if (stationary_corner)
       {
          // stationary-corner - moving-edge
-         normal = stationary_edge.Normal;
-         collision_point = moving_edge.End;
+         normal = moving_edge.Normal;
+         collision_point = stationary_edge.End;
       }
       else
       {
