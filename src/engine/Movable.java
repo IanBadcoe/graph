@@ -45,12 +45,17 @@ public abstract class Movable
 
    public DynamicsState step(double timeStep)
    {
+      return step(timeStep, timeStep);
+   }
+
+   public DynamicsState step(double positionTimeStep, double velocityTimeStep)
+   {
       DynamicsState ret = new DynamicsState();
 
-      ret.Position = m_state.Position.plus(m_state.Velocity.multiply(timeStep));
-      ret.Orientation = m_state.Orientation + m_state.Spin * timeStep;
-      ret.Velocity = m_state.Velocity.plus(m_force.multiply(timeStep / Mass));
-      ret.Spin = m_state.Spin + m_torque * timeStep / MomentOfInertia;
+      ret.Position = m_state.Position.plus(m_state.Velocity.multiply(positionTimeStep));
+      ret.Orientation = m_state.Orientation + m_state.Spin * positionTimeStep;
+      ret.Velocity = m_state.Velocity.plus(m_force.multiply(velocityTimeStep / Mass));
+      ret.Spin = m_state.Spin + m_torque * velocityTimeStep / MomentOfInertia;
 
       return ret;
    }

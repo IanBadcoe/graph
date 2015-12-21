@@ -1,24 +1,41 @@
 package engine;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.TreeSet;
+
 public class PhysicalSimulator
 {
+   public PhysicalSimulator(Level level)
+   {
+      m_level = level;
+   }
+
    // constraints...
    // I am thinking that the maximum speed for a rotatable object (such as a vehicle) should be about 200 units/second
    // and the maximum speed of rotation would be 1 rps
    // if we assume a frame-rate of 20 fps, this gives us a max translation per step of 10 and a max rotation of
    // 2PI / 20 = ~20 degrees
-   public void step(Movable m, Level level, double timeStep)
+   public void step(double timeStep)
    {
-      partStep(m, level, timeStep);
+      Movable m = m_movable_objects.pollFirst();
+
+      if (m == null)
+         return;
+
+      partStep(m, timeStep);
+
+      m_movable_objects.addLast(m);
    }
 
    // steps until first collision, returns time consumed (<= timeStep)
    @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
-   public double partStep(Movable m, Level level, double timeStep)
+   public double partStep(Movable m, double timeStep)
    {
       Movable.DynamicsState new_state = m.step(timeStep);
 
-      Level.MovableCollision c = level.collide(m, m.getState(), new_state, 0.1);
+      Level.MovableCollision c = m_level.collide(m, m.getState(), new_state, 0.1);
 
       if (c == null)
       {
@@ -27,7 +44,13 @@ public class PhysicalSimulator
          return timeStep;
       }
 
-      new_state = m.step(timeStep * c.FractionTravelled);
+      // maybe a bit of a hack, movement cannot complete the time step because it hits something
+      // and if the impact is at t == 0, velocity stops evolving, so instead here give velocity full step
+      // even if movement cannot do it
+      //
+      // if we start doing multiple sub-steps per step, we'll need to only do this for the remaining unused
+      // time after the last one...
+      new_state = m.step(timeStep * c.FractionTravelled, timeStep);
       m.setState(new_state);
 
       resolveCollision(m, c);
@@ -107,6 +130,20 @@ public class PhysicalSimulator
       }
    }
 
+   public void addMovable(Movable m)
+   {
+      m_movable_objects.addLast(m);
+   }
+
+   public Collection<Movable> getMovables()
+   {
+      return Collections.unmodifiableCollection(m_movable_objects);
+   }
+
    @SuppressWarnings("FieldCanBeLocal")
-   private final double WallRestitution = 0.9;
+   private final double WallRestitution = 0.3;
+
+   private LinkedList<Movable> m_movable_objects = new LinkedList<>();
+
+   private final Level m_level;
 }

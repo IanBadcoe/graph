@@ -42,14 +42,29 @@ public class Main extends PApplet
 
       m_level = uh.makeLevel(20, 10);
 
-      PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.1);
-      pto.setPosition(new XY(width / 2, 100));
-      // gravity
-      pto.applyForceRelative(new XY(0, 10), new XY(0, 0));
-      // kick it off centre to give some spin...
-      pto.applyImpulseRelative(new XY(0, 100), new XY(50, 0));
+      m_sim = new PhysicalSimulator(m_level);
 
-      m_objects.add(pto);
+      {
+         PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3);
+         pto.setPosition(new XY(width / 2, 100));
+         // gravity
+         pto.applyForceRelative(new XY(0, 10), new XY(0, 0));
+         // kick it off centre to give some spin...
+         pto.applyImpulseRelative(new XY(0, 100), new XY(50, 0));
+
+         m_sim.addMovable(pto);
+      }
+
+      {
+         PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3);
+         pto.setPosition(new XY(width / 2, 200));
+         // gravity
+         pto.applyForceRelative(new XY(0, 10), new XY(0, 0));
+         // kick it off centre to give some spin...
+         pto.applyImpulseRelative(new XY(0, 110), new XY(-50, 0));
+
+         m_sim.addMovable(pto);
+      }
    }
 
    @Override
@@ -60,10 +75,10 @@ public class Main extends PApplet
    @Override
    public void draw()
    {
-      m_objects.forEach(x -> m_sim.partStep(x, m_level, 0.1));
+      m_sim.step(0.1);
 
       drawLevel(m_level, null);
-      m_objects.forEach(Main::drawObject);
+      m_sim.getMovables().forEach(x -> drawObject((PhysicsTestObject)x));
    }
 
    static void drawObject(PhysicsTestObject pto)
@@ -246,6 +261,5 @@ public class Main extends PApplet
 
    private Level m_level;
    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-   private final ArrayList<PhysicsTestObject> m_objects = new ArrayList<>();
-   private final PhysicalSimulator m_sim = new PhysicalSimulator();
+   private PhysicalSimulator m_sim;
 }
