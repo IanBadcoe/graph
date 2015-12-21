@@ -2,7 +2,7 @@ package engine;
 
 import java.util.*;
 
-public class Level
+public class Level implements ICollidable
 {
    Level(double cell_size, double wall_facet_length, Box bounds, XY start_pos)
    {
@@ -111,269 +111,24 @@ public class Level
       return new RayCollision(hit, length, nearest_to.plus(dir.multiply(length)));
    }
 
-   public static class MovableCollision
+   @Override
+   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
    {
-      MovableCollision(XY worldPoint, double fractionTravelled, XY normal)
-      {
-         WorldPoint = worldPoint;
-         FractionTravelled = fractionTravelled;
-         Normal = normal;
-      }
-
-      final XY WorldPoint;
-      final double FractionTravelled;
-      final XY Normal;
-   }
-
-   @SuppressWarnings("SameParameterValue")
-   public MovableCollision collide(Movable m,
-                                   Movable.DynamicsPosition start, Movable.DynamicsPosition end,
-                                   double resolution)
-   {
-      // we're looking for the first interval within the overall movement
-      // that is of length at most "resolution" and where the start has no
-      // collision and the end does have a collision
-      //
-      // we'll stop the movable at the start of this interval and calculate the
-      // collision params for the collision that would be about to occur
-
-      assert collide(m, start) == null;
-
-      ColRet col = collide(m, end);
-
-      if (col == null)
-         return null;
-
-      double iLength2 = end.Position.minus(start.Position).length2();
-
-      resolution *= resolution;
-
-      // we only need *_frac for tracking s_frac which is eventually the fraction we succeeded in moving
-      double s_frac = 0;
-      double e_frac = 1;
-
-      while(iLength2 > resolution)
-      {
-         double m_frac = (s_frac + e_frac) / 2;
-         Movable.DynamicsPosition mid = start.interpolate(end, 0.5);
-
-         ColRet m_col = collide(m, mid);
-
-         if (m_col != null)
-         {
-            e_frac = m_frac;
-            col = m_col;
-            end = mid;
-         }
-         else
-         {
-            s_frac = m_frac;
-            start = mid;
-         }
-
-         iLength2 = end.Position.minus(start.Position).length2();
-      }
-
-      // we've got three kinds of collision:
-      // 1) corner - corner
-      // 2) corner - edge
-      // 3) edge - edge
-      //
-      // Since we detect collision by actual penetration (that we then back off from) these manifest as
-      // two lines crossing:
-      // 1) both intersecting close to an end
-      // 2) midway on one line crossing close to the end of the other
-      // 3) two lines crossing midway
-      //
-      // (arbitrarily define "midway" as more than some fraction from both ends, maybe 5%?)
-      //
-      // additionally, case 2 happens two ways (moving-edge vs. stationary-corner and vice versa)
-      // and case 3 happens 4 ways (start - start, start - end, end - start and end - end) but these become
-      // identical once we have resolved them to corner-corner instead of edge-edge
-      //
-      // stationary edges are class Wall, moving edges are class Edge
-
-      boolean moving_corner = false;
-      boolean stationary_corner = false;
-
-      // any corner is expressed as between a Wall (or Edge) and the following Wall (or Edge)
-      Wall wall = col.Wall;
-      Wall next_wall = null;
-      Edge edge = col.Edge;
-      Edge next_edge = null;
-
-      if (col.WallFrac < CornerTolerance)
-      {
-         // corner at start of reported wall
-         next_wall = wall;
-         wall = next_wall.getPrev();
-         stationary_corner = true;
-      }
-      else if (col.WallFrac > 1 - CornerTolerance)
-      {
-         // corner at end of reported wall
-         next_wall = wall.getNext();
-         stationary_corner = true;
-      }
-
-      if (col.EdgeFrac < CornerTolerance)
-      {
-         // corner at start of reported edge
-         next_edge = edge;
-         edge = next_edge.getPrev();
-         moving_corner = true;
-      }
-      else if (col.EdgeFrac > 1 - CornerTolerance)
-      {
-         // corner at end of reported edge
-         next_edge = edge.getNext();
-         moving_corner = true;
-      }
-
-      // normal will be "out of" statianary object as that's the way round we need it for the moving object
-      XY normal;
-      XY collision_point;
-
-      if (moving_corner && stationary_corner)
-      {
-         // corner - corner
-         normal = wall.Normal.plus(next_wall.Normal).minus(edge.normal()).minus(next_edge.normal()).asUnit();
-         // arbitrary, we have two points, each slightly penetrating the other body
-         // but again hope "resolution" is small enough not to make any difference
-         collision_point = edge.End;
-      }
-      else if (moving_corner)
-      {
-         // moving-corner - stationary-edge
-         normal = wall.Normal;
-         collision_point = edge.End;
-      }
-      else if (stationary_corner)
-      {
-         // stationary-corner - moving-edge
-         normal = edge.normal();
-         collision_point = wall.End;
-      }
-      else
-      {
-         // edge - edge use average normal
-         normal = wall.Normal.minus(edge.normal()).asUnit();
-         // either edge or wall should give same answer
-         // this is post-collision, could back-step to point on pre-collision movable position
-         // but hopefully "resolution" can be set small enough for that not to matter
-         collision_point = XY.interpolate(edge.Start, edge.End, col.EdgeFrac);
-      }
-
-      return new MovableCollision(collision_point, s_frac, normal);
-   }
-
-   private static class Edge
-   {
-      private Edge m_next;
-      private Edge m_prev;
-
-      Edge(XY start, XY end)
-      {
-         Start = start;
-         End = end;
-      }
-
-      final XY Start;
-      final XY End;
-
-      public void setNext(Edge next)
-      {
-         this.m_next = next;
-      }
-
-      public Edge getNext()
-      {
-         return m_next;
-      }
-
-      public void setPrev(Edge prev)
-      {
-         this.m_prev = prev;
-      }
-
-      public Edge getPrev()
-      {
-         return m_prev;
-      }
-
-      // we build edges rotating clockwise, so their normals are 90 degrees anticlockwise from their directions
-      public XY normal()
-      {
-         return End.minus(Start).rot270().asUnit();
-      }
-   }
-
-   private ArrayList<Edge> makeEdges(Movable m, Movable.DynamicsPosition pos)
-   {
-      ArrayList<XY> transformed_corners = m.getTransformedCorners(pos);
-
-      XY prev = transformed_corners.get(transformed_corners.size() - 1);
-
-      ArrayList<Edge> ret = new ArrayList<>();
-
-      Edge prev_e = null;
-
-      for (XY curr : transformed_corners)
-      {
-         Edge curr_e = new Edge(prev, curr);
-         ret.add(curr_e);
-
-         if (prev_e != null)
-         {
-            prev_e.setNext(curr_e);
-            curr_e.setPrev(prev_e);
-         }
-
-         prev = curr;
-         prev_e = curr_e;
-      }
-
-      assert prev_e != null;
-
-      ret.get(0).setPrev(prev_e);
-      prev_e.setNext(ret.get(0));
-
-      return ret;
-   }
-
-   private static class ColRet
-   {
-      final Edge Edge;
-      final Wall Wall;
-      final double EdgeFrac;
-      final double WallFrac;
-
-      ColRet(Edge edge, Wall wall, double edgeFrac, double wallFrac)
-      {
-         Edge = edge;
-         Wall = wall;
-         EdgeFrac = edgeFrac;
-         WallFrac = wallFrac;
-      }
-   }
-
-   private ColRet collide(Movable m, Movable.DynamicsPosition pos)
-   {
-      ArrayList<Wall> walls = wallsInRangeOfPoint(pos.Position, m.getRadius());
+      ArrayList<Wall> walls = wallsInRangeOfPoint(centre, radius);
 
       if (walls != null)
       {
-         ArrayList<Edge> edges = makeEdges(m, pos);
-
-         for(Wall w : walls)
+         for(Wall wall : walls)
          {
-            for(Edge e : edges)
+            for(Edge moving_edge : moving_edges)
             {
-               OrderedPair<Double, Double> intr = Util.edgeIntersect(w.Start, w.End, e.Start, e.End);
+               OrderedPair<Double, Double> intr = Util.edgeIntersect(
+                     moving_edge.Start, moving_edge.End,
+                     wall.Start, wall.End);
 
                if (intr != null)
                {
-                  return new ColRet(e, w, intr.Second, intr.First);
+                  return new ColRet(activeMovable, null, moving_edge, wall, intr.First, intr.Second);
                }
             }
          }
@@ -446,6 +201,4 @@ public class Level
 
    private final XY m_start_pos;
 
-   // constant
-   private static final double CornerTolerance = 0.05;
 }

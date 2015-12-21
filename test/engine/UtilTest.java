@@ -1321,6 +1321,12 @@ public class UtilTest
       assertEquals(1 + Math.PI / 2, Util.relativeAngle(l3, l5), 1e-6);
       assertEquals(1 + Math.PI, Util.relativeAngle(l4, l5), 1e-6);
       assertEquals(1 + Math.PI * 3 / 2, Util.relativeAngle(l1, l5), 1e-6);
+
+      // any old angle
+      XY any = new XY(1.23, 3.21);
+      assertEquals(Math.PI / 2, Util.relativeAngle(any, any.rot90()), 1e-6);
+      assertEquals(Math.PI, Util.relativeAngle(any, any.rot90().rot90()), 1e-6);
+      assertEquals(Math.PI *3 / 2, Util.relativeAngle(any, any.rot270()), 1e-6);
    }
 
    // ------------------

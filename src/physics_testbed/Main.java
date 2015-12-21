@@ -57,7 +57,7 @@ public class Main extends PApplet
 
       {
          PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3);
-         pto.setPosition(new XY(width / 2, 200));
+         pto.setPosition(new XY(width / 2, 300));
          // gravity
          pto.applyForceRelative(new XY(0, 10), new XY(0, 0));
          // kick it off centre to give some spin...

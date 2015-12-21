@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 //
 // also for the moment, not separating Movable from "ICollidable" (which non-movable things, such as walls, could
 // also implement...
-public abstract class Movable
+public abstract class Movable implements ICollidable
 {
    protected Movable(double mass, double momentOfIntertia, double coefficientOfRestitution)
    {
@@ -81,6 +81,7 @@ public abstract class Movable
       return getTransformedCorners(m_state);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public ArrayList<XY> getTransformedCorners(DynamicsPosition pos)
    {
       Transform t = new Transform(pos);
@@ -118,10 +119,82 @@ public abstract class Movable
       return m_state.Velocity.plus(relativePoint.rot270().multiply(m_state.Spin));
    }
 
+   // make edges for current position/orientation
+   //
+   // optimisation: make this memoize the result as we can use the edges for the same position
+   // over and over
+   private ArrayList<Edge> makeEdges()
+   {
+      return makeEdges(m_state);
+   }
+
+   // make edges for given hypothetical position/orientation
+   public ArrayList<Edge> makeEdges(DynamicsPosition pos)
+   {
+      ArrayList<XY> transformed_corners = getTransformedCorners(pos);
+
+      XY prev = transformed_corners.get(transformed_corners.size() - 1);
+
+      ArrayList<Edge> ret = new ArrayList<>();
+
+      Edge prev_e = null;
+
+      for (XY curr : transformed_corners)
+      {
+         Edge curr_e = new Edge(prev, curr, curr.minus(prev).rot270().asUnit());
+         ret.add(curr_e);
+
+         if (prev_e != null)
+         {
+            prev_e.setNext(curr_e);
+            curr_e.setPrev(prev_e);
+         }
+
+         prev = curr;
+         prev_e = curr_e;
+      }
+
+      assert prev_e != null;
+
+      ret.get(0).setPrev(prev_e);
+      prev_e.setNext(ret.get(0));
+
+      return ret;
+   }
+
    @SuppressWarnings("WeakerAccess")
    public abstract Collection<XY> getCorners();
 
    public abstract double getRadius();
+
+   @Override
+   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
+   {
+      double combined_r2 = radius + getRadius();
+      combined_r2 *= combined_r2;
+
+      if (centre.minus(getPosition()).length2() > combined_r2)
+         return null;
+
+      ArrayList<Edge> stationary_edges = makeEdges();
+
+      for(Edge stationary_edge : stationary_edges)
+      {
+         for(Edge moving_edge : moving_edges)
+         {
+            OrderedPair<Double, Double> intr = Util.edgeIntersect(
+                  moving_edge.Start, moving_edge.End,
+                  stationary_edge.Start, stationary_edge.End);
+
+            if (intr != null)
+            {
+               return new ColRet(activeMovable, this, moving_edge, stationary_edge, intr.First, intr.Second);
+            }
+         }
+      }
+
+      return null;
+   }
 
    // these final more as a way of letting the compiler
    // check they got assigned, no absolute reason why they can't be changed later
