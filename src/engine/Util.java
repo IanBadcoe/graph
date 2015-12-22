@@ -573,4 +573,43 @@ class Util
       //noinspection SuspiciousNameCombination
       return fixupAngle(Math.atan2(rel_x, rel_y));
    }
+
+   public static class EPORet
+   {
+      public final boolean Overlaps;
+      public final double PStart;
+      public final double PEnd;
+      public final double PStartClamped;
+      public final double PEndClamped;
+
+      public EPORet(boolean overlaps, double pStart, double pEnd, double pStartClamped, double pEndClamped)
+      {
+         Overlaps = overlaps;
+         PStart = pStart;
+         PEnd = pEnd;
+         PStartClamped = pStartClamped;
+         PEndClamped = pEndClamped;
+      }
+   }
+
+   // measures whether e2, projected onto e1, overlaps by more than tolerance
+   // with the parameter range of e1
+   public static EPORet edgeParameterOverlap(ICollidable.Edge e1, ICollidable.Edge e2, double tolerance)
+   {
+      XY e1vec = e1.End.minus(e1.Start);
+
+      // vector divided by l, gives us a projected distance between 0 and 1
+      e1vec = e1vec.divide(e1vec.length2());
+
+      double p_start = e1vec.dot(e2.Start.minus(e1.Start));
+      double p_end = e1vec.dot(e2.End.minus(e1.Start));
+
+      // clamp to parameter range of 0 -> 1
+      double clamp_start = Math.max(Math.min(p_start, 1 - tolerance), tolerance);
+      double clamp_end = Math.max(Math.min(p_end, 1 - tolerance), tolerance);
+
+      return new EPORet(
+            Math.abs(clamp_start - clamp_end) > 0,
+            p_start, p_end, clamp_start, clamp_end);
+   }
 }

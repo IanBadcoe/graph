@@ -188,6 +188,11 @@ public class PhysicalSimulator
          stationary_corner = true;
       }
 
+//      if (moving_corner || stationary_corner)
+//      {
+//         if (moving_edge.Normal.dot(stationary_edge.Normal.rot90()) < ParallelTolerance)
+//      }
+
       // normal will be "out of" statianary object as that's the way round we need it for the moving object
       XY normal;
       XY collision_point;
@@ -195,11 +200,11 @@ public class PhysicalSimulator
       if (moving_corner && stationary_corner)
       {
          // corner - corner
-         normal = moving_edge.Normal
-               .plus(moving_edge_next.Normal)
-               .minus(stationary_edge.Normal)
-               .minus(stationary_edge_next.Normal).asUnit();
-         // arbitrary, we have two points, each slightly penetrating the other body
+         normal = stationary_edge.Normal
+               .plus(stationary_edge_next.Normal)
+               .minus(moving_edge.Normal)
+               .minus(moving_edge_next.Normal).asUnit();
+         // arbitrary, we have two points, each slightly clear of the other body
          // but again hope "resolution" is small enough not to make any difference
          collision_point = stationary_edge.End;
       }
@@ -218,8 +223,8 @@ public class PhysicalSimulator
       else
       {
          // edge - edge use average normal
-         normal = moving_edge.Normal
-               .minus(stationary_edge.Normal)
+         normal = stationary_edge.Normal
+               .minus(moving_edge.Normal)
                .asUnit();
 
          // either edge or wall should give same answer
@@ -341,6 +346,8 @@ public class PhysicalSimulator
 
    private final Level m_level;
 
-   // constant
+   // collision considered a corner when within this fraction of an edge end
    private static final double CornerTolerance = 0.05;
+   // however a collision is face-to-face when two faces are within this
+   private static final double ParallelTolerance = 0.05;
 }

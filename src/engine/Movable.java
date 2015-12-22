@@ -89,6 +89,11 @@ public abstract class Movable implements ICollidable
       return getCorners().stream().map(t::transform).collect(Collectors.toCollection(ArrayList::new));
    }
 
+   public void setSpin(double spin)
+   {
+      m_state.Spin = spin;
+   }
+
    public static class DynamicsPosition
    {
       public XY Position = new XY();
