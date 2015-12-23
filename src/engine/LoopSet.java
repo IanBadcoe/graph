@@ -2,9 +2,9 @@ package engine;
 
 import java.util.ArrayList;
 
-class LoopSet extends ArrayList<Loop>
+public class LoopSet extends ArrayList<Loop>
 {
-   LoopSet()
+   public LoopSet()
    {
    }
 

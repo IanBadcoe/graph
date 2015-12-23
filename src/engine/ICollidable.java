@@ -53,23 +53,23 @@ public interface ICollidable
       final Movable ActiveMovable;
       final Movable InactiveMovable;
 
-      final Edge MovingEdge;
-      final Edge StationaryEdge;
-      final double MovingEdgeFrac;
-      final double StationaryEdgeFrac;
+      final Edge ActiveEdge;
+      final Edge InactiveEdge;
+      final double ActiveEdgeFrac;
+      final double InactiveEdgeFrac;
 
       ColRet(Movable activeMovable, Movable inactiveMovable,
-            Edge movingEdge, Edge stationaryEdge,
-            double movingEdgeFrac, double stationaryEdgeFrac)
+             Edge activeEdge, Edge inactiveEdge,
+             double activeEdgeFrac, double inactiveEdgeFrac)
       {
          ActiveMovable = activeMovable;
          InactiveMovable = inactiveMovable;
 
-         MovingEdge = movingEdge;
-         StationaryEdge = stationaryEdge;
+         ActiveEdge = activeEdge;
+         InactiveEdge = inactiveEdge;
 
-         MovingEdgeFrac = movingEdgeFrac;
-         StationaryEdgeFrac = stationaryEdgeFrac;
+         ActiveEdgeFrac = activeEdgeFrac;
+         InactiveEdgeFrac = inactiveEdgeFrac;
       }
    }
 

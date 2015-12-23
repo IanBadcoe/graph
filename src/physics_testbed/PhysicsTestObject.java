@@ -9,7 +9,7 @@ import java.util.Collections;
 public class PhysicsTestObject extends Movable
 {
    @SuppressWarnings("SameParameterValue")
-   PhysicsTestObject(double width, double height, double mass, double coefficientOfRestitution)
+   PhysicsTestObject(double width, double height, double mass, double coefficientOfRestitution, String name)
    {
       super(
             mass,
@@ -17,6 +17,8 @@ public class PhysicsTestObject extends Movable
             // also often expressed w * h * (w^2 + h^2) / 12 (second moment of area) TIMES area density: m / (w * h)
             mass * (width * width + height * height) / 12,
             coefficientOfRestitution);
+
+      Name = name;
 
       width /= 2;
       height /= 2;
@@ -48,4 +50,5 @@ public class PhysicsTestObject extends Movable
 
    private final ArrayList<XY> m_corners = new ArrayList<>();
    private final double m_radius;
+   public final String Name;
 }

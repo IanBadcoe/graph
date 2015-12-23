@@ -13,7 +13,7 @@ public class UnionHelper
 
    // exposed for testing but there could be cases where client code wants to reach-in
    // and add some special piece of geometry
-   void addDetailLoops(LoopSet ls)
+   public void addDetailLoops(LoopSet ls)
    {
       m_detail_loop_sets.add(ls);
    }

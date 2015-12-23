@@ -38,6 +38,20 @@ public class Main extends PApplet
 
       uh.addBaseLoop(l);
 
+      ArrayList<Curve> curves = new ArrayList<>();
+      curves.add(new LineCurve(new XY(width / 2 + 50, 250), new XY(0, 1), 100));
+      curves.add(new LineCurve(new XY(width / 2 + 50, 350), new XY(-1, 0), 100));
+      curves.add(new LineCurve(new XY(width / 2 - 50, 350), new XY(0, -1), 100));
+      curves.add(new LineCurve(new XY(width / 2 - 50, 250), new XY(1, 0), 100));
+
+      l = new Loop(curves);
+
+      LoopSet ls = new LoopSet();
+      ls.add(l);
+
+      uh.addDetailLoops(ls);
+
+      uh.unionOne(new Random(1));
       uh.unionOne(new Random(1));
 
       m_level = uh.makeLevel(20, 10);
@@ -45,26 +59,26 @@ public class Main extends PApplet
       m_sim = new PhysicalSimulator(m_level);
 
       {
-         PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3);
+         PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3, "upper");
          pto.setPosition(new XY(width / 2, 100));
          // gravity
-         pto.applyForceRelative(new XY(0, 10), new XY(0, 0));
+         pto.applyForceRelative(new XY(0, 20), new XY(0, 0));
          // kick it off centre to give some spin...
-         pto.applyImpulseRelative(new XY(0, 100), new XY(50, 0));
+//         pto.applyImpulseRelative(new XY(0, 100), new XY(50, 0));
 
          m_sim.addMovable(pto);
       }
 
-      {
-         PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3);
-         pto.setPosition(new XY(width / 2, 300));
-         // gravity
-         pto.applyForceRelative(new XY(0, 10), new XY(0, 0));
-         // kick it off centre to give some spin...
-         pto.applyImpulseRelative(new XY(0, 110), new XY(-50, 0));
-
-         m_sim.addMovable(pto);
-      }
+//      {
+//         PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3, "lower");
+//         pto.setPosition(new XY(width / 2 + 90, 300));
+//         // gravity
+////         pto.applyForceRelative(new XY(0, 20), new XY(0, 0));
+//         // kick it off centre to give some spin...
+////         pto.applyImpulseRelative(new XY(0, 110), new XY(-50, 0));
+//
+//         m_sim.addMovable(pto);
+//      }
    }
 
    @Override

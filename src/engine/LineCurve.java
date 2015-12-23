@@ -2,9 +2,9 @@ package engine;
 
 import java.security.InvalidParameterException;
 
-class LineCurve extends Curve
+public class LineCurve extends Curve
 {
-   LineCurve(XY position, XY directionCosines, double length)
+   public LineCurve(XY position, XY directionCosines, double length)
    {
       super(0, length);
 

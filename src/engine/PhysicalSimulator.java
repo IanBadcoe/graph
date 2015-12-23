@@ -43,16 +43,21 @@ public class PhysicalSimulator
          return timeStep;
       }
 
+      // time before collision
+      double time_taken = timeStep * mc.FractionTravelled;
+      new_state = m.step(time_taken);
+      m.setState(new_state);
+
+      resolveCollision(mc);
+
       // maybe a bit of a hack, movement cannot complete the time step because it hits something
-      // and if the impact is at t == 0, velocity stops evolving, so instead here give velocity full step
+      // and if the impact is at t == 0, velocity stops evolving, so here give velocity the rest of its step
       // even if movement cannot do it
       //
       // if we start doing multiple sub-steps per step, we'll need to only do this for the remaining unused
       // time after the last one...
-      new_state = m.step(timeStep * mc.FractionTravelled, timeStep);
+      new_state = m.step(0, timeStep - time_taken);
       m.setState(new_state);
-
-      resolveCollision(mc);
 
       return timeStep * mc.FractionTravelled;
    }
@@ -76,6 +81,16 @@ public class PhysicalSimulator
 
       final Movable ActiveMovable;
       final Movable InactiveMovable;
+   }
+
+   // just allows easy communication with sub-routine
+   private static class EdgeEdgeData
+   {
+      public double overlap = -1;
+      public double p_where = 0.5;
+
+      public ICollidable.Edge active_edge = null;
+      public ICollidable.Edge inactive_edge = null;
    }
 
    @SuppressWarnings("SameParameterValue")
@@ -145,96 +160,165 @@ public class PhysicalSimulator
       //
       // (arbitrarily define "midway" as more than some fraction from both ends, maybe 5%?)
       //
-      // additionally, case 2 happens two ways (moving-edge vs. stationary-corner and vice versa)
+      // additionally, case 2 happens two ways (active-edge vs. inactive-corner and vice versa)
       // and case 3 happens 4 ways (start - start, start - end, end - start and end - end) but these become
       // identical once we have resolved them to corner-corner instead of edge-edge
-      //
-      // stationary edges are class Wall, moving edges are class Edge
 
-      boolean moving_corner = false;
-      boolean stationary_corner = false;
+      boolean active_corner = false;
+      boolean inactive_corner = false;
 
       // any corner is expressed as between a Wall (or Edge) and the following Wall (or Edge)
-      ICollidable.Edge moving_edge = col.MovingEdge;
-      ICollidable.Edge moving_edge_next = null;
-      ICollidable.Edge stationary_edge = col.StationaryEdge;
-      ICollidable.Edge stationary_edge_next = null;
+      ICollidable.Edge active_edge = col.ActiveEdge;
+      ICollidable.Edge active_edge_next = null;
+      ICollidable.Edge inactive_edge = col.InactiveEdge;
+      ICollidable.Edge inactive_edge_next = null;
 
-      if (col.MovingEdgeFrac < CornerTolerance)
+      if (col.ActiveEdgeFrac < CornerTolerance)
       {
          // corner at start of reported wall
-         moving_edge_next = moving_edge;
-         moving_edge = moving_edge_next.getPrev();
-         moving_corner = true;
+         active_edge_next = active_edge;
+         active_edge = active_edge_next.getPrev();
+         active_corner = true;
       }
-      else if (col.MovingEdgeFrac > 1 - CornerTolerance)
+      else if (col.ActiveEdgeFrac > 1 - CornerTolerance)
       {
          // corner at end of reported wall
-         moving_edge_next = moving_edge.getNext();
-         moving_corner = true;
+         active_edge_next = active_edge.getNext();
+         active_corner = true;
       }
 
-      if (col.StationaryEdgeFrac < CornerTolerance)
+      if (col.InactiveEdgeFrac < CornerTolerance)
       {
          // corner at start of reported edge
-         stationary_edge_next = stationary_edge;
-         stationary_edge = stationary_edge_next.getPrev();
-         stationary_corner = true;
+         inactive_edge_next = inactive_edge;
+         inactive_edge = inactive_edge_next.getPrev();
+         inactive_corner = true;
       }
-      else if (col.StationaryEdgeFrac > 1 - CornerTolerance)
+      else if (col.InactiveEdgeFrac > 1 - CornerTolerance)
       {
          // corner at end of reported edge
-         stationary_edge_next = stationary_edge.getNext();
-         stationary_corner = true;
+         inactive_edge_next = inactive_edge.getNext();
+         inactive_corner = true;
       }
 
-//      if (moving_corner || stationary_corner)
-//      {
-//         if (moving_edge.Normal.dot(stationary_edge.Normal.rot90()) < ParallelTolerance)
-//      }
+      // distance along active edge as a fraction that is nominal centre of an edge-edge collision
+      double edge_edge_parameter = 0.5;
 
-      // normal will be "out of" statianary object as that's the way round we need it for the moving object
+      {
+         // collision detects only edge-edge crossings, which means we can detect something like:
+         //  |
+         //  |    x-----------------
+         //  |    |
+         //  y----+----------
+         //       |
+         //
+         // when what has happened is that y has moved in from above and what we're like to have detected
+         // was the edge-edge collision of the two horizontal edges
+         // this block detects that by examining the edges adjoining any corner collision, and if they
+         // are sufficiently parallel and have significant axial overlap, switches the collision type to
+         // an edge-edge case
+
+         EdgeEdgeData eed = new EdgeEdgeData();
+
+         // we always have the these two edges
+         detectCrypticEdgeEdgeCollision(eed, active_edge, inactive_edge);
+
+         if (active_corner)
+         {
+            detectCrypticEdgeEdgeCollision(eed, active_edge_next, inactive_edge);
+         }
+
+         if (inactive_corner)
+         {
+            detectCrypticEdgeEdgeCollision(eed, active_edge, inactive_edge_next);
+         }
+
+         if (active_corner && inactive_corner)
+         {
+            detectCrypticEdgeEdgeCollision(eed, active_edge_next, inactive_edge_next);
+         }
+
+         // we
+         if (eed.active_edge != null)
+         {
+            assert eed.inactive_edge != null;
+
+            active_corner = false;
+            inactive_corner = false;
+
+            active_edge = eed.active_edge;
+            inactive_edge = eed.inactive_edge;
+
+            active_edge_next = null;
+            inactive_edge_next = null;
+
+            edge_edge_parameter = eed.p_where;
+         }
+      }
+
+      // normal will be "out of" inactive object and into the active object
       XY normal;
       XY collision_point;
 
-      if (moving_corner && stationary_corner)
+      if (active_corner && inactive_corner)
       {
          // corner - corner
-         normal = stationary_edge.Normal
-               .plus(stationary_edge_next.Normal)
-               .minus(moving_edge.Normal)
-               .minus(moving_edge_next.Normal).asUnit();
+         normal = inactive_edge.Normal
+               .plus(inactive_edge_next.Normal)
+               .minus(active_edge.Normal)
+               .minus(active_edge_next.Normal).asUnit();
          // arbitrary, we have two points, each slightly clear of the other body
          // but again hope "resolution" is small enough not to make any difference
-         collision_point = stationary_edge.End;
+         collision_point = inactive_edge.End;
       }
-      else if (moving_corner)
+      else if (active_corner)
       {
-         // moving-corner - stationary-edge
-         normal = stationary_edge.Normal;
-         collision_point = moving_edge.End;
+         // active-corner - inactive-edge
+         normal = inactive_edge.Normal;
+         collision_point = active_edge.End;
       }
-      else if (stationary_corner)
+      else if (inactive_corner)
       {
-         // stationary-corner - moving-edge
-         normal = moving_edge.Normal;
-         collision_point = stationary_edge.End;
+         // inactive-corner - active-edge
+         normal = active_edge.Normal;
+         collision_point = inactive_edge.End;
       }
       else
       {
          // edge - edge use average normal
-         normal = stationary_edge.Normal
-               .minus(moving_edge.Normal)
+         normal = inactive_edge.Normal
+               .minus(active_edge.Normal)
                .asUnit();
 
          // either edge or wall should give same answer
          // this is post-collision, could back-step to point on pre-collision movable position
          // but hopefully "resolution" can be set small enough for that not to matter
-         collision_point = XY.interpolate(stationary_edge.Start, stationary_edge.End, col.StationaryEdgeFrac);
+         collision_point = XY.interpolate(active_edge.Start, active_edge.End, edge_edge_parameter);
       }
 
       return new MovableCollision(collision_point, s_frac, normal,
             col.ActiveMovable, col.InactiveMovable);
+   }
+
+   private void detectCrypticEdgeEdgeCollision(EdgeEdgeData eed, ICollidable.Edge active_edge,
+                                               ICollidable.Edge inactive_edge)
+   {
+      if (Math.abs(active_edge.Normal.dot(inactive_edge.Normal.rot90())) < ParallelTolerance)
+      {
+         Util.EPORet ret = Util.edgeParameterOverlap(active_edge, inactive_edge, CornerTolerance);
+
+         if (ret.Overlaps)
+         {
+            double here_over = Math.abs(ret.PEnd - ret.PStart);
+            if (here_over > eed.overlap)
+            {
+               eed.overlap = here_over;
+               eed.active_edge = active_edge;
+               eed.inactive_edge = inactive_edge;
+               eed.p_where = (ret.PStart + ret.PEnd) / 2;
+            }
+         }
+      }
    }
 
    // non-private for unit-testing only
@@ -261,13 +345,13 @@ public class PhysicalSimulator
       // so far we have only collisions with immovable objects, we signal this to the collision routine with
       // a null second object
       //
-      // normal is towards the moving object and away from the stationary
+      // normal is towards the active object and away from the inactive
 
       // mc.ActiveMovable is the one we are stepping when the collision occurs
-      // mc.InactiveMovable is the one it hit, it is not necessarily stationary, it just isn't being
+      // mc.InactiveMovable is the one it hit, it is not necessarily inactive, it just isn't being
       // stepped at the moment
       //
-      // if we hit something imobile then StationaryMobile is null and disappears form the maths
+      // if we hit something imobile then InactiveMobile is null and disappears form the maths
       // (acting as an infinite mass with zero velocity...)
 
       // AFAIK if one object, no need to ever make it m2

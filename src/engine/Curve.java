@@ -1,6 +1,6 @@
 package engine;
 
-abstract class Curve
+public abstract class Curve
 {
    public final double StartParam;
    public final double EndParam;
