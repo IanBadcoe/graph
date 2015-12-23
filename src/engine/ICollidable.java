@@ -8,6 +8,8 @@ public interface ICollidable
 
    class Edge
    {
+      public final XY Start;
+      public final XY End;
       public final XY Normal;
       private Edge m_next;
       private Edge m_prev;
@@ -18,9 +20,6 @@ public interface ICollidable
          End = end;
          Normal = normal;
       }
-
-      public final XY Start;
-      public final XY End;
 
       public void setNext(Edge next)
       {
@@ -45,6 +44,17 @@ public interface ICollidable
       public XY midPoint()
       {
          return End.plus(Start).divide(2);
+      }
+   }
+
+   // purpose of this is just to make edges in ColRet a different class from Edge and any other derived classes
+   // point of that is that on long straight edges we cut them into many small edges but we keep the one long super-edge
+   // for physics purposes (basically so we don't see just one small bit in the middle of a long colliding edge)
+   class SuperEdge extends Edge
+   {
+      SuperEdge(XY start, XY end, XY normal)
+      {
+         super(start, end, normal);
       }
    }
 
