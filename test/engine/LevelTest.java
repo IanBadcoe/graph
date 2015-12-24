@@ -31,7 +31,7 @@ public class LevelTest
 
             assertNotNull(wcr);
 
-            double dist = Math.min(wcr.WallHit.Start.length(), wcr.WallHit.End.length());
+            double dist = Math.min(wcr.WallHit.getStart().length(), wcr.WallHit.getEnd().length());
             // circle is facetted, but for this size we expect to find a point within
             // 1% of real radius
             assertEquals(1, dist/rad, 0.01);
@@ -68,8 +68,8 @@ public class LevelTest
 
             assertNotNull(wcr);
 
-            double len1 = wcr.WallHit.Start.length();
-            double len2 = wcr.WallHit.End.length();
+            double len1 = wcr.WallHit.getStart().length();
+            double len2 = wcr.WallHit.getEnd().length();
             double dist = Math.min(len1, len2);
 
             // hitting small circle

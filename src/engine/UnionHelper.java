@@ -158,7 +158,65 @@ public class UnionHelper
          ret.addWallLoop(wl);
       }
 
+      for(WallLoop wl : ret.getWallLoops())
+      {
+         Wall sequence_start = null;
+
+         SuperEdge prev_se = null;
+
+         for(Wall w : wl)
+         {
+            if (sequence_start == null)
+            {
+               sequence_start = w;
+            }
+            else if (!sequence_start.getNormal().equals(w.getNormal()))
+            {
+               prev_se = createSuperEdge(sequence_start, w, prev_se);
+               sequence_start = w;
+            }
+         }
+
+         prev_se = createSuperEdge(sequence_start, wl.get(0), prev_se);
+
+         prev_se.setNext(wl.get(0).getSuperEdge());
+         wl.get(0).getSuperEdge().setPrev(prev_se);
+      }
+
       return ret;
+   }
+
+   // seqence_end is one after the end, this works either to build a common super-edge for a sequence of
+   //
+   private SuperEdge createSuperEdge(Wall sequence_start, Wall sequence_end,
+                                     SuperEdge prev_se)
+   {
+      assert sequence_start != sequence_end;
+
+      int num = 0;
+
+      for(Wall w = sequence_start; w != sequence_end; w = w.getNext())
+      {
+         num++;
+      }
+
+      SuperEdge se = new SuperEdge(
+            sequence_start.getStart(),
+            sequence_end.getStart(),
+            sequence_start.getNormal());
+
+      if (prev_se != null)
+      {
+         se.setPrev(prev_se);
+         prev_se.setNext(se);
+      }
+
+      for(Wall w = sequence_start; w != sequence_end; w = w.getNext())
+      {
+         w.setSuperEdge(se);
+      }
+
+      return se;
    }
 
    Collection<Loop> getMergedLoops()

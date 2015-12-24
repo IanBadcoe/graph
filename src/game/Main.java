@@ -311,8 +311,8 @@ public class Main extends processing.core.PApplet
 
       for(Wall w : level.getVisibleWalls(visibility_pos))
       {
-         s_app.line((float)w.Start.X, (float)w.Start.Y,
-               (float)w.End.X, (float)w.End.Y);
+         s_app.line((float) w.getStart().X, (float) w.getStart().Y,
+               (float) w.getEnd().X, (float) w.getEnd().Y);
       }
    }
 
@@ -321,7 +321,7 @@ public class Main extends processing.core.PApplet
       s_app.beginContour();
       for(Wall w : wl)
       {
-         s_app.vertex((float)w.Start.X, (float)w.Start.Y);
+         s_app.vertex((float) w.getStart().X, (float) w.getStart().Y);
       }
       s_app.endContour();
    }

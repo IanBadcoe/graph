@@ -89,8 +89,8 @@ public class PhysicalSimulator
       public double overlap = -1;
       public double p_where = 0.5;
 
-      public ICollidable.Edge active_edge = null;
-      public ICollidable.Edge inactive_edge = null;
+      public SuperEdge active_edge = null;
+      public SuperEdge inactive_edge = null;
    }
 
    @SuppressWarnings("SameParameterValue")
@@ -168,33 +168,38 @@ public class PhysicalSimulator
       boolean inactive_corner = false;
 
       // any corner is expressed as between a Wall (or Edge) and the following Wall (or Edge)
-      ICollidable.Edge active_edge = col.ActiveEdge;
-      ICollidable.Edge active_edge_next = null;
-      ICollidable.Edge inactive_edge = col.InactiveEdge;
-      ICollidable.Edge inactive_edge_next = null;
+      SuperEdge active_edge = col.ActiveEdge;
+      SuperEdge active_edge_next = null;
+      SuperEdge inactive_edge = col.InactiveEdge;
+      SuperEdge inactive_edge_next = null;
 
-      if (col.ActiveEdgeFrac < CornerTolerance)
+      double active_edge_frac = active_edge.getFractionalPosition(col.Position);
+      assert active_edge_frac > -1e-6 && active_edge_frac < 1 + 1e-6;
+      double inactive_edge_frac = inactive_edge.getFractionalPosition(col.Position);
+      assert inactive_edge_frac > -1e-6 && inactive_edge_frac < 1 + 1e-6;
+
+      if (active_edge_frac < CornerTolerance)
       {
          // corner at start of reported wall
          active_edge_next = active_edge;
          active_edge = active_edge_next.getPrev();
          active_corner = true;
       }
-      else if (col.ActiveEdgeFrac > 1 - CornerTolerance)
+      else if (active_edge_frac > 1 - CornerTolerance)
       {
          // corner at end of reported wall
          active_edge_next = active_edge.getNext();
          active_corner = true;
       }
 
-      if (col.InactiveEdgeFrac < CornerTolerance)
+      if (inactive_edge_frac < CornerTolerance)
       {
          // corner at start of reported edge
          inactive_edge_next = inactive_edge;
          inactive_edge = inactive_edge_next.getPrev();
          inactive_corner = true;
       }
-      else if (col.InactiveEdgeFrac > 1 - CornerTolerance)
+      else if (inactive_edge_frac > 1 - CornerTolerance)
       {
          // corner at end of reported edge
          inactive_edge_next = inactive_edge.getNext();
@@ -263,49 +268,52 @@ public class PhysicalSimulator
       if (active_corner && inactive_corner)
       {
          // corner - corner
-         normal = inactive_edge.Normal
-               .plus(inactive_edge_next.Normal)
-               .minus(active_edge.Normal)
-               .minus(active_edge_next.Normal).asUnit();
+         normal = inactive_edge.getNormal()
+               .plus(inactive_edge_next.getNormal())
+               .minus(active_edge.getNormal())
+               .minus(active_edge_next.getNormal()).asUnit();
          // arbitrary, we have two points, each slightly clear of the other body
          // but again hope "resolution" is small enough not to make any difference
-         collision_point = inactive_edge.End;
+         collision_point = inactive_edge.getEnd();
       }
       else if (active_corner)
       {
          // active-corner - inactive-edge
-         normal = inactive_edge.Normal;
-         collision_point = active_edge.End;
+         normal = inactive_edge.getNormal();
+         collision_point = active_edge.getEnd();
       }
       else if (inactive_corner)
       {
          // inactive-corner - active-edge
-         normal = active_edge.Normal;
-         collision_point = inactive_edge.End;
+         normal = active_edge.getNormal();
+         collision_point = inactive_edge.getEnd();
       }
       else
       {
          // edge - edge use average normal
-         normal = inactive_edge.Normal
-               .minus(active_edge.Normal)
+         normal = inactive_edge.getNormal()
+               .minus(active_edge.getNormal())
                .asUnit();
 
          // either edge or wall should give same answer
          // this is post-collision, could back-step to point on pre-collision movable position
          // but hopefully "resolution" can be set small enough for that not to matter
-         collision_point = XY.interpolate(active_edge.Start, active_edge.End, edge_edge_parameter);
+         collision_point = XY.interpolate(active_edge.getStart(), active_edge.getEnd(), edge_edge_parameter);
       }
 
       return new MovableCollision(collision_point, s_frac, normal,
             col.ActiveMovable, col.InactiveMovable);
    }
 
-   private void detectCrypticEdgeEdgeCollision(EdgeEdgeData eed, ICollidable.Edge active_edge,
-                                               ICollidable.Edge inactive_edge)
+   private void detectCrypticEdgeEdgeCollision(EdgeEdgeData eed, SuperEdge active_edge,
+                                               SuperEdge inactive_edge)
    {
-      if (Math.abs(active_edge.Normal.dot(inactive_edge.Normal.rot90())) < ParallelTolerance)
+      if (Math.abs(active_edge.getNormal().dot(inactive_edge.getNormal().rot90())) < ParallelTolerance)
       {
-         Util.EPORet ret = Util.edgeParameterOverlap(active_edge, inactive_edge, CornerTolerance);
+         Util.EPORet ret = Util.edgeParameterOverlap(
+               active_edge.getStart(), active_edge.getEnd(),
+               inactive_edge.getStart(), inactive_edge.getEnd(),
+               CornerTolerance);
 
          if (ret.Overlaps)
          {
@@ -325,7 +333,7 @@ public class PhysicalSimulator
    @SuppressWarnings("WeakerAccess")
    ICollidable.ColRet collide(Movable m, Movable.DynamicsPosition pos, Collection<ICollidable> collideWith)
    {
-      ArrayList<ICollidable.Edge> edges = m.makeEdges(pos);
+      ArrayList<IEdge> edges = m.makeEdges(pos);
 
       for(ICollidable c : collideWith)
       {

@@ -128,19 +128,19 @@ public abstract class Movable implements ICollidable
    //
    // optimisation: make this memoize the result as we can use the edges for the same position
    // over and over
-   private ArrayList<Edge> makeEdges()
+   private ArrayList<IEdge> makeEdges()
    {
       return makeEdges(m_state);
    }
 
    // make edges for given hypothetical position/orientation
-   public ArrayList<Edge> makeEdges(DynamicsPosition pos)
+   public ArrayList<IEdge> makeEdges(DynamicsPosition pos)
    {
       ArrayList<XY> transformed_corners = getTransformedCorners(pos);
 
       XY prev = transformed_corners.get(transformed_corners.size() - 1);
 
-      ArrayList<Edge> ret = new ArrayList<>();
+      ArrayList<IEdge> ret = new ArrayList<>();
 
       Edge prev_e = null;
 
@@ -161,7 +161,7 @@ public abstract class Movable implements ICollidable
 
       assert prev_e != null;
 
-      ret.get(0).setPrev(prev_e);
+      ((Edge)ret.get(0)).setPrev(prev_e);
       prev_e.setNext(ret.get(0));
 
       return ret;
@@ -173,7 +173,7 @@ public abstract class Movable implements ICollidable
    public abstract double getRadius();
 
    @Override
-   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
+   public ColRet collide(Collection<IEdge> active_edges, double radius, XY centre, Movable activeMovable)
    {
       double combined_r2 = radius + getRadius();
       combined_r2 *= combined_r2;
@@ -181,24 +181,106 @@ public abstract class Movable implements ICollidable
       if (centre.minus(getPosition()).length2() > combined_r2)
          return null;
 
-      ArrayList<Edge> stationary_edges = makeEdges();
+      ArrayList<IEdge> inactive_edges = makeEdges();
 
-      for(Edge stationary_edge : stationary_edges)
+      for(IEdge inactive_edge : inactive_edges)
       {
-         for(Edge moving_edge : moving_edges)
+         for(IEdge active_edge : active_edges)
          {
             OrderedPair<Double, Double> intr = Util.edgeIntersect(
-                  moving_edge.Start, moving_edge.End,
-                  stationary_edge.Start, stationary_edge.End);
+                  active_edge.getStart(), active_edge.getEnd(),
+                  inactive_edge.getStart(), inactive_edge.getEnd());
 
             if (intr != null)
             {
-               return new ColRet(activeMovable, this, moving_edge, stationary_edge, intr.First, intr.Second);
+               XY position = active_edge.getStart()
+                     .plus(active_edge.getEnd()
+                           .minus(active_edge.getStart())
+                           .multiply(intr.First));
+
+               return new ColRet(activeMovable, this,
+                     active_edge.getSuperEdge(), inactive_edge.getSuperEdge(),
+                     position);
             }
          }
       }
 
       return null;
+   }
+
+   // just for testing
+   static IEdge makeEdge(XY start, XY end, XY normal)
+   {
+      return new Edge(start, end, normal);
+   }
+
+   static private class Edge implements IEdge
+   {
+      Edge(XY start, XY end, XY normal)
+      {
+         m_start = start;
+         m_end = end;
+         m_normal = normal;
+
+         m_super_edge = new SuperEdge(start, end, normal);
+      }
+
+      public void setNext(IEdge next)
+      {
+         this.m_next = next;
+         assert next.getSuperEdge() != null;
+         m_super_edge.setNext(next.getSuperEdge());
+      }
+
+      @Override
+      public IEdge getNext()
+      {
+         return m_next;
+      }
+
+      public void setPrev(IEdge prev)
+      {
+         this.m_prev = prev;
+         assert prev.getSuperEdge() != null;
+         m_super_edge.setPrev(prev.getSuperEdge());
+      }
+
+      @Override
+      public IEdge getPrev()
+      {
+         return m_prev;
+      }
+
+      @Override
+      public XY getStart()
+      {
+         return m_start;
+      }
+
+      @Override
+      public XY getEnd()
+      {
+         return m_end;
+      }
+
+      @Override
+      public XY getNormal()
+      {
+         return m_normal;
+      }
+
+      @Override
+      public SuperEdge getSuperEdge()
+      {
+         return m_super_edge;
+      }
+
+      private final XY m_start;
+      private final XY m_end;
+      private final XY m_normal;
+      private IEdge m_next;
+      private IEdge m_prev;
+      private final SuperEdge m_super_edge;
    }
 
    // these final more as a way of letting the compiler

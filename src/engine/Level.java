@@ -22,7 +22,7 @@ public class Level implements ICollidable
    {
       // using centre point halves the effective length of the facet,
       // making our cell-search distances smaller
-      CC cell = GridWalker.positionToCell(w.Start.plus(w.End).divide(2), m_cell_size);
+      CC cell = GridWalker.positionToCell(w.getStart().plus(w.getEnd()).divide(2), m_cell_size);
 
       ArrayList<Wall> walls = m_wall_map.get(cell);
 
@@ -92,7 +92,7 @@ public class Level implements ICollidable
             for(Wall w : walls)
             {
                OrderedPair<Double, Double> intersect = Util.edgeIntersect(nearest_to, end,
-                     w.Start, w.End);
+                     w.getStart(), w.getEnd());
 
                if (intersect != null)
                {
@@ -112,7 +112,7 @@ public class Level implements ICollidable
    }
 
    @Override
-   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
+   public ColRet collide(Collection<IEdge> active_edges, double radius, XY centre, Movable activeMovable)
    {
       ArrayList<Wall> walls = wallsInRangeOfPoint(centre, radius);
 
@@ -120,15 +120,22 @@ public class Level implements ICollidable
       {
          for(Wall wall : walls)
          {
-            for(Edge moving_edge : moving_edges)
+            for(IEdge active_edge : active_edges)
             {
                OrderedPair<Double, Double> intr = Util.edgeIntersect(
-                     moving_edge.Start, moving_edge.End,
-                     wall.Start, wall.End);
+                     active_edge.getStart(), active_edge.getEnd(),
+                     wall.getStart(), wall.getEnd());
 
                if (intr != null)
                {
-                  return new ColRet(activeMovable, null, moving_edge, wall, intr.First, intr.Second);
+                  XY position = active_edge.getStart()
+                        .plus(active_edge.getEnd()
+                              .minus(active_edge.getStart())
+                              .multiply(intr.First));
+
+                  return new ColRet(activeMovable, null,
+                        active_edge.getSuperEdge(), wall.getSuperEdge(),
+                        position);
                }
             }
          }

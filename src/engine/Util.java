@@ -594,15 +594,15 @@ class Util
 
    // measures whether e2, projected onto e1, overlaps by more than tolerance
    // with the parameter range of e1
-   public static EPORet edgeParameterOverlap(ICollidable.Edge e1, ICollidable.Edge e2, double tolerance)
+   public static EPORet edgeParameterOverlap(XY e1Start, XY e1End, XY e2Start, XY e2End, double tolerance)
    {
-      XY e1vec = e1.End.minus(e1.Start);
+      XY e1vec = e1End.minus(e1Start);
 
       // vector divided by l, gives us a projected distance between 0 and 1
       e1vec = e1vec.divide(e1vec.length2());
 
-      double p_start = e1vec.dot(e2.Start.minus(e1.Start));
-      double p_end = e1vec.dot(e2.End.minus(e1.Start));
+      double p_start = e1vec.dot(e2Start.minus(e1Start));
+      double p_end = e1vec.dot(e2End.minus(e1Start));
 
       // clamp to parameter range of 0 -> 1
       double clamp_start = Math.max(Math.min(p_start, 1 - tolerance), tolerance);
@@ -611,5 +611,15 @@ class Util
       return new EPORet(
             Math.abs(clamp_start - clamp_end) > 0,
             p_start, p_end, clamp_start, clamp_end);
+   }
+
+   public static double calcFractionalPosition(XY start, XY end, XY pos)
+   {
+      XY vec = end.minus(start);
+
+      // vector divided by l, gives us a projected distance between 0 and 1
+      vec = vec.divide(vec.length2());
+
+      return vec.dot(pos.minus(start));
    }
 }

@@ -1290,10 +1290,10 @@ public class UtilTest
    public void testEdgeParameterOverlap() throws Exception
    {
       {
-         ICollidable.Edge e1 = new ICollidable.Edge(new XY(0, 0), new XY(10, 0), null);
-         ICollidable.Edge e2 = new ICollidable.Edge(new XY(0, 0), new XY(10, 0), null);
+         IEdge e1 = Movable.makeEdge(new XY(0, 0), new XY(10, 0), null);
+         IEdge e2 = Movable.makeEdge(new XY(0, 0), new XY(10, 0), null);
 
-         Util.EPORet ret = Util.edgeParameterOverlap(e1, e2, 0);
+         Util.EPORet ret = Util.edgeParameterOverlap(e1.getStart(), e1.getEnd(), e2.getStart(), e2.getEnd(), 0);
 
          assertEquals(true, ret.Overlaps);
          assertEquals(0, ret.PStart, 1e-6);
@@ -1303,10 +1303,10 @@ public class UtilTest
       }
 
       {
-         ICollidable.Edge e1 = new ICollidable.Edge(new XY(0, 0), new XY(10, 0), null);
-         ICollidable.Edge e2 = new ICollidable.Edge(new XY(1, 1), new XY(11, 11), null);
+         IEdge e1 = Movable.makeEdge(new XY(0, 0), new XY(10, 0), null);
+         IEdge e2 = Movable.makeEdge(new XY(1, 1), new XY(11, 11), null);
 
-         Util.EPORet ret = Util.edgeParameterOverlap(e1, e2, 0.1);
+         Util.EPORet ret = Util.edgeParameterOverlap(e1.getStart(), e1.getEnd(), e2.getStart(), e2.getEnd(), 0.1);
 
          assertEquals(true, ret.Overlaps);
          assertEquals(.1, ret.PStart, 1e-6);
@@ -1316,10 +1316,10 @@ public class UtilTest
       }
 
       {
-         ICollidable.Edge e1 = new ICollidable.Edge(new XY(0, 0), new XY(0, 10), null);
-         ICollidable.Edge e2 = new ICollidable.Edge(new XY(1, 1), new XY(11, 11), null);
+         IEdge e1 = Movable.makeEdge(new XY(0, 0), new XY(0, 10), null);
+         IEdge e2 = Movable.makeEdge(new XY(1, 1), new XY(11, 11), null);
 
-         Util.EPORet ret = Util.edgeParameterOverlap(e1, e2, 0.01);
+         Util.EPORet ret = Util.edgeParameterOverlap(e1.getStart(), e1.getEnd(), e2.getStart(), e2.getEnd(), 0.01);
 
          assertEquals(true, ret.Overlaps);
          assertEquals(.1, ret.PStart, 1e-6);
@@ -1329,10 +1329,10 @@ public class UtilTest
       }
 
       {
-         ICollidable.Edge e1 = new ICollidable.Edge(new XY(0, 0), new XY(0, 10), null);
-         ICollidable.Edge e2 = new ICollidable.Edge(new XY(5, 5), new XY(6, 6), null);
+         IEdge e1 = Movable.makeEdge(new XY(0, 0), new XY(0, 10), null);
+         IEdge e2 = Movable.makeEdge(new XY(5, 5), new XY(6, 6), null);
 
-         Util.EPORet ret = Util.edgeParameterOverlap(e1, e2, 0.1);
+         Util.EPORet ret = Util.edgeParameterOverlap(e1.getStart(), e1.getEnd(), e2.getStart(), e2.getEnd(), 0.1);
 
          assertEquals(true, ret.Overlaps);
          assertEquals(.5, ret.PStart, 1e-6);
@@ -1342,10 +1342,10 @@ public class UtilTest
       }
 
       {
-         ICollidable.Edge e1 = new ICollidable.Edge(new XY(0, 0), new XY(0, 10), null);
-         ICollidable.Edge e2 = new ICollidable.Edge(new XY(15, 15), new XY(16, 16), null);
+         IEdge e1 = Movable.makeEdge(new XY(0, 0), new XY(0, 10), null);
+         IEdge e2 = Movable.makeEdge(new XY(15, 15), new XY(16, 16), null);
 
-         Util.EPORet ret = Util.edgeParameterOverlap(e1, e2, 0.1);
+         Util.EPORet ret = Util.edgeParameterOverlap(e1.getStart(), e1.getEnd(), e2.getStart(), e2.getEnd(), 0.1);
 
          assertEquals(false, ret.Overlaps);
       }

@@ -60,7 +60,7 @@ public class Main extends PApplet
 
       {
          PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3, "upper");
-         pto.setPosition(new XY(width / 2, 100));
+         pto.setPosition(new XY(width / 2 - 51, 100));
          // gravity
          pto.applyForceRelative(new XY(0, 20), new XY(0, 0));
          // kick it off centre to give some spin...
@@ -203,8 +203,8 @@ public class Main extends PApplet
       {
          for (Wall w : level.getVisibleWalls(visibility_pos))
          {
-            s_app.line((float) w.Start.X, (float) w.Start.Y,
-                  (float) w.End.X, (float) w.End.Y);
+            s_app.line((float) w.getStart().X, (float) w.getStart().Y,
+                  (float) w.getEnd().X, (float) w.getEnd().Y);
          }
       }
    }
@@ -214,7 +214,7 @@ public class Main extends PApplet
       s_app.beginContour();
       for(Wall w : wl)
       {
-         s_app.vertex((float)w.Start.X, (float)w.Start.Y);
+         s_app.vertex((float) w.getStart().X, (float) w.getStart().Y);
       }
       s_app.endContour();
    }
