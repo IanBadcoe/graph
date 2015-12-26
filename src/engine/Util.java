@@ -579,16 +579,12 @@ class Util
       public final boolean Overlaps;
       public final double PStart;
       public final double PEnd;
-      public final double PStartClamped;
-      public final double PEndClamped;
 
-      public EPORet(boolean overlaps, double pStart, double pEnd, double pStartClamped, double pEndClamped)
+      public EPORet(boolean overlaps, double pStart, double pEnd)
       {
          Overlaps = overlaps;
          PStart = pStart;
          PEnd = pEnd;
-         PStartClamped = pStartClamped;
-         PEndClamped = pEndClamped;
       }
    }
 
@@ -605,12 +601,10 @@ class Util
       double p_end = e1vec.dot(e2End.minus(e1Start));
 
       // clamp to parameter range of 0 -> 1
-      double clamp_start = Math.max(Math.min(p_start, 1 - tolerance), tolerance);
-      double clamp_end = Math.max(Math.min(p_end, 1 - tolerance), tolerance);
+      p_start = Math.max(Math.min(p_start, 1), 0);
+      p_end = Math.max(Math.min(p_end, 1), 0);
 
-      return new EPORet(
-            Math.abs(clamp_start - clamp_end) > 0,
-            p_start, p_end, clamp_start, clamp_end);
+      return new EPORet(Math.abs(p_start - p_end) > tolerance * 2, p_start, p_end);
    }
 
    public static double calcFractionalPosition(XY start, XY end, XY pos)

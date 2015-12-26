@@ -94,6 +94,16 @@ public abstract class Movable implements ICollidable
       m_state.Spin = spin;
    }
 
+   public double getSpin()
+   {
+      return m_state.Spin;
+   }
+
+   public XY getVelocity()
+   {
+      return m_state.Velocity;
+   }
+
    public static class DynamicsPosition
    {
       public XY Position = new XY();

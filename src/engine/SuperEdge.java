@@ -14,27 +14,27 @@ class SuperEdge
 
    public SuperEdge getNext()
    {
-      return null;
+      return m_next;
    }
 
    public SuperEdge getPrev()
    {
-      return null;
+      return m_prev;
    }
 
    public XY getStart()
    {
-      return null;
+      return m_start;
    }
 
    public XY getEnd()
    {
-      return null;
+      return m_end;
    }
 
    public XY getNormal()
    {
-      return null;
+      return m_normal;
    }
 
    private final XY m_start;

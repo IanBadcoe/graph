@@ -127,16 +127,19 @@ public class UnionHelper
       {
          ArrayList<OrderedPair<XY, XY>> loop_pnts = l.facetWithNormals(wall_facet_length);
 
-         OrderedPair<XY, XY> prev = loop_pnts.get(loop_pnts.size() - 1);
-
          WallLoop wl = new WallLoop();
 
          Wall prev_w = null;
 
-         for (OrderedPair<XY, XY> curr : loop_pnts)
+         for (int i = 0; i < loop_pnts.size(); i++)
          {
-            Wall w = new Wall(prev.First, curr.First,
-                  prev.Second.plus(curr.Second).asUnit());
+            // we need the loop to start at the start of a curve, so that
+            // we don't have to generate a SuperEdge across the join in the loop
+            OrderedPair<XY, XY> curr = loop_pnts.get(i);
+            OrderedPair<XY, XY> next = loop_pnts.get((i + 1) % loop_pnts.size());
+
+            Wall w = new Wall(curr.First, next.First,
+                  curr.Second);
 
             if (prev_w != null)
             {
@@ -147,11 +150,9 @@ public class UnionHelper
             wl.add(w);
 
             prev_w = w;
-
-            prev = curr;
          }
 
-         //noinspection ConstantConditions
+         // joint the end back to the beginning
          prev_w.setNext(wl.get(0));
          wl.get(0).setPrev(prev_w);
 
@@ -187,7 +188,7 @@ public class UnionHelper
    }
 
    // seqence_end is one after the end, this works either to build a common super-edge for a sequence of
-   //
+   // colinear edges, or to put a single super-edge on an edge from the middle of a curve
    private SuperEdge createSuperEdge(Wall sequence_start, Wall sequence_end,
                                      SuperEdge prev_se)
    {

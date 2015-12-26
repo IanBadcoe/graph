@@ -149,24 +149,28 @@ public class Loop
       return ret;
    }
 
+   // each normal (ret.Second) is from the middle on the interval that ret.First begins
    public ArrayList<OrderedPair<XY,XY>> facetWithNormals(double max_length)
    {
       ArrayList<OrderedPair<XY,XY>> ret = new ArrayList<>();
 
       for(Curve c : m_curves)
       {
-         double param_step = c.paramRange()
-               * (max_length / c.length());
+         int num_steps = (int)(c.length() / max_length) + 1;
+         double param_step = c.paramRange() / num_steps;
 
          double p = 0;
 
          double start_p = c.StartParam;
 
-         while(p < c.paramRange())
+         // we run for num_steps, which takes us to a point one-step before the end of the curve
+         // the end of the last segment in the curve is the start of the next curve, but the normal
+         // of that segment is the last normal we calculate here (in this curve)
+         for(int i = 0; i < num_steps; i++)
          {
             ret.add(new OrderedPair<>(
                   c.computePos(start_p + p),
-                  c.computeNormal(start_p + p)));
+                  c.computeNormal(start_p + p + param_step / 2)));
 
             p += param_step;
          }

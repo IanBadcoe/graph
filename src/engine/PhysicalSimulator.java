@@ -50,14 +50,14 @@ public class PhysicalSimulator
 
       resolveCollision(mc);
 
-      // maybe a bit of a hack, movement cannot complete the time step because it hits something
-      // and if the impact is at t == 0, velocity stops evolving, so here give velocity the rest of its step
-      // even if movement cannot do it
-      //
-      // if we start doing multiple sub-steps per step, we'll need to only do this for the remaining unused
-      // time after the last one...
-      new_state = m.step(0, timeStep - time_taken);
-      m.setState(new_state);
+//      // maybe a bit of a hack, movement cannot complete the time step because it hits something
+//      // and if the impact is at t == 0, velocity stops evolving, so here give velocity the rest of its step
+//      // even if movement cannot do it
+//      //
+//      // if we start doing multiple sub-steps per step, we'll need to only do this for the remaining unused
+//      // time after the last one...
+//      new_state = m.step(0, timeStep - time_taken);
+//      m.setState(new_state);
 
       return timeStep * mc.FractionTravelled;
    }

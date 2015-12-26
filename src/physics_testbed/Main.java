@@ -9,6 +9,8 @@ import java.util.Random;
 @SuppressWarnings("WeakerAccess")
 public class Main extends PApplet
 {
+   private boolean m_going = false;
+
    public static void main(String[] args) {
       PApplet.main("physics_testbed.Main", args);
    }
@@ -20,7 +22,6 @@ public class Main extends PApplet
    @Override
    public void settings()
    {
-//      size(500, 500);
       fullScreen();
 
       s_app = this;
@@ -39,10 +40,10 @@ public class Main extends PApplet
       uh.addBaseLoop(l);
 
       ArrayList<Curve> curves = new ArrayList<>();
-      curves.add(new LineCurve(new XY(width / 2 + 50, 250), new XY(0, 1), 100));
-      curves.add(new LineCurve(new XY(width / 2 + 50, 350), new XY(-1, 0), 100));
-      curves.add(new LineCurve(new XY(width / 2 - 50, 350), new XY(0, -1), 100));
-      curves.add(new LineCurve(new XY(width / 2 - 50, 250), new XY(1, 0), 100));
+      curves.add(new LineCurve(new XY(550, 250), new XY(0, 1), 100));
+      curves.add(new LineCurve(new XY(550, 350), new XY(-1, 0), 100));
+      curves.add(new LineCurve(new XY(450, 350), new XY(0, -1), 100));
+      curves.add(new LineCurve(new XY(450, 250), new XY(1, 0), 100));
 
       l = new Loop(curves);
 
@@ -60,7 +61,7 @@ public class Main extends PApplet
 
       {
          PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3, "upper");
-         pto.setPosition(new XY(width / 2 - 51, 100));
+         pto.setPosition(new XY(405, 100));
          // gravity
          pto.applyForceRelative(new XY(0, 20), new XY(0, 0));
          // kick it off centre to give some spin...
@@ -89,7 +90,10 @@ public class Main extends PApplet
    @Override
    public void draw()
    {
-      m_sim.step(0.1);
+      if (m_going)
+      {
+         m_sim.step(0.1);
+      }
 
       drawLevel(m_level, null);
       m_sim.getMovables().forEach(x -> drawObject((PhysicsTestObject)x));
@@ -103,6 +107,39 @@ public class Main extends PApplet
          s_app.vertex((float)pnt.X, (float)pnt.Y);
       }
       s_app.endShape(CLOSE);
+
+      stroke(255, 0, 0);
+      arrow(pto.getPosition(), pto.getPosition().plus(pto.getVelocity().multiply(5)));
+      circleArrow(pto.getPosition(), pto.getRadius() / 2, pto.getSpin() * 10);
+   }
+
+   private static void circleArrow(XY position, double radius, double angle)
+   {
+      XY prev = position.plus(new XY(0, radius));
+
+      double a = 0;
+
+      for(int i = 0; i < 10; i++)
+      {
+         a += angle / 10;
+
+         XY current = position.plus(new XY(Math.sin(a) * radius, Math.cos(a) * radius));
+
+         line(prev, current);
+
+         prev = current;
+      }
+
+      circle(prev, radius / 5);
+   }
+
+   private static void arrow(XY from, XY to)
+   {
+      XY bit = to.minus(from).multiply(.1);
+
+      line(from, to);
+      line(to, to.minus(bit).minus(bit.rot90()));
+      line(to, to.minus(bit).plus(bit.rot90()));
    }
 
    static void line(XY from, XY to)
@@ -241,9 +278,9 @@ public class Main extends PApplet
       s_app.fill(red, green, blue);
    }
 
-   static void circle(double x, double y, double rad)
+   static void circle(XY pos, double rad)
    {
-      s_app.ellipse((float)x, (float)y, (float)rad, (float)rad);
+      s_app.ellipse((float)pos.X, (float)pos.Y, (float)rad, (float)rad);
    }
 
    static void scaleTo(Box b)

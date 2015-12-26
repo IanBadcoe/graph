@@ -1298,8 +1298,6 @@ public class UtilTest
          assertEquals(true, ret.Overlaps);
          assertEquals(0, ret.PStart, 1e-6);
          assertEquals(1, ret.PEnd, 1e-6);
-         assertEquals(0, ret.PStartClamped, 1e-6);
-         assertEquals(1, ret.PEndClamped, 1e-6);
       }
 
       {
@@ -1310,9 +1308,7 @@ public class UtilTest
 
          assertEquals(true, ret.Overlaps);
          assertEquals(.1, ret.PStart, 1e-6);
-         assertEquals(1.1, ret.PEnd, 1e-6);
-         assertEquals(.1, ret.PStartClamped, 1e-6);
-         assertEquals(.9, ret.PEndClamped, 1e-6);
+         assertEquals(1, ret.PEnd, 1e-6);
       }
 
       {
@@ -1323,9 +1319,7 @@ public class UtilTest
 
          assertEquals(true, ret.Overlaps);
          assertEquals(.1, ret.PStart, 1e-6);
-         assertEquals(1.1, ret.PEnd, 1e-6);
-         assertEquals(.1, ret.PStartClamped, 1e-6);
-         assertEquals(.99, ret.PEndClamped, 1e-6);
+         assertEquals(1, ret.PEnd, 1e-6);
       }
 
       {
@@ -1337,8 +1331,6 @@ public class UtilTest
          assertEquals(true, ret.Overlaps);
          assertEquals(.5, ret.PStart, 1e-6);
          assertEquals(.6, ret.PEnd, 1e-6);
-         assertEquals(.5, ret.PStartClamped, 1e-6);
-         assertEquals(.6, ret.PEndClamped, 1e-6);
       }
 
       {
