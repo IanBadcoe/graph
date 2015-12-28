@@ -10,6 +10,7 @@ import java.util.Random;
 public class Main extends PApplet
 {
    private boolean m_going = false;
+   private boolean m_step = false;
 
    public static void main(String[] args) {
       PApplet.main("physics_testbed.Main", args);
@@ -61,7 +62,7 @@ public class Main extends PApplet
 
       {
          PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3, "upper");
-         pto.setPosition(new XY(405, 100));
+         pto.setPosition(new XY(425, 100));
          // gravity
          pto.applyForceRelative(new XY(0, 20), new XY(0, 0));
          // kick it off centre to give some spin...
@@ -85,18 +86,48 @@ public class Main extends PApplet
    @Override
    public void keyPressed()
    {
+      if (key == ' ')
+      {
+         m_step = true;
+      }
+
+      if (key == 'g')
+      {
+         m_going = !m_going;
+      }
    }
 
    @Override
    public void draw()
    {
-      if (m_going)
+      PhysicalSimulator.MovableCollision mc = m_sim.peakCollision(0.1);
+
+      if (mc != null)
       {
+         m_going = false;
+      }
+
+      if (m_going || m_step)
+      {
+         m_step = false;
          m_sim.step(0.1);
       }
 
       drawLevel(m_level, null);
       m_sim.getMovables().forEach(x -> drawObject((PhysicsTestObject)x));
+
+      if (mc != null)
+      {
+         drawCollision(mc);
+      }
+   }
+
+   private static void drawCollision(PhysicalSimulator.MovableCollision mc)
+   {
+      stroke(0, 0, 255);
+
+      circle(mc.WorldPoint, 10);
+      line(mc.WorldPoint, mc.WorldPoint.plus(mc.Normal.multiply(50)));
    }
 
    static void drawObject(PhysicsTestObject pto)
@@ -115,7 +146,8 @@ public class Main extends PApplet
 
    private static void circleArrow(XY position, double radius, double angle)
    {
-      XY prev = position.plus(new XY(0, radius));
+      XY offset = new XY(0, radius);
+      XY prev = position.plus(offset);
 
       double a = 0;
 
@@ -123,7 +155,9 @@ public class Main extends PApplet
       {
          a += angle / 10;
 
-         XY current = position.plus(new XY(Math.sin(a) * radius, Math.cos(a) * radius));
+         Matrix2D m = new Matrix2D(a);
+         // use same rotation mechanism as physics uses
+         XY current = position.plus(m.multiply(offset));
 
          line(prev, current);
 

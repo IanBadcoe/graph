@@ -62,6 +62,18 @@ public class PhysicalSimulator
       return timeStep * mc.FractionTravelled;
    }
 
+   public MovableCollision peakCollision(double timeStep)
+   {
+      Movable m = m_movable_objects.getFirst();
+
+      if (m == null)
+         return null;
+
+      Movable.DynamicsState new_state = m.step(timeStep);
+
+      return collide(m, m.getState(), new_state, 0.1);
+   }
+
    public static class MovableCollision
    {
       MovableCollision(XY worldPoint, double fractionTravelled, XY normal,
@@ -75,12 +87,12 @@ public class PhysicalSimulator
          InactiveMovable = inactiveMovable;
       }
 
-      final XY WorldPoint;
-      final double FractionTravelled;
-      final XY Normal;
+      final public XY WorldPoint;
+      final public double FractionTravelled;
+      final public XY Normal;
 
-      final Movable ActiveMovable;
-      final Movable InactiveMovable;
+      final public Movable ActiveMovable;
+      final public Movable InactiveMovable;
    }
 
    // just allows easy communication with sub-routine
