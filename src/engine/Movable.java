@@ -54,8 +54,13 @@ public abstract class Movable implements ICollidable
 
       ret.Position = m_state.Position.plus(m_state.Velocity.multiply(positionTimeStep));
       ret.Orientation = m_state.Orientation + m_state.Spin * positionTimeStep;
-      ret.Velocity = m_state.Velocity.plus(m_force.multiply(velocityTimeStep / Mass));
-      ret.Spin = m_state.Spin + m_torque * velocityTimeStep / MomentOfInertia;
+
+      ret.Velocity = m_state.Velocity
+            .plus(m_force.multiply(velocityTimeStep / Mass))
+            .plus(m_temporary_force.multiply(velocityTimeStep / Mass));
+      ret.Spin = m_state.Spin
+            + m_torque * velocityTimeStep / MomentOfInertia
+            + m_temporary_torque * velocityTimeStep / MomentOfInertia;
 
       return ret;
    }
@@ -92,6 +97,25 @@ public abstract class Movable implements ICollidable
    public void setSpin(double spin)
    {
       m_state.Spin = spin;
+   }
+
+   public void clearTemporaryForces()
+   {
+      m_temporary_force = new XY();
+      m_temporary_torque = 0;
+   }
+
+   public void applyTemporaryForceAbsolute(XY force, XY worldPosition)
+   {
+      applyTemporaryForceRelative(force, worldPosition.minus(getPosition()));
+   }
+
+   private void applyTemporaryForceRelative(XY force, XY relativePosition)
+   {
+      m_temporary_force = m_temporary_force.plus(force);
+
+      double torque = relativePosition.rot270().dot(force);
+      m_temporary_torque += torque;
    }
 
    public static class DynamicsPosition
@@ -167,13 +191,30 @@ public abstract class Movable implements ICollidable
       return ret;
    }
 
+   // make edges for given hypothetical position/orientation
+   public ArrayList<Track> makeRadialTracks(DynamicsPosition pos)
+   {
+      ArrayList<XY> from_transformed_corners = getTransformedCorners(pos);
+
+      ArrayList<Track> ret = new ArrayList<>();
+
+      for (int i = 0; i < from_transformed_corners.size(); i++)
+      {
+         XY corner = from_transformed_corners.get(i);
+
+         ret.add(new Track(pos.Position, corner));
+      }
+
+      return ret;
+   }
+
    @SuppressWarnings("WeakerAccess")
    public abstract Collection<XY> getCorners();
 
    public abstract double getRadius();
 
    @Override
-   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
+   public Collection<ColRet> collide(Collection<Track> corner_tracks, double radius, XY centre, Movable activeMovable)
    {
       double combined_r2 = radius + getRadius();
       combined_r2 *= combined_r2;
@@ -183,19 +224,27 @@ public abstract class Movable implements ICollidable
 
       ArrayList<Edge> stationary_edges = makeEdges();
 
+      ArrayList<ColRet> ret = new ArrayList<>();
+
       for(Edge stationary_edge : stationary_edges)
       {
-         for(Edge moving_edge : moving_edges)
+         for(Track corner_track : corner_tracks)
          {
             OrderedPair<Double, Double> intr = Util.edgeIntersect(
-                  moving_edge.Start, moving_edge.End,
+                  corner_track.Start, corner_track.End,
                   stationary_edge.Start, stationary_edge.End);
 
             if (intr != null)
             {
-               return new ColRet(activeMovable, this, moving_edge, stationary_edge, intr.First, intr.Second);
+               ret.add(new ColRet(activeMovable, this, corner_track, intr.First, stationary_edge, intr.Second,
+                     corner_track.interp(intr.First)));
             }
          }
+      }
+
+      if (ret.size() > 0)
+      {
+         return ret;
       }
 
       return null;
@@ -211,4 +260,7 @@ public abstract class Movable implements ICollidable
 
    private XY m_force = new XY();
    private double m_torque = 0;
+
+   private XY m_temporary_force = new XY();
+   private double m_temporary_torque = 0;
 }

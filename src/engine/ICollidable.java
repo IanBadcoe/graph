@@ -4,7 +4,24 @@ import java.util.Collection;
 
 public interface ICollidable
 {
-   ColRet collide(Collection<Edge> edges, double radius, XY centre, Movable activeMovable);
+   Collection<ColRet> collide(Collection<Track> tracks, double radius, XY centre, Movable activeMovable);
+
+   class Track
+   {
+      public final XY Start;
+      public final XY End;
+
+      public Track(XY start, XY end)
+      {
+         Start = start;
+         End = end;
+      }
+
+      public XY interp(Double p)
+      {
+         return Start.plus(End.minus(Start).multiply(p));
+      }
+   }
 
    class Edge
    {
@@ -60,26 +77,30 @@ public interface ICollidable
 
    class ColRet
    {
-      final Movable ActiveMovable;
-      final Movable InactiveMovable;
+      final public Movable ActiveMovable;
+      final public Movable InactiveMovable;
 
-      final Edge ActiveEdge;
-      final Edge InactiveEdge;
-      final double ActiveEdgeFrac;
-      final double InactiveEdgeFrac;
+      final public Track ActiveTrack;
+      final public double ActiveTrackFrac;
+
+      final public Edge InactiveEdge;
+      final public double InactiveEdgeFrac;
+
+      final public XY WorldPosition;
 
       ColRet(Movable activeMovable, Movable inactiveMovable,
-             Edge activeEdge, Edge inactiveEdge,
-             double activeEdgeFrac, double inactiveEdgeFrac)
+            Track activeTrack, double activeTrackFrac, Edge inactiveEdge,
+            double inactiveEdgeFrac, XY worldPosition)
       {
          ActiveMovable = activeMovable;
          InactiveMovable = inactiveMovable;
 
-         ActiveEdge = activeEdge;
+         ActiveTrack = activeTrack;
          InactiveEdge = inactiveEdge;
 
-         ActiveEdgeFrac = activeEdgeFrac;
+         ActiveTrackFrac = activeTrackFrac;
          InactiveEdgeFrac = inactiveEdgeFrac;
+         WorldPosition = worldPosition;
       }
    }
 

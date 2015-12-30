@@ -112,26 +112,36 @@ public class Level implements ICollidable
    }
 
    @Override
-   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
+   public Collection<ColRet> collide(Collection<Track> corner_tracks, double radius, XY centre, Movable activeMovable)
    {
       ArrayList<Wall> walls = wallsInRangeOfPoint(centre, radius);
 
-      if (walls != null)
+      if (walls.size() == 0)
       {
-         for(Wall wall : walls)
-         {
-            for(Edge moving_edge : moving_edges)
-            {
-               OrderedPair<Double, Double> intr = Util.edgeIntersect(
-                     moving_edge.Start, moving_edge.End,
-                     wall.Start, wall.End);
+         return null;
+      }
 
-               if (intr != null)
-               {
-                  return new ColRet(activeMovable, null, moving_edge, wall, intr.First, intr.Second);
-               }
+      ArrayList<ColRet> ret = new ArrayList<ColRet>();
+
+      for(Wall wall : walls)
+      {
+         for(Track corner_track : corner_tracks)
+         {
+            OrderedPair<Double, Double> intr = Util.edgeIntersect(
+                  corner_track.Start, corner_track.End,
+                  wall.Start, wall.End);
+
+            if (intr != null)
+            {
+               ret.add(new ColRet(activeMovable, null, corner_track, intr.First, wall, intr.Second,
+                     corner_track.interp(intr.First)));
             }
          }
+      }
+
+      if (ret.size() > 0)
+      {
+         return ret;
       }
 
       return null;

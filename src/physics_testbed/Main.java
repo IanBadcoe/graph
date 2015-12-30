@@ -4,6 +4,7 @@ import engine.*;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 @SuppressWarnings("WeakerAccess")
@@ -59,7 +60,7 @@ public class Main extends PApplet
       m_sim = new PhysicalSimulator(m_level);
 
       {
-         PhysicsTestObject pto = new PhysicsTestObject(100, 100, 10, 0.3, "upper");
+         PhysicsTestObject pto = new PhysicsTestObject(90, 90, 10, 0.3, "upper");
          pto.setPosition(new XY(width / 2, 100));
          // gravity
          pto.applyForceRelative(new XY(0, 20), new XY(0, 0));
@@ -84,15 +85,50 @@ public class Main extends PApplet
    @Override
    public void keyPressed()
    {
+      if (key == ' ')
+      {
+         m_step = true;
+      }
+
+      if (key == 'g')
+      {
+         m_going = !m_going;
+      }
    }
 
    @Override
    public void draw()
    {
-      m_sim.step(0.1);
+      Collection<ICollidable.ColRet> collisions = m_sim.peekCollisions(0.1);
+
+      if (collisions != null)
+      {
+         m_going = false;
+      }
+
+      if (m_going || m_step)
+      {
+         m_sim.step(0.1);
+
+         m_step = false;
+      }
 
       drawLevel(m_level, null);
       m_sim.getMovables().forEach(x -> drawObject((PhysicsTestObject)x));
+
+      if (collisions != null)
+      {
+         drawCollisions(collisions);
+      }
+   }
+
+   private void drawCollisions(Collection<ICollidable.ColRet> collisions)
+   {
+      for(ICollidable.ColRet cr : collisions)
+      {
+         stroke(255, 0, 0);
+         line(cr.WorldPosition, cr.ActiveTrack.End);
+      }
    }
 
    static void drawObject(PhysicsTestObject pto)
@@ -276,4 +312,7 @@ public class Main extends PApplet
    private Level m_level;
    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
    private PhysicalSimulator m_sim;
+
+   private boolean m_going = false;
+   private boolean m_step = false;
 }
