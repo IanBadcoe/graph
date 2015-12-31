@@ -1,8 +1,6 @@
 package engine;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 // for the moment, not separating physically simulated from movable, but if required later, could split this
 // into a base class of Movable and a derived class of PhysicallyMovable, giving us scope for other derived
@@ -12,203 +10,145 @@ import java.util.stream.Collectors;
 // also implement...
 public abstract class Movable implements ICollidable
 {
-   protected Movable(double mass, double momentOfIntertia, double coefficientOfRestitution)
+   protected Movable(double m_radius)
    {
-      Mass = mass;
-      MomentOfInertia = momentOfIntertia;
-      CoefficientOfRestitution = coefficientOfRestitution;
+      this.m_radius = m_radius;
    }
 
    public void setPosition(XY pos)
    {
-      m_state.Position = pos;
+      m_position = pos;
    }
 
    public XY getPosition()
    {
-      return m_state.Position;
+      return m_position;
    }
 
-   public void applyForceAbsolute(XY force, XY position)
+   public void addVelocity(XY v)
    {
-      applyForceRelative(force, position.minus(m_state.Position));
+      m_velocity = m_velocity.plus(v);
    }
 
-   @SuppressWarnings("WeakerAccess")
-   public void applyForceRelative(XY force, XY relativePosition)
+   public XY getVelocity()
    {
-      m_force = m_force.plus(force);
-
-      double torque = relativePosition.rot270().dot(force);
-      m_torque += torque;
+      return m_velocity;
    }
 
-   public DynamicsState step(double timeStep)
+   private void dampVelocity()
    {
-      return step(timeStep, timeStep);
+      m_velocity = m_velocity.multiply(0.95);
    }
 
-   public DynamicsState step(double positionTimeStep, double velocityTimeStep)
+   public void step(double timeStep, Collection<ICollidable> collisionCandidates)
    {
-      DynamicsState ret = new DynamicsState();
+      double used_time = 0;
 
-      ret.Position = m_state.Position.plus(m_state.Velocity.multiply(positionTimeStep));
-      ret.Orientation = m_state.Orientation + m_state.Spin * positionTimeStep;
-      ret.Velocity = m_state.Velocity.plus(m_force.multiply(velocityTimeStep / Mass));
-      ret.Spin = m_state.Spin + m_torque * velocityTimeStep / MomentOfInertia;
-
-      return ret;
-   }
-
-   public DynamicsState getState()
-   {
-      return m_state;
-   }
-
-   public void setState(DynamicsState state)
-   {
-      m_state = state;
-   }
-
-   public void applyImpulseRelative(XY impulse, XY relPoint)
-   {
-      m_state.Velocity = m_state.Velocity.plus(impulse.divide(Mass));
-      m_state.Spin += relPoint.rot270().dot(impulse) / MomentOfInertia;
-   }
-
-   public ArrayList<XY> getTransformedCorners()
-   {
-      return getTransformedCorners(m_state);
-   }
-
-   @SuppressWarnings("WeakerAccess")
-   public ArrayList<XY> getTransformedCorners(DynamicsPosition pos)
-   {
-      Transform t = new Transform(pos);
-
-      return getCorners().stream().map(t::transform).collect(Collectors.toCollection(ArrayList::new));
-   }
-
-   public void setSpin(double spin)
-   {
-      m_state.Spin = spin;
-   }
-
-   public static class DynamicsPosition
-   {
-      public XY Position = new XY();
-      public double Orientation = 0;
-
-      @SuppressWarnings("SameParameterValue")
-      DynamicsPosition interpolate(DynamicsPosition towards, double amount)
+      while(used_time < timeStep)
       {
-         DynamicsPosition ret = new DynamicsPosition();
-
-         ret.Position = Position.plus(towards.Position.minus(Position).multiply(amount));
-         ret.Orientation = Orientation + (towards.Orientation - Orientation) * amount;
-
-         return ret;
+         used_time += tryStep(timeStep - used_time, collisionCandidates, 0.01);
       }
+
+      // to simplify movement maths, do this once and indivisibly
+      dampVelocity();
    }
 
-   public static class DynamicsState extends DynamicsPosition
+   protected double tryStep(double timeStep, Collection<ICollidable> collisionCandidates, double resolution)
    {
-      public XY Velocity = new XY();
-      public double Spin = 0;
-   }
+      assert collideWith(collisionCandidates) == null;
 
-   // sum the combined effewct of translation and rotation for a point on the body
-   // relativePoint is the offset from the mass centre
-   public XY pointVelocity(XY relativePoint)
-   {
-      return m_state.Velocity.plus(relativePoint.rot270().multiply(m_state.Spin));
-   }
+      XY where = m_position.plus(m_velocity.multiply(timeStep));
 
-   // make edges for current position/orientation
-   //
-   // optimisation: make this memoize the result as we can use the edges for the same position
-   // over and over
-   private ArrayList<Edge> makeEdges()
-   {
-      return makeEdges(m_state);
-   }
+      ColRet col = collideWith(collisionCandidates);
 
-   // make edges for given hypothetical position/orientation
-   public ArrayList<Edge> makeEdges(DynamicsPosition pos)
-   {
-      ArrayList<XY> transformed_corners = getTransformedCorners(pos);
-
-      XY prev = transformed_corners.get(transformed_corners.size() - 1);
-
-      ArrayList<Edge> ret = new ArrayList<>();
-
-      Edge prev_e = null;
-
-      for (XY curr : transformed_corners)
+      if (col == null)
       {
-         Edge curr_e = new Edge(prev, curr, curr.minus(prev).rot270().asUnit());
-         ret.add(curr_e);
+         m_position = where;
+         return timeStep;
+      }
 
-         if (prev_e != null)
+      // binary search for an interval where "start" is not colliding and "end" is
+
+      double start = 0;
+      double end = 1;
+
+      while (end - start > resolution)
+      {
+         double mid = (start + end) / 2;
+         ColRet temp = collideWith(collisionCandidates);
+
+         if (temp == null)
          {
-            prev_e.setNext(curr_e);
-            curr_e.setPrev(prev_e);
+            start = mid;
          }
-
-         prev = curr;
-         prev_e = curr_e;
+         else
+         {
+            col = temp;
+            end = mid;
+         }
       }
 
-      assert prev_e != null;
+      // we can move as far as start
+      where = m_position.plus(m_velocity.multiply(timeStep * start));
 
-      ret.get(0).setPrev(prev_e);
-      prev_e.setNext(ret.get(0));
+      // we lose the part of our velocity which is into the edge we hit
+      m_velocity = filterVelocity(m_velocity, col.Normal.rot90());
 
-      return ret;
+      return timeStep * start;
    }
 
-   @SuppressWarnings("WeakerAccess")
-   public abstract Collection<XY> getCorners();
-
-   public abstract double getRadius();
-
-   @Override
-   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
+   private XY filterVelocity(XY velocity, XY keepComponent)
    {
-      double combined_r2 = radius + getRadius();
-      combined_r2 *= combined_r2;
+      return keepComponent.multiply(keepComponent.dot(velocity));
+   }
 
-      if (centre.minus(getPosition()).length2() > combined_r2)
-         return null;
+   public void setOrientation(double ori)
+   {
+      m_orientation = ori;
+   }
 
-      ArrayList<Edge> stationary_edges = makeEdges();
+   public double getOrientation()
+   {
+      return m_orientation;
+   }
 
-      for(Edge stationary_edge : stationary_edges)
+   public double getRadius()
+   {
+      return m_radius;
+   }
+
+   public ColRet collideWith(Collection<ICollidable> collisionCandidates)
+   {
+      for(ICollidable ic : collisionCandidates)
       {
-         for(Edge moving_edge : moving_edges)
-         {
-            OrderedPair<Double, Double> intr = Util.edgeIntersect(
-                  moving_edge.Start, moving_edge.End,
-                  stationary_edge.Start, stationary_edge.End);
+         ColRet ret = ic.collide(this);
 
-            if (intr != null)
-            {
-               return new ColRet(activeMovable, this, moving_edge, stationary_edge, intr.First, intr.Second);
-            }
+         if (ret != null)
+         {
+            return ret;
          }
       }
 
       return null;
    }
 
-   // these final more as a way of letting the compiler
-   // check they got assigned, no absolute reason why they can't be changed later
-   final public double Mass;
-   final public double MomentOfInertia;
-   final public double CoefficientOfRestitution;
+   @Override
+   public ColRet collide(Movable m)
+   {
+      if (Util.circleCircleIntersect(getPosition(), getRadius(),
+            m.getPosition(), getRadius()) != null)
+      {
+         return new ColRet(m.getPosition().minus(m.getPosition()).asUnit());
+      }
 
-   private DynamicsState m_state = new DynamicsState();
+      return null;
+   }
 
-   private XY m_force = new XY();
-   private double m_torque = 0;
+   private XY m_position = new XY();
+   private XY m_velocity = new XY();
+
+   public double m_orientation = 0;
+
+   private final double m_radius;
+
 }

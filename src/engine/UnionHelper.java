@@ -2,6 +2,7 @@ package engine;
 
 import java.util.*;
 
+@SuppressWarnings("WeakerAccess")
 public class UnionHelper
 {
    // exposed for testing but there could be cases where client code wants to reach-in

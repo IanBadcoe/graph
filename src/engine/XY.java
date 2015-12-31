@@ -122,4 +122,9 @@ public class XY
    {
       return start.plus(end.minus(start).multiply(fraction));
    }
+
+   public static XY makeDirectionVector(double orientation)
+   {
+      return new XY(Math.sin(orientation), Math.cos(orientation));
+   }
 }

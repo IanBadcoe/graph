@@ -271,12 +271,37 @@ class Util
    // http://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
    private static OrderedPair<XY, XY> circleLineIntersect(CircleCurve c1, LineCurve l2)
    {
-      XY d = l2.endPos().minus(l2.startPos());
-      XY f = l2.startPos().minus(c1.Position);
+      OrderedPair<Double, Double> ret = circleLineIntersect(c1.Position, c1.Radius,
+            l2.startPos(), l2.endPos());
+
+      if (ret == null)
+         return null;
+
+      XY hit1 = null;
+      XY hit2 = null;
+
+      if(ret.First != null)
+      {
+         hit1 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * ret.First);
+      }
+
+      if(ret.Second != null)
+      {
+         hit2 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * ret.Second);
+      }
+
+      return new OrderedPair<>(hit1, hit2);
+   }
+
+   public static OrderedPair<Double, Double> circleLineIntersect(XY circlePos, double circleRadius,
+         XY lineStart, XY lineEnd)
+   {
+      XY d = lineEnd.minus(lineStart);
+      XY f = lineStart.minus(circlePos);
 
       double a = d.length2();
       double b = 2 * f.dot(d);
-      double c = f.length2() - c1.Radius * c1.Radius;
+      double c = f.length2() - circleRadius * circleRadius;
 
       double discriminant_2 = b * b - 4 * a * c;
 
@@ -284,9 +309,6 @@ class Util
       {
          return null;
       }
-
-      XY hit1 = null;
-      XY hit2 = null;
 
       // ray didn't totally miss sphere,
       // so there is a solution to
@@ -310,14 +332,17 @@ class Util
 
       double tol = 1e-12;
 
+      Double hit1 = null;
+      Double hit2 = null;
+
       if( t1 >= -tol && t1 <= 1 + tol )
       {
-         hit1 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * t1);
+         hit1 = t1;
       }
 
       if( t2 >= -tol && t2 <= 1 + tol )
       {
-         hit2 = l2.computePos(l2.StartParam + (l2.EndParam - l2.StartParam) * t2);
+         hit2 = t2;
       }
 
       if (hit1 == null)
@@ -332,7 +357,7 @@ class Util
       return new OrderedPair<>(hit1, hit2);
    }
 
-   private static OrderedPair<XY, XY> circleCircleIntersect(XY c1, double r1, XY c2, double r2)
+   public static OrderedPair<XY, XY> circleCircleIntersect(XY c1, double r1, XY c2, double r2)
    {
       double dist_2 = c1.minus(c2).length2();
       double dist = Math.sqrt(dist_2);
@@ -572,44 +597,5 @@ class Util
 
       //noinspection SuspiciousNameCombination
       return fixupAngle(Math.atan2(rel_x, rel_y));
-   }
-
-   public static class EPORet
-   {
-      public final boolean Overlaps;
-      public final double PStart;
-      public final double PEnd;
-      public final double PStartClamped;
-      public final double PEndClamped;
-
-      public EPORet(boolean overlaps, double pStart, double pEnd, double pStartClamped, double pEndClamped)
-      {
-         Overlaps = overlaps;
-         PStart = pStart;
-         PEnd = pEnd;
-         PStartClamped = pStartClamped;
-         PEndClamped = pEndClamped;
-      }
-   }
-
-   // measures whether e2, projected onto e1, overlaps by more than tolerance
-   // with the parameter range of e1
-   public static EPORet edgeParameterOverlap(ICollidable.Edge e1, ICollidable.Edge e2, double tolerance)
-   {
-      XY e1vec = e1.End.minus(e1.Start);
-
-      // vector divided by l, gives us a projected distance between 0 and 1
-      e1vec = e1vec.divide(e1vec.length2());
-
-      double p_start = e1vec.dot(e2.Start.minus(e1.Start));
-      double p_end = e1vec.dot(e2.End.minus(e1.Start));
-
-      // clamp to parameter range of 0 -> 1
-      double clamp_start = Math.max(Math.min(p_start, 1 - tolerance), tolerance);
-      double clamp_end = Math.max(Math.min(p_end, 1 - tolerance), tolerance);
-
-      return new EPORet(
-            Math.abs(clamp_start - clamp_end) > 0,
-            p_start, p_end, clamp_start, clamp_end);
    }
 }

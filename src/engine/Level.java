@@ -1,6 +1,7 @@
 package engine;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Level implements ICollidable
 {
@@ -46,6 +47,22 @@ public class Level implements ICollidable
       wl.forEach(this::addWallToMap);
 
       m_wall_loops.add(wl);
+   }
+
+   public Collection<IDrawable> getDrawables()
+   {
+      return m_movable_objects.stream()
+            .filter(x -> x instanceof IDrawable)
+            .map(x -> (IDrawable)x)
+            .collect(Collectors.toCollection(ArrayList::new));
+   }
+
+   public void step(double stepSize)
+   {
+      for(Movable m : m_movable_objects)
+      {
+         stepMovable(m, stepSize);
+      }
    }
 
    public static class RayCollision
@@ -112,25 +129,16 @@ public class Level implements ICollidable
    }
 
    @Override
-   public ColRet collide(Collection<Edge> moving_edges, double radius, XY centre, Movable activeMovable)
+   public ColRet collide(Movable m)
    {
-      ArrayList<Wall> walls = wallsInRangeOfPoint(centre, radius);
+      ArrayList<Wall> walls = wallsInRangeOfPoint(m.getPosition(), m.getRadius());
 
-      if (walls != null)
+      for(Wall wall : walls)
       {
-         for(Wall wall : walls)
+         if (Util.circleLineIntersect(m.getPosition(), m.getRadius(),
+               wall.Start, wall.End) != null)
          {
-            for(Edge moving_edge : moving_edges)
-            {
-               OrderedPair<Double, Double> intr = Util.edgeIntersect(
-                     moving_edge.Start, moving_edge.End,
-                     wall.Start, wall.End);
-
-               if (intr != null)
-               {
-                  return new ColRet(activeMovable, null, moving_edge, wall, intr.First, intr.Second);
-               }
-            }
+            return new ColRet(wall.Normal);
          }
       }
 
@@ -188,6 +196,37 @@ public class Level implements ICollidable
       return ret;
    }
 
+//   public void stepNextMovable(double timeStep)
+//   {
+//      Movable m = m_movable_objects.pollFirst();
+//
+//      if (m == null)
+//         return;
+//
+//      stepMovable(m, timeStep);
+//
+//      m_movable_objects.addLast(m);
+//   }
+
+   private void stepMovable(Movable m, double timeStep)
+   {
+      ArrayList<ICollidable> collideWith = new ArrayList<>();
+      collideWith.add(this);
+      collideWith.addAll(m_movable_objects.stream().filter(ic -> ic != m).collect(Collectors.toList()));
+
+      m.step(timeStep, collideWith);
+   }
+
+   public void addMovable(Movable m)
+   {
+      m_movable_objects.addLast(m);
+   }
+
+   public Collection<Movable> getMovables()
+   {
+      return Collections.unmodifiableCollection(m_movable_objects);
+   }
+
    private final HashMap<CC, ArrayList<Wall>> m_wall_map
          = new HashMap<>();
 
@@ -201,4 +240,4 @@ public class Level implements ICollidable
 
    private final XY m_start_pos;
 
-}
+   private final LinkedList<Movable> m_movable_objects = new LinkedList<>();}

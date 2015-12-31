@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 @SuppressWarnings("WeakerAccess")
-public class Main extends processing.core.PApplet
+public class Main extends processing.core.PApplet implements IDraw
 {
    public static void main(String[] args) {
       processing.core.PApplet.main("game.Main", args);
@@ -51,7 +51,7 @@ public class Main extends processing.core.PApplet
    {
       if (m_playing)
       {
-         playKeyPress();
+         playKeyPressed();
 
          return;
       }
@@ -98,26 +98,31 @@ public class Main extends processing.core.PApplet
       }
    }
 
-   private void playKeyPress()
+   private void playKeyPressed()
    {
       if (keyCode == KeyEvent.VK_LEFT)
       {
-         m_player_pos = m_player_pos.plus(new XY(-5, 0));
+         m_player.turnLeft();
       }
 
       if (keyCode == KeyEvent.VK_RIGHT)
       {
-         m_player_pos = m_player_pos.plus(new XY(5, 0));
+         m_player.turnRight();
       }
 
       if (keyCode == KeyEvent.VK_UP)
       {
-         m_player_pos = m_player_pos.plus(new XY(0, -5));
+         m_player.accelerate();
       }
 
       if (keyCode == KeyEvent.VK_DOWN)
       {
-         m_player_pos = m_player_pos.plus(new XY(0, 5));
+         m_player.brake();
+      }
+
+      if (key == 'r')
+      {
+         m_rotating = !m_rotating;
       }
    }
 
@@ -184,18 +189,29 @@ public class Main extends processing.core.PApplet
 
    private void play()
    {
+      m_level.step(0.1);
+
       translate((float)(width / 2), (float)(height / 2));
 
       scale(2);
 
-      translate((float)(-m_player_pos.X), (float)(-m_player_pos.Y));
+      if (m_rotating)
+      {
+         rotate((float)(Math.PI + m_player.getOrientation()));
+      }
 
-      drawLevel(m_level, m_player_pos);
+      translate((float)(-m_player.getPosition().X), (float)(-m_player.getPosition().Y));
+
+      drawLevel(m_level, m_player.getPosition());
    }
 
    private void startPlay()
    {
-      m_player_pos = m_level.startPos();
+      m_player = new Player();
+      m_player.setPosition(m_level.startPos());
+      m_player.setOrientation(Math.PI / 4);
+
+      m_level.addMovable(m_player);
 
       m_playing = true;
    }
@@ -214,23 +230,12 @@ public class Main extends processing.core.PApplet
       m_scale = smaller_scale;
    }
 
-
-   static void line(XY from, XY to)
-   {
-      s_app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
-   }
-
-   static void text(String text, XY pos)
-   {
-      s_app.text(text, (float)pos.X, (float)pos.Y);
-   }
-
-   static void drawGraph(Graph g, boolean show_labels, boolean show_connections,
+   void drawGraph(Graph g, boolean show_labels, boolean show_connections,
                          @SuppressWarnings("SameParameterValue") boolean show_circles, boolean show_arrows)
    {
       if (show_circles)
       {
-         g.allGraphNodes().forEach(Main::drawNode);
+         g.allGraphNodes().forEach(this::drawNode);
       }
 
 
@@ -244,11 +249,11 @@ public class Main extends processing.core.PApplet
 
       if (show_labels)
       {
-         g.allGraphNodes().forEach(Main::drawLabel);
+         g.allGraphNodes().forEach(this::drawLabel);
       }
    }
 
-   static void drawNode(INode n)
+   void drawNode(INode n)
    {
       s_app.noStroke();
       s_app.fill(n.getColour());
@@ -256,14 +261,14 @@ public class Main extends processing.core.PApplet
             (float) n.getRad(), (float) n.getRad());
    }
 
-   static void drawLabel(INode n)
+   void drawLabel(INode n)
    {
       s_app.fill(255, 255, 255);
       s_app.text(n.getName(),
             (float) n.getPos().X, (float) n.getPos().Y);
    }
 
-   static void drawConnections(INode n, boolean show_arrows)
+   void drawConnections(INode n, boolean show_arrows)
    {
       // in connections are drawn by the other node...
       for(DirectedEdge e : n.getOutConnections())
@@ -285,7 +290,7 @@ public class Main extends processing.core.PApplet
       }
    }
 
-   static void drawLevel(Level level, XY visibility_pos)
+   void drawLevel(Level level, XY visibility_pos)
    {
       s_app.background(0xff201010);
 
@@ -303,7 +308,7 @@ public class Main extends processing.core.PApplet
       s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
       s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
 
-      level.getWallLoops().forEach(Main::drawWallLoop);
+      level.getWallLoops().forEach(this::drawWallLoop);
       s_app.endShape(CLOSE);
 
       s_app.stroke(0xfff0f0f0);
@@ -314,9 +319,14 @@ public class Main extends processing.core.PApplet
          s_app.line((float)w.Start.X, (float)w.Start.Y,
                (float)w.End.X, (float)w.End.Y);
       }
+
+      for(IDrawable id : level.getDrawables())
+      {
+         id.draw(this);
+      }
    }
 
-   static void drawWallLoop(WallLoop wl)
+   void drawWallLoop(WallLoop wl)
    {
       s_app.beginContour();
       for(Wall w : wl)
@@ -326,7 +336,7 @@ public class Main extends processing.core.PApplet
       s_app.endContour();
    }
 
-   static void drawLoopPoints(ArrayList<XY> pnts)
+   void drawLoopPoints(ArrayList<XY> pnts)
    {
       XY prev = pnts.get(pnts.size() - 1);
 
@@ -338,22 +348,37 @@ public class Main extends processing.core.PApplet
       }
    }
 
-   static void stroke(int red, int green, int blue)
+   @Override
+   public void line(XY from, XY to)
+   {
+      s_app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
+   }
+
+   @Override
+   public void text(String text, XY pos)
+   {
+      s_app.text(text, (float)pos.X, (float)pos.Y);
+   }
+
+   @Override
+   public void stroke(int red, int green, int blue)
    {
       s_app.stroke(red, green, blue);
    }
 
-   static void fill(int red, int green, int blue)
+   @Override
+   public void fill(int red, int green, int blue)
    {
       s_app.fill(red, green, blue);
    }
 
-   static void circle(double x, double y, double rad)
+   @Override
+   public void circle(XY pos, double rad)
    {
-      s_app.ellipse((float)x, (float)y, (float)rad, (float)rad);
+      s_app.ellipse((float)pos.X, (float)pos.Y, (float)rad, (float)rad);
    }
 
-   static void scaleTo(Box b)
+   void scaleTo(Box b)
    {
       double shorter_display = Math.min(s_app.width, s_app.height);
 
@@ -368,12 +393,13 @@ public class Main extends processing.core.PApplet
       s_app.translate((float)-b.Min.X,(float)-b.Min.Y);
    }
 
-   static void clear(@SuppressWarnings("SameParameterValue") int c)
+   void clear(@SuppressWarnings("SameParameterValue") int c)
    {
       s_app.background(c);
    }
 
-   public static void strokeWidth(double d)
+   @Override
+   public void strokeWidth(double d)
    {
       s_app.strokeWeight((float)d);
    }
@@ -394,5 +420,8 @@ public class Main extends processing.core.PApplet
    private Level m_level;
 
    boolean m_playing = false;
-   private XY m_player_pos;
+
+   private Player m_player;
+
+   private boolean m_rotating = true;
 }
