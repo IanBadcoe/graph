@@ -3,6 +3,7 @@ package engine;
 public interface ICollidable
 {
    ColRet collide(Movable m);
+   ColRet collide(Movable m, XY where);
 
    class ColRet
    {

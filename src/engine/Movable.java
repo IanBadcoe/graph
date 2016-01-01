@@ -25,11 +25,13 @@ public abstract class Movable implements ICollidable
       return m_position;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public void addVelocity(XY v)
    {
       m_velocity = m_velocity.plus(v);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public XY getVelocity()
    {
       return m_velocity;
@@ -44,8 +46,10 @@ public abstract class Movable implements ICollidable
    {
       double used_time = 0;
 
-      while(used_time < timeStep)
+      int attempts = 0;
+      while(used_time < timeStep && attempts < 3)
       {
+         attempts++;
          used_time += tryStep(timeStep - used_time, collisionCandidates, 0.01);
       }
 
@@ -53,13 +57,20 @@ public abstract class Movable implements ICollidable
       dampVelocity();
    }
 
+   @SuppressWarnings("WeakerAccess")
    protected double tryStep(double timeStep, Collection<ICollidable> collisionCandidates, double resolution)
    {
       assert collideWith(collisionCandidates) == null;
 
+      double dist = m_velocity.length() * timeStep;
+
+      // round small velocities to zero
+      if (dist < resolution / 2)
+         return timeStep;
+
       XY where = m_position.plus(m_velocity.multiply(timeStep));
 
-      ColRet col = collideWith(collisionCandidates);
+      ColRet col = collideWith(collisionCandidates, where);
 
       if (col == null)
       {
@@ -72,10 +83,14 @@ public abstract class Movable implements ICollidable
       double start = 0;
       double end = 1;
 
-      while (end - start > resolution)
+      double here_res = resolution / dist;
+
+      while (end - start > here_res)
       {
          double mid = (start + end) / 2;
-         ColRet temp = collideWith(collisionCandidates);
+         where = m_position.plus(m_velocity.multiply(timeStep * mid));
+
+         ColRet temp = collideWith(collisionCandidates, where);
 
          if (temp == null)
          {
@@ -90,6 +105,7 @@ public abstract class Movable implements ICollidable
 
       // we can move as far as start
       where = m_position.plus(m_velocity.multiply(timeStep * start));
+      setPosition(where);
 
       // we lose the part of our velocity which is into the edge we hit
       m_velocity = filterVelocity(m_velocity, col.Normal.rot90());
@@ -99,7 +115,8 @@ public abstract class Movable implements ICollidable
 
    private XY filterVelocity(XY velocity, XY keepComponent)
    {
-      return keepComponent.multiply(keepComponent.dot(velocity));
+      double project = keepComponent.dot(velocity);
+      return keepComponent.multiply(project);
    }
 
    public void setOrientation(double ori)
@@ -117,11 +134,16 @@ public abstract class Movable implements ICollidable
       return m_radius;
    }
 
-   public ColRet collideWith(Collection<ICollidable> collisionCandidates)
+   private ColRet collideWith(Collection<ICollidable> collisionCandidates)
+   {
+      return collideWith(collisionCandidates, getPosition());
+   }
+
+   private ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where)
    {
       for(ICollidable ic : collisionCandidates)
       {
-         ColRet ret = ic.collide(this);
+         ColRet ret = ic.collide(this, where);
 
          if (ret != null)
          {
@@ -135,20 +157,30 @@ public abstract class Movable implements ICollidable
    @Override
    public ColRet collide(Movable m)
    {
+      return collide(m, m.getPosition());
+   }
+
+   @Override
+   public ColRet collide(Movable m, XY where)
+   {
       if (Util.circleCircleIntersect(getPosition(), getRadius(),
-            m.getPosition(), getRadius()) != null)
+            where, m.getRadius()) != null)
       {
-         return new ColRet(m.getPosition().minus(m.getPosition()).asUnit());
+         return new ColRet(m.getPosition().minus(where).asUnit());
       }
 
       return null;
    }
 
+   public void addOrientation(double angle)
+   {
+      m_orientation += angle;
+   }
+
    private XY m_position = new XY();
    private XY m_velocity = new XY();
 
-   public double m_orientation = 0;
+   private double m_orientation = 0;
 
    private final double m_radius;
-
 }

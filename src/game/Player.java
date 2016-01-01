@@ -1,9 +1,6 @@
 package game;
 
-import engine.IDraw;
-import engine.IDrawable;
-import engine.Movable;
-import engine.XY;
+import engine.*;
 
 public class Player extends Movable implements IDrawable
 {
@@ -14,17 +11,17 @@ public class Player extends Movable implements IDrawable
 
    public void turnLeft()
    {
-      m_orientation += TurnFactor;
+      addOrientation(TurnFactor);
    }
 
    public void turnRight()
    {
-      m_orientation -= TurnFactor;
+      addOrientation(-TurnFactor);
    }
 
    public void accelerate()
    {
-      addVelocity(XY.makeDirectionVector(m_orientation).multiply(AcclerationFactor));
+      addVelocity(XY.makeDirectionVector(getOrientation()).multiply(AcclerationFactor));
    }
 
    public void brake()
@@ -39,7 +36,7 @@ public class Player extends Movable implements IDrawable
       draw.strokeWidth(0.5);
       draw.circle(getPosition(), getRadius());
       draw.strokeWidth(2.0);
-      draw.line(getPosition(), getPosition().plus(XY.makeDirectionVector(m_orientation).multiply(getRadius() * 1.1)));
+      draw.line(getPosition(), getPosition().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
    }
 
    private static final double AcclerationFactor = 1.0;

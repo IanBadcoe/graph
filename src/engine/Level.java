@@ -131,14 +131,27 @@ public class Level implements ICollidable
    @Override
    public ColRet collide(Movable m)
    {
-      ArrayList<Wall> walls = wallsInRangeOfPoint(m.getPosition(), m.getRadius());
+      return collide(m, m.getPosition());
+   }
+
+   @Override
+   public ColRet collide(Movable m, XY where)
+   {
+      ArrayList<Wall> walls = wallsInRangeOfPoint(where, m.getRadius());
 
       for(Wall wall : walls)
       {
-         if (Util.circleLineIntersect(m.getPosition(), m.getRadius(),
-               wall.Start, wall.End) != null)
+         OrderedPair<Double, Double> ret = Util.circleLineIntersect(where, m.getRadius(),
+               wall.Start, wall.End);
+         if (ret != null)
          {
-            return new ColRet(wall.Normal);
+            // cna have two collision points, but should be near-enough overlapping by
+            // the time we finish binary-searching for the collision
+            // so can just take first
+            XY col_point = XY.interpolate(wall.Start, wall.End, ret.First);
+
+            // pointing into this
+            return new ColRet(where.minus(col_point).asUnit());
          }
       }
 

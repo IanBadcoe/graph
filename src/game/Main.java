@@ -124,6 +124,16 @@ public class Main extends processing.core.PApplet implements IDraw
       {
          m_rotating = !m_rotating;
       }
+
+      if (key == '+')
+      {
+         m_scale += 0.5;
+      }
+
+      if (key == '=')
+      {
+         m_scale -= 0.5;
+      }
    }
 
    @Override
@@ -193,7 +203,7 @@ public class Main extends processing.core.PApplet implements IDraw
 
       translate((float)(width / 2), (float)(height / 2));
 
-      scale(2);
+      scale((float)m_scale);
 
       if (m_rotating)
       {
@@ -214,6 +224,8 @@ public class Main extends processing.core.PApplet implements IDraw
       m_level.addMovable(m_player);
 
       m_playing = true;
+
+      m_scale = 2.0;
    }
 
    private void autoScale(Graph g, double low, double high)
