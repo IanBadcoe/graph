@@ -2,8 +2,7 @@ package engine;
 
 public interface ICollidable
 {
-   ColRet collide(Movable m);
-   ColRet collide(Movable m, XY where);
+   ColRet collide(Movable m, XY where, XY direction);
 
    class ColRet
    {
@@ -14,4 +13,6 @@ public interface ICollidable
          Normal = normal;
       }
    }
+
+   double NormalTolerance = 1e-6;
 }

@@ -33,9 +33,9 @@ public class Player extends Movable implements IDrawable
    public void draw(IDraw draw)
    {
       draw.stroke(200, 200, 200);
-      draw.strokeWidth(0.5);
+      draw.strokeWidth(1, true);
       draw.circle(getPosition(), getRadius());
-      draw.strokeWidth(2.0);
+      draw.strokeWidth(2, false);
       draw.line(getPosition(), getPosition().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
    }
 

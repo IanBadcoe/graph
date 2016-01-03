@@ -129,20 +129,20 @@ public class Level implements ICollidable
    }
 
    @Override
-   public ColRet collide(Movable m)
-   {
-      return collide(m, m.getPosition());
-   }
-
-   @Override
-   public ColRet collide(Movable m, XY where)
+   public ColRet collide(Movable m, XY where, XY direction)
    {
       ArrayList<Wall> walls = wallsInRangeOfPoint(where, m.getRadius());
 
       for(Wall wall : walls)
       {
+         // can only collide if we are moving into the wall
+         // if direction is null we aren't moving, which makes this a slightly different test
+         if (direction != null && !wallNormalCheck(wall, direction))
+            continue;
+
          OrderedPair<Double, Double> ret = Util.circleLineIntersect(where, m.getRadius(),
                wall.Start, wall.End);
+
          if (ret != null)
          {
             // cna have two collision points, but should be near-enough overlapping by
@@ -156,6 +156,13 @@ public class Level implements ICollidable
       }
 
       return null;
+   }
+
+   private boolean wallNormalCheck(Wall wall, XY direction)
+   {
+      double dot = direction.dot(wall.Normal);
+
+      return dot < ICollidable.NormalTolerance;
    }
 
    private ArrayList<Wall> wallsInRangeOfPoint(XY position, double radius)

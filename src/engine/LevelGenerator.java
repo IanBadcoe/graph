@@ -4,8 +4,9 @@ import java.util.*;
 
 public class LevelGenerator
 {
-   public LevelGenerator(LevelGeneratorConfiguration config)
+   public LevelGenerator(int reqSize, LevelGeneratorConfiguration config)
    {
+      m_reqSize = reqSize;
       m_config = config;
    }
 
@@ -200,7 +201,7 @@ public class LevelGenerator
    private final TemplateStore m_templates = new TemplateStore1();
 
    @SuppressWarnings("FieldCanBeLocal")
-   private final int m_reqSize = 30;
+   private final int m_reqSize;
 
    private StepperController m_expander;
    private StepperController m_final_relaxer;

@@ -1,7 +1,5 @@
 package engine;
 
-// although identical to ICollidable.Edge, _feels_ like it plays a different role
-// and may need more differences later
 public class Wall
 {
    public final XY Start;

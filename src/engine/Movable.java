@@ -1,13 +1,15 @@
 package engine;
 
+import Annotations.AnnArrow;
+import Annotations.AnnLine;
+import Annotations.AnnPoint;
+import game.Main;
+
 import java.util.Collection;
 
 // for the moment, not separating physically simulated from movable, but if required later, could split this
 // into a base class of Movable and a derived class of PhysicallyMovable, giving us scope for other derived
 // classes such as NonPhysicallyMoving for unstoppable things
-//
-// also for the moment, not separating Movable from "ICollidable" (which non-movable things, such as walls, could
-// also implement...
 public abstract class Movable implements ICollidable
 {
    protected Movable(double m_radius)
@@ -50,7 +52,7 @@ public abstract class Movable implements ICollidable
       while(used_time < timeStep && attempts < 3)
       {
          attempts++;
-         used_time += tryStep(timeStep - used_time, collisionCandidates, 0.01);
+         used_time += tryStep(timeStep - used_time, collisionCandidates, 0.1);
       }
 
       // to simplify movement maths, do this once and indivisibly
@@ -60,7 +62,9 @@ public abstract class Movable implements ICollidable
    @SuppressWarnings("WeakerAccess")
    protected double tryStep(double timeStep, Collection<ICollidable> collisionCandidates, double resolution)
    {
-      assert collideWith(collisionCandidates) == null;
+      XY direction = getVelocity().asUnit();
+
+      assert collideWith(collisionCandidates, getPosition(), direction) == null;
 
       double dist = m_velocity.length() * timeStep;
 
@@ -70,7 +74,7 @@ public abstract class Movable implements ICollidable
 
       XY where = m_position.plus(m_velocity.multiply(timeStep));
 
-      ColRet col = collideWith(collisionCandidates, where);
+      ColRet col = collideWith(collisionCandidates, where, direction);
 
       if (col == null)
       {
@@ -90,7 +94,7 @@ public abstract class Movable implements ICollidable
          double mid = (start + end) / 2;
          where = m_position.plus(m_velocity.multiply(timeStep * mid));
 
-         ColRet temp = collideWith(collisionCandidates, where);
+         ColRet temp = collideWith(collisionCandidates, where, direction);
 
          if (temp == null)
          {
@@ -107,8 +111,13 @@ public abstract class Movable implements ICollidable
       where = m_position.plus(m_velocity.multiply(timeStep * start));
       setPosition(where);
 
+      Main.addAnnotation(new AnnPoint(0xff0000, where, 1, true));
+      Main.addAnnotation(new AnnArrow(0x00ff00, where, where.plus(m_velocity.asUnit().multiply(100)), 0.5, true));
+      Main.addAnnotation(new AnnArrow(0x0000ff, where, where.plus(col.Normal.rot90().multiply(100)), 0.5, true));
+
       // we lose the part of our velocity which is into the edge we hit
       m_velocity = filterVelocity(m_velocity, col.Normal.rot90());
+      Main.addAnnotation(new AnnArrow(0x00ffff, where, where.plus(m_velocity.asUnit().multiply(100)), 0.5, true));
 
       return timeStep * start;
    }
@@ -134,16 +143,11 @@ public abstract class Movable implements ICollidable
       return m_radius;
    }
 
-   private ColRet collideWith(Collection<ICollidable> collisionCandidates)
-   {
-      return collideWith(collisionCandidates, getPosition());
-   }
-
-   private ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where)
+   private ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where, XY direction)
    {
       for(ICollidable ic : collisionCandidates)
       {
-         ColRet ret = ic.collide(this, where);
+         ColRet ret = ic.collide(this, where, direction);
 
          if (ret != null)
          {
@@ -155,14 +159,19 @@ public abstract class Movable implements ICollidable
    }
 
    @Override
-   public ColRet collide(Movable m)
+   public ColRet collide(Movable m, XY where, XY direction)
    {
-      return collide(m, m.getPosition());
-   }
+      // can set this null if we're not in motion
+      // which makes this a _slightly_ different test
+      if (direction != null)
+      {
+         XY center_dir = where.minus(getPosition()).asUnit();
+         double dot = center_dir.dot(direction);
 
-   @Override
-   public ColRet collide(Movable m, XY where)
-   {
+         if (dot > ICollidable.NormalTolerance)
+            return null;
+      }
+
       if (Util.circleCircleIntersect(getPosition(), getRadius(),
             where, m.getRadius()) != null)
       {

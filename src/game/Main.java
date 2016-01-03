@@ -15,6 +15,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
    public Main()
    {
+      m_config = new LevelGeneratorConfiguration(85);
+      m_generator = new LevelGenerator(10, m_config);
    }
 
    @Override
@@ -139,6 +141,8 @@ public class Main extends processing.core.PApplet implements IDraw
    @Override
    public void draw()
    {
+      m_annotations.clear();
+
       if (m_playing)
       {
          play();
@@ -213,6 +217,11 @@ public class Main extends processing.core.PApplet implements IDraw
       translate((float)(-m_player.getPosition().X), (float)(-m_player.getPosition().Y));
 
       drawLevel(m_level, m_player.getPosition());
+
+      for(Annotations.Annotation annotation : m_annotations)
+      {
+         annotation.draw(this);
+      }
    }
 
    private void startPlay()
@@ -286,7 +295,7 @@ public class Main extends processing.core.PApplet implements IDraw
       for(DirectedEdge e : n.getOutConnections())
       {
          s_app.stroke(e.GetColour());
-         s_app.strokeWeight((float)(e.HalfWidth * 1.9));
+         strokeWidth(e.HalfWidth * 1.9, false);
          line(e.Start.getPos(), e.End.getPos());
 
          if (show_arrows)
@@ -307,7 +316,7 @@ public class Main extends processing.core.PApplet implements IDraw
       s_app.background(0xff201010);
 
       s_app.stroke(0xff808080);
-      s_app.strokeWeight(1);
+      strokeWidth(2, true);
 
       s_app.stroke(0xff808080);
       s_app.fill(180, 120, 120);
@@ -324,7 +333,7 @@ public class Main extends processing.core.PApplet implements IDraw
       s_app.endShape(CLOSE);
 
       s_app.stroke(0xfff0f0f0);
-      s_app.strokeWeight(2);
+      strokeWidth(2, true);
 
       for(Wall w : level.getVisibleWalls(visibility_pos))
       {
@@ -390,6 +399,12 @@ public class Main extends processing.core.PApplet implements IDraw
       s_app.ellipse((float)pos.X, (float)pos.Y, (float)rad, (float)rad);
    }
 
+   @Override
+   public double getScale()
+   {
+      return m_scale;
+   }
+
    void scaleTo(Box b)
    {
       double shorter_display = Math.min(s_app.width, s_app.height);
@@ -411,9 +426,17 @@ public class Main extends processing.core.PApplet implements IDraw
    }
 
    @Override
-   public void strokeWidth(double d)
+   public void strokeWidth(double d, boolean scaling)
    {
+      if (scaling)
+         d /= m_scale;
+
       s_app.strokeWeight((float)d);
+   }
+
+   public static void addAnnotation(Annotations.Annotation annotation)
+   {
+      m_annotations.add(annotation);
    }
 
    private static PApplet s_app;
@@ -427,8 +450,8 @@ public class Main extends processing.core.PApplet implements IDraw
    private double m_off_y = 0.0;
    private double m_scale = 1.0;
 
-   private LevelGeneratorConfiguration m_config = new LevelGeneratorConfiguration(85);
-   private LevelGenerator m_generator = new LevelGenerator(m_config);
+   private LevelGeneratorConfiguration m_config;
+   private LevelGenerator m_generator;
    private Level m_level;
 
    boolean m_playing = false;
@@ -436,4 +459,6 @@ public class Main extends processing.core.PApplet implements IDraw
    private Player m_player;
 
    private boolean m_rotating = true;
+
+   private static ArrayList<Annotations.Annotation> m_annotations = new ArrayList<>();
 }
