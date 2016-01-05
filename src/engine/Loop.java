@@ -155,18 +155,29 @@ public class Loop
 
       for(Curve c : m_curves)
       {
-         double param_step = c.paramRange()
-               * (max_length / c.length());
+         // every bit of curve, however small, gets one facet
+         // possibly could relax this later and use a global num steps for whole loop
+         // but nice feature of this approach is it keeps any twiddly little steps we put in
+         // it wouldn't keep a tiny little semi-circle
+         // to do that we'd need to do at least two facets and/or take sharpness of curvature
+         // into account
+         int steps = (int)(c.length() / max_length) + 1;
 
-         double p = 0;
+         double param_step = c.paramRange() / steps;
 
-         double start_p = c.StartParam;
+         double p = c.StartParam;
 
-         while(p < c.paramRange())
+         for(int i = 0; i < steps; i++)
          {
+            // curve normals point out into the area outside the playable regions
+            // we need wall normals to point in, so negate
+            //
+            // we take the normal 1/2 way to the next point, as (i) that is the middle of this segment and
+            // (ii) that won't get swung around at the end of this curve where the last point (and it's normal)
+            // is from the next curve
             ret.add(new OrderedPair<>(
-                  c.computePos(start_p + p),
-                  c.computeNormal(start_p + p)));
+                  c.computePos(p),
+                  c.computeNormal(p + param_step / 2).negate()));
 
             p += param_step;
          }

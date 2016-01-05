@@ -136,8 +136,8 @@ public class UnionHelper
 
          for (OrderedPair<XY, XY> curr : loop_pnts)
          {
-            Wall w = new Wall(prev.First, curr.First,
-                  prev.Second.plus(curr.Second).asUnit());
+            // normal (in "Second") is from 1/2 way along the segment that starts at "prev"
+            Wall w = new Wall(prev.First, curr.First, prev.Second);
 
             if (prev_w != null)
             {

@@ -335,8 +335,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
       for(Wall w : level.getVisibleWalls(visibility_pos))
       {
-         s_app.line((float)w.Start.X, (float)w.Start.Y,
-               (float)w.End.X, (float)w.End.Y);
+         line(w.Start, w.End);
+//         line(w.midPoint(), w.midPoint().plus(w.Normal.multiply(10)));
       }
 
       for(IDrawable id : level.getDrawables())

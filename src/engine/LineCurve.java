@@ -98,7 +98,7 @@ public class LineCurve extends Curve
    @Override
    public XY computeNormal(double v)
    {
-      return Direction.rot90();
+      return Direction.rot270();
    }
 
    @Override
