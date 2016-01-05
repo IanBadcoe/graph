@@ -141,8 +141,6 @@ public class Main extends processing.core.PApplet implements IDraw
    @Override
    public void draw()
    {
-      m_annotations.clear();
-
       if (m_playing)
       {
          play();
@@ -218,10 +216,10 @@ public class Main extends processing.core.PApplet implements IDraw
 
       drawLevel(m_level, m_player.getPosition());
 
-      for(Annotations.Annotation annotation : m_annotations)
-      {
-         annotation.draw(this);
-      }
+//      for(Annotations.Annotation annotation : m_annotations)
+//      {
+//         annotation.draw(this);
+//      }
    }
 
    private void startPlay()
@@ -434,11 +432,6 @@ public class Main extends processing.core.PApplet implements IDraw
       s_app.strokeWeight((float)d);
    }
 
-   public static void addAnnotation(Annotations.Annotation annotation)
-   {
-      m_annotations.add(annotation);
-   }
-
    private static PApplet s_app;
 
    // UI data
@@ -459,6 +452,4 @@ public class Main extends processing.core.PApplet implements IDraw
    private Player m_player;
 
    private boolean m_rotating = true;
-
-   private static ArrayList<Annotations.Annotation> m_annotations = new ArrayList<>();
 }

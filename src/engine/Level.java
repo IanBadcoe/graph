@@ -129,7 +129,7 @@ public class Level implements ICollidable
    }
 
    @Override
-   public ColRet collide(Movable m, XY where, XY direction)
+   public ColRet collide(Movable m, XY where, XY direction, XY wherePrevious)
    {
       ArrayList<Wall> walls = wallsInRangeOfPoint(where, m.getRadius());
 
@@ -145,13 +145,20 @@ public class Level implements ICollidable
 
          if (ret != null)
          {
-            // cna have two collision points, but should be near-enough overlapping by
-            // the time we finish binary-searching for the collision
-            // so can just take first
-            XY col_point = XY.interpolate(wall.Start, wall.End, ret.First);
+            // use the closest approach to the wall at our previous position
+            // to find the normal
+            //
+            // this should work because, if the closest approach falls within the wall, we'll get a normal
+            // to the wall; but if it falls at one end, we'll get a radius from that end to m
+            // and that will act to avoid the end
+            //
+            // we use wherePrevious for this because that is where m will be placed (previous non-colliding position)
+            // if this turns out to be end-point of the collision search
 
-            // pointing into this
-            return new ColRet(where.minus(col_point).asUnit());
+            Util.NEDRet ned_ret = Util.nodeEdgeDistDetailed(wherePrevious, wall.Start, wall.End);
+
+            assert ned_ret != null;
+            return new ColRet(ned_ret.Direction.negate());
          }
       }
 

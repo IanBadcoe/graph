@@ -2,7 +2,7 @@ package engine;
 
 public interface ICollidable
 {
-   ColRet collide(Movable m, XY where, XY direction);
+   ColRet collide(Movable m, XY where, XY direction, XY wherePrevious);
 
    class ColRet
    {

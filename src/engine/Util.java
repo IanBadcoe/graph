@@ -438,8 +438,8 @@ class Util
    static class NEDRet
    {
       final double Dist;
-      final XY Target;  // point of closest approach of engine.Node to Edge
-      final XY Direction;  // direction from engine.Node to (Tx, TY)
+      final XY Target;  // point of closest approach of Node to Edge
+      final XY Direction;  // direction from Node to Target
 
       NEDRet(double dist,
              XY target,
@@ -453,9 +453,9 @@ class Util
 
    // specialised version returning extra data for use in force calculations
    // force calculation cannot  handle zero distances so returns null for that
-   static NEDRet nodeEdgeForceDist(XY n,
-                                   XY es,
-                                   XY ee)
+   static NEDRet nodeEdgeDistDetailed(XY n,
+                                      XY es,
+                                      XY ee)
    {
       // direction and length of edge
       XY de = ee.minus(es);

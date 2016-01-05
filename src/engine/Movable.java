@@ -1,10 +1,5 @@
 package engine;
 
-import Annotations.AnnArrow;
-import Annotations.AnnLine;
-import Annotations.AnnPoint;
-import game.Main;
-
 import java.util.Collection;
 
 // for the moment, not separating physically simulated from movable, but if required later, could split this
@@ -64,7 +59,7 @@ public abstract class Movable implements ICollidable
    {
       XY direction = getVelocity().asUnit();
 
-      assert collideWith(collisionCandidates, getPosition(), direction) == null;
+      assert collideWith(collisionCandidates, getPosition(), direction, getPosition()) == null;
 
       double dist = m_velocity.length() * timeStep;
 
@@ -74,7 +69,9 @@ public abstract class Movable implements ICollidable
 
       XY where = m_position.plus(m_velocity.multiply(timeStep));
 
-      ColRet col = collideWith(collisionCandidates, where, direction);
+      XY start_where = getPosition();
+
+      ColRet col = collideWith(collisionCandidates, where, direction, start_where);
 
       if (col == null)
       {
@@ -94,11 +91,12 @@ public abstract class Movable implements ICollidable
          double mid = (start + end) / 2;
          where = m_position.plus(m_velocity.multiply(timeStep * mid));
 
-         ColRet temp = collideWith(collisionCandidates, where, direction);
+         ColRet temp = collideWith(collisionCandidates, where, direction, start_where);
 
          if (temp == null)
          {
             start = mid;
+            start_where = where;
          }
          else
          {
@@ -111,13 +109,13 @@ public abstract class Movable implements ICollidable
       where = m_position.plus(m_velocity.multiply(timeStep * start));
       setPosition(where);
 
-      Main.addAnnotation(new AnnPoint(0xff0000, where, 1, true));
-      Main.addAnnotation(new AnnArrow(0x00ff00, where, where.plus(m_velocity.asUnit().multiply(100)), 0.5, true));
-      Main.addAnnotation(new AnnArrow(0x0000ff, where, where.plus(col.Normal.rot90().multiply(100)), 0.5, true));
+//      Main.addAnnotation(new AnnPoint(0xffff0000, where, 1, true));
+//      Main.addAnnotation(new AnnArrow(0xff00ff00, where, where.plus(m_velocity.asUnit().multiply(100)), 0.5, true));
+//      Main.addAnnotation(new AnnArrow(0xff0000ff, where, where.plus(col.Normal.rot90().multiply(90)), 0.5, true));
 
       // we lose the part of our velocity which is into the edge we hit
       m_velocity = filterVelocity(m_velocity, col.Normal.rot90());
-      Main.addAnnotation(new AnnArrow(0x00ffff, where, where.plus(m_velocity.asUnit().multiply(100)), 0.5, true));
+//      Main.addAnnotation(new AnnArrow(0xffff00ff, where, where.plus(m_velocity.asUnit().multiply(80)), 0.5, true));
 
       return timeStep * start;
    }
@@ -143,11 +141,11 @@ public abstract class Movable implements ICollidable
       return m_radius;
    }
 
-   private ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where, XY direction)
+   private ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where, XY direction, XY wherePrevious)
    {
       for(ICollidable ic : collisionCandidates)
       {
-         ColRet ret = ic.collide(this, where, direction);
+         ColRet ret = ic.collide(this, where, direction, wherePrevious);
 
          if (ret != null)
          {
@@ -159,7 +157,7 @@ public abstract class Movable implements ICollidable
    }
 
    @Override
-   public ColRet collide(Movable m, XY where, XY direction)
+   public ColRet collide(Movable m, XY where, XY direction, XY wherePrevious)
    {
       // can set this null if we're not in motion
       // which makes this a _slightly_ different test
@@ -175,7 +173,9 @@ public abstract class Movable implements ICollidable
       if (Util.circleCircleIntersect(getPosition(), getRadius(),
             where, m.getRadius()) != null)
       {
-         return new ColRet(m.getPosition().minus(where).asUnit());
+         // we use wherePrevious for this because that is where m will be placed (previous non-colliding position)
+         // if this turns out to be end-point of the collision search
+         return new ColRet(getPosition().minus(wherePrevious).asUnit());
       }
 
       return null;
