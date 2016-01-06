@@ -181,6 +181,7 @@ public abstract class Movable implements ICollidable
       return null;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public void addOrientation(double angle)
    {
       m_orientation += angle;

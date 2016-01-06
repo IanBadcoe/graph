@@ -8,6 +8,7 @@ public class KeyTracker
    {
       public final int Id;
       // if we need key-codes then we add a second way to represent this and a bool to choose
+      @SuppressWarnings("CanBeFinal")
       public int KeyCode;
       public boolean IsDown;
 
@@ -93,6 +94,6 @@ public class KeyTracker
       return kd.IsDown;
    }
 
-   private ArrayList<KeyData> m_data = new ArrayList<>();
+   private final ArrayList<KeyData> m_data = new ArrayList<>();
    private boolean m_running = false;
 }
