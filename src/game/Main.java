@@ -102,25 +102,7 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private void playKeyPressed()
    {
-      if (keyCode == KeyEvent.VK_LEFT)
-      {
-         m_player.turnLeft();
-      }
-
-      if (keyCode == KeyEvent.VK_RIGHT)
-      {
-         m_player.turnRight();
-      }
-
-      if (keyCode == KeyEvent.VK_UP)
-      {
-         m_player.accelerate();
-      }
-
-      if (keyCode == KeyEvent.VK_DOWN)
-      {
-         m_player.brake();
-      }
+      m_keys.keyPressed(keyCode);
 
       if (key == 'r')
       {
@@ -136,6 +118,12 @@ public class Main extends processing.core.PApplet implements IDraw
       {
          m_scale -= 0.5;
       }
+   }
+
+   @Override
+   public void keyReleased()
+   {
+      m_keys.keyReleased(keyCode);
    }
 
    @Override
@@ -201,6 +189,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private void play()
    {
+      processKeys();
+
       m_level.step(0.1);
 
       translate((float)(width / 2), (float)(height / 2));
@@ -222,6 +212,29 @@ public class Main extends processing.core.PApplet implements IDraw
 //      }
    }
 
+   private void processKeys()
+   {
+      if (m_keys.isPressed(LEFT_KEY))
+      {
+         m_player.turnLeft();
+      }
+
+      if (m_keys.isPressed(RIGHT_KEY))
+      {
+         m_player.turnRight();
+      }
+
+      if (m_keys.isPressed(FORWARDS_KEY))
+      {
+         m_player.accelerate();
+      }
+
+      if (m_keys.isPressed(BACKWARDS_KEY))
+      {
+         m_player.brake();
+      }
+   }
+
    private void startPlay()
    {
       m_player = new Player();
@@ -233,6 +246,13 @@ public class Main extends processing.core.PApplet implements IDraw
       m_playing = true;
 
       m_scale = 2.0;
+
+      m_keys = new KeyTracker();
+
+      m_keys.addKey(LEFT_KEY, KeyEvent.VK_LEFT);
+      m_keys.addKey(RIGHT_KEY, KeyEvent.VK_RIGHT);
+      m_keys.addKey(FORWARDS_KEY, KeyEvent.VK_UP);
+      m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
    }
 
    private void autoScale(Graph g, double low, double high)
@@ -452,4 +472,11 @@ public class Main extends processing.core.PApplet implements IDraw
    private Player m_player;
 
    private boolean m_rotating = true;
+
+   private KeyTracker m_keys;
+
+   private final static int LEFT_KEY = 0;
+   private final static int RIGHT_KEY = 1;
+   private final static int FORWARDS_KEY = 2;
+   private final static int BACKWARDS_KEY = 3;
 }
