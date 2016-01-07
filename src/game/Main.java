@@ -199,7 +199,9 @@ public class Main extends processing.core.PApplet implements IDraw
 
       if (m_rotating)
       {
-         rotate((float)(Math.PI + m_player.getOrientation()));
+         m_decaying_ori = (m_decaying_ori * 9 + m_player.getOrientation()) / 10;
+
+         rotate((float)(Math.PI + m_decaying_ori));
       }
 
       translate((float)(-m_player.getPosition().X), (float)(-m_player.getPosition().Y));
@@ -474,6 +476,8 @@ public class Main extends processing.core.PApplet implements IDraw
    private boolean m_rotating = true;
 
    private KeyTracker m_keys;
+
+   private double m_decaying_ori = 0;
 
    private final static int LEFT_KEY = 0;
    private final static int RIGHT_KEY = 1;

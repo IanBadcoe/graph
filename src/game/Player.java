@@ -6,7 +6,7 @@ public class Player extends Movable implements IDrawable
 {
    public Player()
    {
-      super(5);
+      super(2);
    }
 
    public void turnLeft()
@@ -35,7 +35,7 @@ public class Player extends Movable implements IDrawable
       draw.stroke(200, 200, 200);
       draw.strokeWidth(1, true);
       draw.circle(getPosition(), getRadius());
-      draw.strokeWidth(2, false);
+      draw.strokeWidth(1, false);
       draw.line(getPosition(), getPosition().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
    }
 
