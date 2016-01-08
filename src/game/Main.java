@@ -23,7 +23,7 @@ public class Main extends processing.core.PApplet implements IDraw
    public void settings()
    {
 //      size(500, 500);
-      fullScreen();
+      fullScreen(P3D);
 
       s_app = this;
 
