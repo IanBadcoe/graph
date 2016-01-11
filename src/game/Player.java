@@ -39,6 +39,18 @@ public class Player extends Movable implements IDrawable
       draw.line(getPosition(), getPosition().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
    }
 
+   public XYZ getEye()
+   {
+      return new XYZ(getPosition(), 2);
+   }
+
+   public XYZ getViewDir()
+   {
+      XY dir_2d = XY.makeDirectionVector(getOrientation());
+
+      return new XYZ(dir_2d, 0);
+   }
+
    private static final double AcclerationFactor = 1.0;
    private static final double BrakingFactor = 2.0;
    private static final double TurnFactor = Math.PI / 64;

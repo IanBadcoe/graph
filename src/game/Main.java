@@ -22,8 +22,8 @@ public class Main extends processing.core.PApplet implements IDraw
    @Override
    public void settings()
    {
-//      size(500, 500);
-      fullScreen(P3D);
+      size(500, 500, P3D);
+//      fullScreen(P3D);
 
       s_app = this;
 
@@ -104,19 +104,27 @@ public class Main extends processing.core.PApplet implements IDraw
    {
       m_keys.keyPressed(keyCode);
 
-      if (key == 'r')
+      if (key == 'm')
       {
-         m_rotating = !m_rotating;
+         m_map = !m_map;
       }
 
-      if (key == '+')
+      if (m_map)
       {
-         m_scale += 0.5;
-      }
+         if (key == 'r')
+         {
+            m_rotating = !m_rotating;
+         }
 
-      if (key == '=')
-      {
-         m_scale -= 0.5;
+         if (key == '+')
+         {
+            m_scale += 0.5;
+         }
+
+         if (key == '=')
+         {
+            m_scale -= 0.5;
+         }
       }
    }
 
@@ -193,6 +201,21 @@ public class Main extends processing.core.PApplet implements IDraw
 
       m_level.step(0.1);
 
+      if (m_map)
+      {
+         drawMap();
+      }
+      else
+      {
+         draw3D();
+      }
+   }
+
+   void drawMap()
+   {
+      camera();
+      perspective();
+
       translate((float)(width / 2), (float)(height / 2));
 
       scale((float)m_scale);
@@ -207,11 +230,27 @@ public class Main extends processing.core.PApplet implements IDraw
       translate((float)(-m_player.getPosition().X), (float)(-m_player.getPosition().Y));
 
       drawLevel(m_level, m_player.getPosition());
+   }
 
-//      for(Annotations.Annotation annotation : m_annotations)
+   void draw3D()
+   {
+      camera(m_player.getEye(), m_player.getEye().plus(m_player.getViewDir()), new XYZ(0, 0, -1));
+      perspective((float)Math.PI / 3, (float)width/height, (float)0.1, (float)500);
+
+      drawLevel3D(m_level, m_player.getPosition());
+
+//      for(annotations.Annotation annotation : m_annotations)
 //      {
 //         annotation.draw(this);
 //      }
+   }
+
+   private void camera(XYZ eye, XYZ target, XYZ up)
+   {
+      camera(
+            (float)eye.X, (float)eye.Y, (float)eye.Z,
+            (float)target.X, (float)target.Y, (float)target.Z,
+            (float)up.X, (float)up.Y, (float)up.Z);
    }
 
    private void processKeys()
@@ -367,6 +406,55 @@ public class Main extends processing.core.PApplet implements IDraw
       }
    }
 
+   void drawLevel3D(Level level, XY visibility_pos)
+   {
+      s_app.background(0xff201010);
+
+//      pointLight((float)m_player.getPosition().X, (float)m_player.getPosition().Y, 3,
+//            140, 140, 140);
+
+      noStroke();
+      // floor
+      s_app.fill(120, 120, 120);
+
+      level.getWallLoops().forEach(x -> drawWallLoop3D(x, 0));
+
+      // ceiling
+      s_app.fill(180, 180, 180);
+
+      level.getWallLoops().forEach(x -> drawWallLoop3D(x, 4));
+
+      s_app.fill(160, 160, 160);
+
+      for(Wall w : level.getVisibleWalls(visibility_pos))
+      {
+         beginShape();
+         vertex((float)w.Start.X, (float)w.Start.Y, 0);
+         vertex((float)w.End.X, (float)w.End.Y, 0);
+         vertex((float)w.End.X, (float)w.End.Y, 4);
+         vertex((float)w.Start.X, (float)w.Start.Y, 4);
+         endShape();
+      }
+
+      for(IDrawable id : level.getDrawables())
+      {
+         if (id != m_player)
+         {
+            id.draw(this);
+         }
+      }
+   }
+
+   private void drawWallLoop3D(WallLoop wl, double height)
+   {
+      s_app.beginShape();
+      for(Wall w : wl)
+      {
+         s_app.vertex((float)w.Start.X, (float)w.Start.Y, (float)height);
+      }
+      s_app.endShape();
+   }
+
    void drawWallLoop(WallLoop wl)
    {
       s_app.beginContour();
@@ -464,6 +552,8 @@ public class Main extends processing.core.PApplet implements IDraw
    private double m_off_x = 0.0;
    private double m_off_y = 0.0;
    private double m_scale = 1.0;
+
+   private boolean m_map = false;
 
    private LevelGeneratorConfiguration m_config;
    private LevelGenerator m_generator;
