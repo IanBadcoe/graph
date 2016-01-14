@@ -16,7 +16,7 @@ public class Main extends processing.core.PApplet implements IDraw
    public Main()
    {
       m_config = new LevelGeneratorConfiguration(85);
-      m_generator = new LevelGenerator(10, m_config);
+      m_generator = new LevelGenerator(30, m_config);
    }
 
    @Override
@@ -425,6 +425,8 @@ public class Main extends processing.core.PApplet implements IDraw
       level.getWallLoops().forEach(x -> drawWallLoop3D(x, 4));
 
       s_app.fill(160, 160, 160);
+      s_app.stroke(128, 0, 0);
+      s_app.strokeWeight(1);
 
       for(Wall w : level.getVisibleWalls(visibility_pos))
       {
