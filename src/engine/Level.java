@@ -238,18 +238,6 @@ public class Level implements ICollidable
       return ret;
    }
 
-//   public void stepNextMovable(double timeStep)
-//   {
-//      Movable m = m_movable_objects.pollFirst();
-//
-//      if (m == null)
-//         return;
-//
-//      stepMovable(m, timeStep);
-//
-//      m_movable_objects.addLast(m);
-//   }
-
    private void stepMovable(Movable m, double timeStep)
    {
       ArrayList<ICollidable> collideWith = new ArrayList<>();

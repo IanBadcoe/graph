@@ -98,6 +98,11 @@ public class Main extends processing.core.PApplet implements IDraw
       {
          m_arrows = !m_arrows;
       }
+
+      if (m_complete && key == 'p')
+      {
+         startPlay();
+      }
    }
 
    private void playKeyPressed()
@@ -150,7 +155,7 @@ public class Main extends processing.core.PApplet implements IDraw
 
       StepperController.StatusReport ret;
 
-      if (m_generator != null)
+      if (m_generator != null && !m_complete)
       {
          ret = m_generator.step();
 
@@ -164,10 +169,7 @@ public class Main extends processing.core.PApplet implements IDraw
                exit();
             }
 
-            m_generator = null;
-            m_config = null;
-
-            startPlay();
+            m_complete = true;
          }
       }
 
@@ -278,6 +280,9 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private void startPlay()
    {
+      m_generator = null;
+      m_config = null;
+
       m_player = new Player();
       m_player.setPosition(m_level.startPos());
       m_player.setOrientation(Math.PI / 4);
@@ -562,6 +567,7 @@ public class Main extends processing.core.PApplet implements IDraw
    private Level m_level;
 
    boolean m_playing = false;
+   boolean m_complete = false;
 
    private Player m_player;
 
