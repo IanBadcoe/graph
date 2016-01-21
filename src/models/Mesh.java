@@ -117,7 +117,7 @@ public class Mesh
       if (capTop)
       {
          normals[which] = new XYZ(1, 0, 0);
-         points[which] = new XYZ(0, 0, length);
+         points[which] = new XYZ(length, 0, 0);
 
          int prev_idx = length_steps * radius_steps - 1;
          for(int i = (length_steps - 1) * radius_steps; i < length_steps * radius_steps; i++)

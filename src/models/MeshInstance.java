@@ -24,6 +24,7 @@ public class MeshInstance
       draw.rotateZ(Orientation);
 
       draw.fill(Colour);
+      draw.noStroke();
 
       Mesh.draw(draw);
 

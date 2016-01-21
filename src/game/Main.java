@@ -247,11 +247,6 @@ public class Main extends processing.core.PApplet implements IDraw
       perspective((float)Math.PI / 3, (float)width/height, (float)0.1, (float)500);
 
       drawLevel3D(m_level, m_player.getEye());
-
-//      for(annotations.Annotation annotation : m_annotations)
-//      {
-//         annotation.draw(this);
-//      }
    }
 
    private void camera(XYZ eye, XYZ target, XYZ up)
@@ -308,7 +303,7 @@ public class Main extends processing.core.PApplet implements IDraw
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
 
       TestCylinder tc = new TestCylinder();
-      tc.Position = new XYZ(m_player.getPosition().plus(new XY(1, 0)), 0);
+      tc.Position = new XYZ(m_player.getPosition().plus(new XY(2, 0)), 0);
       m_level.addDrawable(tc);
    }
 
@@ -426,8 +421,8 @@ public class Main extends processing.core.PApplet implements IDraw
    {
       s_app.background(0xff201010);
 
-//      pointLight((float)m_player.getPosition().X, (float)m_player.getPosition().Y, 3,
-//            140, 140, 140);
+      pointLight(140, 140, 140,
+            (float)m_player.getPosition().X, (float)m_player.getPosition().Y, 3);
 
       noStroke();
       // floor
