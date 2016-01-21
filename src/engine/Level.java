@@ -200,6 +200,7 @@ public class Level implements ICollidable
    public Collection<Wall> getVisibleWalls(XY visibility_pos)
    {
       HashSet<Wall> ret = new HashSet<>();
+      HashSet<Wall> extras = new HashSet<>();
 
       for(WallLoop wl : m_wall_loops)
       {
@@ -215,25 +216,27 @@ public class Level implements ICollidable
                RayCollision wcr = nearestWall(visibility_pos,
                      dir, l + 1);
 
+               assert wcr.WallHit != null;
+
                ret.add(wcr.WallHit);
+               // can see some walls whose mid-points are out of sight
+               // trying to examine wall start and end points is twice as expensive, and also
+               // introduces fp problems when we skim past the end of the wall
+               //
+               // so, seems like a good hack to just bring both neightbours along with a wall we can see
+               //
+               // "extras" rather than "ret" as we can't early out on basis of something being a neighbour
+               // (because nothing would examine its neighbours...)
+               extras.add(wcr.WallHit.getNext());
+               extras.add(wcr.WallHit.getPrev());
             }
          }
       }
 
+      ret.addAll(extras);
+
       return ret;
    }
-
-//   public void stepNextMovable(double timeStep)
-//   {
-//      Movable m = m_movable_objects.pollFirst();
-//
-//      if (m == null)
-//         return;
-//
-//      stepMovable(m, timeStep);
-//
-//      m_movable_objects.addLast(m);
-//   }
 
    private void stepMovable(Movable m, double timeStep)
    {

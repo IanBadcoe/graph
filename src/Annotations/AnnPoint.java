@@ -1,4 +1,4 @@
-package Annotations;
+package annotations;
 
 import engine.IDraw;
 import engine.XY;

@@ -2,9 +2,18 @@ package engine;
 
 public interface IDraw
 {
-   void line(XY from, XY to);
+   void translate(XY offset);
+   void translate(XYZ offset);
+   void rotateX(double ori);
+   void rotateY(double ori);
+   void rotateZ(double ori);
 
+   void pushTransform();
+   void popTransform();
+
+   void line(XY from, XY to);
    void text(String text, XY pos);
+   void circle(XY position, double radius);
 
    void fill(int red, int green, int blue);
    void fill(int colour);
@@ -12,10 +21,11 @@ public interface IDraw
    void stroke(int red, int green, int blue);
    void stroke(int colour);
    void strokeWidth(double d, boolean scaling);
-
-   void circle(XY position, double radius);
+   void noStroke();
 
    double getScale();
 
-   void noStroke();
+   void beginTriangles();
+   void triangle(XYZ p1, XYZ n1, XYZ p2 , XYZ n2 ,XYZ p3, XYZ n3);
+   void endTriangles();
 }
