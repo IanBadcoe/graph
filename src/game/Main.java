@@ -107,7 +107,10 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private void playKeyPressed()
    {
-      m_keys.keyPressed(keyCode);
+      if (m_keys != null)
+      {
+         m_keys.keyPressed(keyCode);
+      }
 
       if (key == 'm')
       {
@@ -136,7 +139,10 @@ public class Main extends processing.core.PApplet implements IDraw
    @Override
    public void keyReleased()
    {
-      m_keys.keyReleased(keyCode);
+      if (m_keys != null)
+      {
+         m_keys.keyReleased(keyCode);
+      }
    }
 
    @Override
@@ -229,7 +235,7 @@ public class Main extends processing.core.PApplet implements IDraw
          rotate((float)(Math.PI + m_decaying_ori));
       }
 
-      translate((float)(-m_player.getPosition().X), (float)(-m_player.getPosition().Y));
+      translate(m_player.getPosition().negate());
 
       drawLevel(m_level, m_player.getPosition());
    }
@@ -239,7 +245,7 @@ public class Main extends processing.core.PApplet implements IDraw
       camera(m_player.getEye(), m_player.getEye().plus(m_player.getViewDir()), new XYZ(0, 0, -1));
       perspective((float)Math.PI / 3, (float)width/height, (float)0.1, (float)500);
 
-      drawLevel3D(m_level, m_player.getPosition());
+      drawLevel3D(m_level, m_player.getEye());
 
 //      for(annotations.Annotation annotation : m_annotations)
 //      {
@@ -407,11 +413,11 @@ public class Main extends processing.core.PApplet implements IDraw
 
       for(IDrawable id : level.getDrawables())
       {
-         id.draw(this);
+         id.draw2D(this);
       }
    }
 
-   void drawLevel3D(Level level, XY visibility_pos)
+   void drawLevel3D(Level level, XYZ visibility_pos)
    {
       s_app.background(0xff201010);
 
@@ -433,7 +439,7 @@ public class Main extends processing.core.PApplet implements IDraw
       s_app.stroke(128, 0, 0);
       s_app.strokeWeight(1);
 
-      for(Wall w : level.getVisibleWalls(visibility_pos))
+      for(Wall w : level.getVisibleWalls(new  XY(visibility_pos)))
       {
          beginShape();
          vertex((float)w.Start.X, (float)w.Start.Y, 0);
@@ -443,13 +449,7 @@ public class Main extends processing.core.PApplet implements IDraw
          endShape();
       }
 
-      for(IDrawable id : level.getDrawables())
-      {
-         if (id != m_player)
-         {
-            id.draw(this);
-         }
-      }
+      level.getDrawables().stream().filter(id -> id != m_player).forEach(id -> id.draw3D(this, visibility_pos));
    }
 
    private void drawWallLoop3D(WallLoop wl, double height)
@@ -482,6 +482,48 @@ public class Main extends processing.core.PApplet implements IDraw
 
          prev = curr;
       }
+   }
+
+   @Override
+   public void translate(XY offset)
+   {
+      translate((float)offset.X, (float)offset.Y);
+   }
+
+   @Override
+   public void translate(XYZ offset)
+   {
+      translate((float)offset.X, (float)offset.Y, (float)offset.Z);
+   }
+
+   @Override
+   public void rotateX(double ori)
+   {
+      rotateX((float)ori);
+   }
+
+   @Override
+   public void rotateY(double ori)
+   {
+      rotateY((float)ori);
+   }
+
+   @Override
+   public void rotateZ(double ori)
+   {
+      rotateZ((float)ori);
+   }
+
+   @Override
+   public void pushTransform()
+   {
+      pushMatrix();
+   }
+
+   @Override
+   public void popTransform()
+   {
+      popMatrix();
    }
 
    @Override
@@ -518,6 +560,40 @@ public class Main extends processing.core.PApplet implements IDraw
    public double getScale()
    {
       return m_scale;
+   }
+
+   @Override
+   public void beginTriangles()
+   {
+      beginShape(TRIANGLES);
+   }
+
+   @Override
+   public void triangle(XYZ p1, XYZ p2, XYZ p3, XYZ n1, XYZ n2, XYZ n3)
+   {
+      normal(n1);
+      vertex(p1);
+      normal(n2);
+      vertex(p2);
+      normal(n3);
+      vertex(p3);
+   }
+
+   @Override
+   public void endTriangles()
+   {
+      endShape();
+   }
+
+   private void normal(XYZ n)
+   {
+      assert n.isUnit();
+      normal((float)n.X, (float)n.Y, (float)n.Z);
+   }
+
+   private void vertex(XYZ v)
+   {
+      vertex((float)v.X, (float)v.Y, (float)v.Z);
    }
 
    void scaleTo(Box b)

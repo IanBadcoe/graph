@@ -30,13 +30,19 @@ public class Player extends Movable implements IDrawable
    }
 
    @Override
-   public void draw(IDraw draw)
+   public void draw2D(IDraw draw)
    {
       draw.stroke(200, 200, 200);
       draw.strokeWidth(1, true);
       draw.circle(getPosition(), getRadius());
       draw.strokeWidth(1, false);
       draw.line(getPosition(), getPosition().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
+   }
+
+   @Override
+   public void draw3D(IDraw draw, XYZ eye)
+   {
+      // HUD??
    }
 
    public XYZ getEye()

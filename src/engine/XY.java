@@ -17,6 +17,12 @@ public class XY
       Y = y;
    }
 
+   public XY(XYZ position3D)
+   {
+      X = position3D.X;
+      Y = position3D.Y;
+   }
+
    public boolean equals(XY xyo, double tol)
    {
       return this.minus(xyo).length() < tol;
