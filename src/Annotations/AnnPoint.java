@@ -2,6 +2,7 @@ package annotations;
 
 import engine.IDraw;
 import engine.XY;
+import engine.XYZ;
 
 public class AnnPoint extends Annotation
 {
@@ -15,7 +16,7 @@ public class AnnPoint extends Annotation
    }
 
    @Override
-   public void draw(IDraw draw)
+   public void draw2D(IDraw draw)
    {
       draw.fill(m_colour);
       draw.noStroke();
@@ -28,6 +29,12 @@ public class AnnPoint extends Annotation
       {
          draw.circle(m_where, m_radius);
       }
+   }
+
+   @Override
+   public void draw3D(IDraw draw, XYZ eye)
+   {
+      // nothing
    }
 
    private final XY m_where;
