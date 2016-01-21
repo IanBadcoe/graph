@@ -1,6 +1,7 @@
 package game;
 
 import engine.*;
+import entities.TestCylinder;
 import processing.core.PApplet;
 
 import java.awt.event.KeyEvent;
@@ -305,6 +306,10 @@ public class Main extends processing.core.PApplet implements IDraw
       m_keys.addKey(RIGHT_KEY, KeyEvent.VK_RIGHT);
       m_keys.addKey(FORWARDS_KEY, KeyEvent.VK_UP);
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
+
+      TestCylinder tc = new TestCylinder();
+      tc.Position = new XYZ(m_player.getPosition().plus(new XY(1, 0)), 0);
+      m_level.addDrawable(tc);
    }
 
    private void autoScale(Graph g, double low, double high)

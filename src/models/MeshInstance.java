@@ -18,11 +18,15 @@ public class MeshInstance
    void draw(IDraw draw)
    {
       draw.pushTransform();
+
       draw.translate(Offset);
       draw.rotateY(Elevation);
       draw.rotateZ(Orientation);
+
       draw.fill(Colour);
+
       Mesh.draw(draw);
+
       draw.popTransform();
    }
 

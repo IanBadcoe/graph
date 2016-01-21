@@ -26,6 +26,6 @@ public interface IDraw
    double getScale();
 
    void beginTriangles();
-   void triangle(XYZ p1, XYZ n1, XYZ p2 , XYZ n2 ,XYZ p3, XYZ n3);
+   void triangle(XYZ p1, XYZ p2, XYZ p3, XYZ n1, XYZ n2, XYZ n3);
    void endTriangles();
 }

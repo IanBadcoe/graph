@@ -6,7 +6,7 @@ import engine.XYZ;
 @SuppressWarnings("WeakerAccess")
 public class Model
 {
-   public Model(Mesh[] loDs, double radius)
+   public Model(LoD[] loDs, double radius)
    {
       LoDs = loDs;
       Radius = radius;
@@ -17,13 +17,15 @@ public class Model
       assert lod >= 0 && lod < LoDs.length;
 
       draw.pushTransform();
+
       draw.translate(position);
       draw.rotateZ(orientation);
 
       LoDs[lod].draw(draw);
+
       draw.popTransform();
    }
 
-   private final Mesh[] LoDs;
+   private final LoD[] LoDs;
    public final double Radius;
 }

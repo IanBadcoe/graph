@@ -5,21 +5,24 @@ import engine.IDrawable;
 import engine.XY;
 import engine.XYZ;
 
+@SuppressWarnings("WeakerAccess")
 public class Object3D implements IDrawable
 {
    public Object3D(Model model)
    {
+      assert model != null;
+
       this.Model = model;
    }
 
    public void draw2D(IDraw draw)
    {
-      draw.circle(new XY(m_position), Model.Radius);
+      draw.circle(new XY(Position), Model.Radius);
    }
 
    public void draw3D(IDraw draw, XYZ eye)
    {
-      double d2 = m_position.minus(eye).length2();
+      double d2 = Position.minus(eye).length2();
 
       int lod = findLoD(d2);
 
@@ -30,7 +33,7 @@ public class Object3D implements IDrawable
    {
       int ret = 0;
 
-      while (d2 > m_lod_dist2s[ret] && ret < m_lod_dist2s.length)
+      while (d2 > m_lod_dist2s[ret] && ret < m_lod_dist2s.length - 1)
          ret++;
 
       return ret;
@@ -38,12 +41,15 @@ public class Object3D implements IDrawable
 
    private void draw(IDraw draw, int lod)
    {
-      Model.draw(draw, m_position, m_orientation, lod);
+      Model.draw(draw, Position, Orientation, lod);
    }
 
-   private XYZ m_position;
-   private double m_orientation;
+   @SuppressWarnings("CanBeFinal")
+   public XYZ Position = new XYZ();
+   @SuppressWarnings("CanBeFinal")
+   public double Orientation = 0;
+
    private final Model Model;
 
-   private static final double[] m_lod_dist2s = new double[] { 100, 400, 1000 };
+   private static final double[] m_lod_dist2s = new double[] { 100, 400 };
 }

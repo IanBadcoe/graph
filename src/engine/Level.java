@@ -2,6 +2,7 @@ package engine;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Level implements ICollidable
 {
@@ -51,10 +52,13 @@ public class Level implements ICollidable
 
    public Collection<IDrawable> getDrawables()
    {
-      return m_movable_objects.stream()
-            .filter(x -> x instanceof IDrawable)
-            .map(x -> (IDrawable)x)
-            .collect(Collectors.toCollection(ArrayList::new));
+      return
+            Stream.concat(
+                  m_movable_objects.stream()
+                     .filter(x -> x instanceof IDrawable)  // possibly in time we'll relaise all movables are drawables
+                     .map(x -> (IDrawable)x),
+                  m_static_objects.stream()
+            ).collect(Collectors.toCollection(ArrayList::new));
    }
 
    public void step(double stepSize)
@@ -63,6 +67,11 @@ public class Level implements ICollidable
       {
          stepMovable(m, stepSize);
       }
+   }
+
+   public void addDrawable(IDrawable drawable)
+   {
+      m_static_objects.add(drawable);
    }
 
    public static class RayCollision
@@ -270,4 +279,6 @@ public class Level implements ICollidable
 
    private final XY m_start_pos;
 
-   private final LinkedList<Movable> m_movable_objects = new LinkedList<>();}
+   private final LinkedList<Movable> m_movable_objects = new LinkedList<>();
+   private final LinkedList<IDrawable> m_static_objects = new LinkedList<>();
+}

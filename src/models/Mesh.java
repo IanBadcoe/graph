@@ -10,6 +10,29 @@ public class Mesh
    // orientation, which is rotation about Z
    private Mesh(XYZ[] points, XYZ[] normals, Triangle[] triangles)
    {
+      for(XYZ xyz : points)
+      {
+         assert xyz != null;
+      }
+
+      for(XYZ xyz : normals)
+      {
+         assert xyz != null;
+      }
+
+      for(Triangle t : triangles)
+      {
+         assert t != null;
+
+         assert t.PointIndex1 >= 0 && t.PointIndex1 < points.length;
+         assert t.PointIndex2 >= 0 && t.PointIndex2 < points.length;
+         assert t.PointIndex3 >= 0 && t.PointIndex3 < points.length;
+
+         assert t.NormalIndex1 >= 0 && t.NormalIndex1 < normals.length;
+         assert t.NormalIndex2 >= 0 && t.NormalIndex2 < normals.length;
+         assert t.NormalIndex3 >= 0 && t.NormalIndex3 < normals.length;
+      }
+
       Points = points;
       Normals = normals;
       Triangles = triangles;
@@ -20,13 +43,13 @@ public class Mesh
                                      boolean capBase, boolean capTop)
    {
       // must at least be a triangular prism
-      int radius_steps = (int)(Math.PI * 2 * radius / facetingFactor + 3);
+      int radius_steps = (int)Math.max(Math.PI * 2 * radius / facetingFactor, 3);
       //with at least two rings of points
-      int length_steps = (int)(length / facetingFactor + 2);
+      int length_steps = (int)Math.max(length / facetingFactor, 2);
 
       int points_size = radius_steps * length_steps;
       int normals_size = points_size;
-      int triangle_size = points_size * 2;
+      int triangle_size = radius_steps * (length_steps - 1) * 2;
 
       // need one normal, one centre point
       // and one fan of radius_steps triangles for each end
@@ -146,10 +169,10 @@ public class Mesh
       {
          draw.triangle(
                Points[t.PointIndex1],
-               Normals[t.NormalIndex1],
                Points[t.PointIndex2],
-               Normals[t.NormalIndex2],
                Points[t.PointIndex3],
+               Normals[t.NormalIndex1],
+               Normals[t.NormalIndex2],
                Normals[t.NormalIndex3]);
       }
 
