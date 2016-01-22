@@ -6,9 +6,16 @@ import java.util.ArrayList;
 
 public class ModelBuilder
 {
-   ModelBuilder(double[] lodFacetFactors)
+   public ModelBuilder(double radius)
+   {
+      this(Object3D.FacetingFactors, radius);
+   }
+
+   @SuppressWarnings("WeakerAccess")
+   public ModelBuilder(double[] lodFacetFactors, double radius)
    {
       LoDFacetFactors = lodFacetFactors;
+      Radius = radius;
       NumLoDs = LoDFacetFactors.length;
       LoDBuilders = new LoDBuilder[NumLoDs];
 
@@ -18,9 +25,23 @@ public class ModelBuilder
       }
    }
 
+   public Model makeModel()
+   {
+      LoD[] lods = new LoD[NumLoDs];
+
+      for(int i = 0; i < NumLoDs; i++)
+      {
+         LoDBuilder lb = LoDBuilders[i];
+         MeshInstance[] mis = lb.Meshes.stream().toArray(MeshInstance[]::new);
+         lods[i] = new LoD(mis);
+      }
+
+      return new Model(lods, Radius);
+   }
+
    static class LoDBuilder
    {
-      public ArrayList<MeshInstance> Meshes = new ArrayList<>();
+      public final ArrayList<MeshInstance> Meshes = new ArrayList<>();
    }
 
    // collects a set of meshes representing the same mesh from different LoDs
@@ -87,14 +108,14 @@ public class ModelBuilder
       return new MeshSet(meshes);
    }
 
-   public MeshSet createSphere(double radius, double topHeight, double baseHeight,
+   public MeshSet createSphere(double radius, double baseHeight, double topHeight,
                                boolean capBase, boolean capTop)
    {
       Mesh[] meshes = new Mesh[NumLoDs];
 
       for(int i = 0; i < NumLoDs; i++)
       {
-         meshes[i] = Mesh.createSphere(radius, topHeight, baseHeight, LoDFacetFactors[i], capBase, capTop);
+         meshes[i] = Mesh.createSphere(radius, baseHeight, topHeight, LoDFacetFactors[i], capBase, capTop);
       }
 
       return new MeshSet(meshes);
@@ -112,7 +133,8 @@ public class ModelBuilder
       return new MeshSet(meshes);
    }
 
-   final double[] LoDFacetFactors;
-   final int NumLoDs;
-   final LoDBuilder[] LoDBuilders;
+   private final double[] LoDFacetFactors;
+   private final int NumLoDs;
+   private final LoDBuilder[] LoDBuilders;
+   private final double Radius;
 }

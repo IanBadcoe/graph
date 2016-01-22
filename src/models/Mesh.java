@@ -116,6 +116,7 @@ public class Mesh
          for(int j = 0; j < radius_steps; j++)
          {
             points[which] = new XYZ(length_pos, Math.sin(angle) * radius, Math.cos(angle) * radius);
+            // wrong, need to factor slope in also...
             normals[which] = new XYZ(0, Math.sin(angle), Math.cos(angle));
             which++;
 
@@ -193,12 +194,12 @@ public class Mesh
       return new Mesh(points, normals, triangles);
    }
 
-   public static Mesh createSphere(double radius, double topHeight, double baseHeight, double facetingFactor,
+   public static Mesh createSphere(double radius, double baseHeight, double topHeight, double facetingFactor,
                                    boolean capBase, boolean capTop)
    {
       assert topHeight >= -radius && topHeight <= radius;
       assert baseHeight >= -radius && baseHeight <= radius;
-      assert baseHeight > topHeight;
+      assert topHeight > baseHeight;
 
       double length = topHeight - baseHeight;
 
@@ -241,14 +242,12 @@ public class Mesh
       {
          double angle = 0;
 
-         double frac = (double)i / (length_steps - 1);
-
          double slice_radius = Math.sqrt(radius * radius - length_pos * length_pos);
 
          for(int j = 0; j < radius_steps; j++)
          {
             points[which] = new XYZ(length_pos, Math.sin(angle) * slice_radius, Math.cos(angle) * slice_radius);
-            normals[which] = new XYZ(0, Math.sin(angle), Math.cos(angle));
+            normals[which] = points[which].asUnit();
             which++;
 
             angle += angle_step;
@@ -262,7 +261,8 @@ public class Mesh
       if (capBase)
       {
          normals[which] = new XYZ(-1, 0, 0);
-         points[which] = new XYZ(0, 0, 0);
+         //noinspection SuspiciousNameCombination
+         points[which] = new XYZ(baseHeight, 0, 0);
 
          int prev_idx = radius_steps - 1;
          for(int i = 0; i < radius_steps; i++)
@@ -281,7 +281,8 @@ public class Mesh
       if (capTop)
       {
          normals[which] = new XYZ(1, 0, 0);
-         points[which] = new XYZ(length, 0, 0);
+         //noinspection SuspiciousNameCombination
+         points[which] = new XYZ(topHeight, 0, 0);
 
          int prev_idx = length_steps * radius_steps - 1;
          for(int i = (length_steps - 1) * radius_steps; i < length_steps * radius_steps; i++)
@@ -356,23 +357,17 @@ public class Mesh
       normals[4] = new XYZ(0, 0, 1);
       normals[5] = new XYZ(0, 0, -1);
 
-      int which = 0;
-
-      double x_pos;
-      double y_pos;
-      double z_pos;
-
       int wherePoints = 0;
       int whereTriangles = 0;
 
       OrderedPair<Integer, Integer> ret = face(wherePoints, whereTriangles,
-            ySize, zSize, xSize / 2,
-            y_steps, z_steps,
-            Axes.YAxis, Axes.ZAxis,
+            zSize, ySize, xSize / 2,
+            z_steps, y_steps,
+            Axes.ZAxis, Axes.YAxis,
             points, triangles,
             0);
-      wherePoints += ret.First;
-      whereTriangles += ret.Second;
+      wherePoints = ret.First;
+      whereTriangles = ret.Second;
 
       ret = face(wherePoints, whereTriangles,
             ySize, zSize, -xSize / 2,
@@ -380,17 +375,17 @@ public class Mesh
             Axes.YAxis, Axes.ZAxis,
             points, triangles,
             1);
-      wherePoints += ret.First;
-      whereTriangles += ret.Second;
+      wherePoints = ret.First;
+      whereTriangles = ret.Second;
 
       ret = face(wherePoints, whereTriangles,
-            zSize, xSize, ySize / 2,
-            z_steps, x_steps,
-            Axes.ZAxis, Axes.XAxis,
+            xSize, zSize, ySize / 2,
+            x_steps, z_steps,
+            Axes.XAxis, Axes.ZAxis,
             points, triangles,
             2);
-      wherePoints += ret.First;
-      whereTriangles += ret.Second;
+      wherePoints = ret.First;
+      whereTriangles = ret.Second;
 
       ret = face(wherePoints, whereTriangles,
             zSize, xSize, -ySize / 2,
@@ -398,17 +393,17 @@ public class Mesh
             Axes.ZAxis, Axes.XAxis,
             points, triangles,
             3);
-      wherePoints += ret.First;
-      whereTriangles += ret.Second;
+      wherePoints = ret.First;
+      whereTriangles = ret.Second;
 
       ret = face(wherePoints, whereTriangles,
-            xSize, ySize, zSize / 2,
-            x_steps, y_steps,
-            Axes.XAxis, Axes.YAxis,
+            ySize, xSize, zSize / 2,
+            y_steps, x_steps,
+            Axes.YAxis, Axes.XAxis,
             points, triangles,
             4);
-      wherePoints += ret.First;
-      whereTriangles += ret.Second;
+      wherePoints = ret.First;
+      whereTriangles = ret.Second;
 
       face(wherePoints, whereTriangles,
             xSize, ySize, -zSize / 2,
@@ -449,15 +444,20 @@ public class Mesh
          pos1 += step1;
       }
 
-      this_point = wherePoints;
-      int next_point = wherePoints + 1;
-      int this_point_next_row = wherePoints + steps1;
-      int next_point_next_row = wherePoints + steps1 + 1;
-
       for(int i = 0; i < steps1 - 1; i++)
       {
          for (int j = 0; j < steps2 - 1; j++)
          {
+            this_point = wherePoints + i * steps2 + j;
+            int next_point = this_point + 1;
+            int this_point_next_row = this_point + steps2;
+            int next_point_next_row = this_point + steps2 + 1;
+
+            assert this_point >= 0 && this_point < points.length;
+            assert next_point >= 0 && next_point < points.length;
+            assert this_point_next_row >= 0 && this_point_next_row < points.length;
+            assert next_point_next_row >= 0 && next_point_next_row < points.length;
+
             triangles[whereTriangles] = new Triangle(
                   this_point, next_point, this_point_next_row,
                   normalIdx ,normalIdx, normalIdx);
@@ -467,15 +467,10 @@ public class Mesh
                   next_point, next_point_next_row, this_point_next_row,
                   normalIdx, normalIdx, normalIdx);
             whereTriangles++;
-
-            this_point++;
-            next_point++;
-            this_point_next_row++;
-            next_point_next_row++;
          }
       }
 
-      return new OrderedPair<>(next_point_next_row, whereTriangles);
+      return new OrderedPair<>(wherePoints + steps1 * steps2, whereTriangles);
    }
 
    private static XYZ createXYZ(double pos1, double pos2, double position, Axes axis1, Axes axis2)

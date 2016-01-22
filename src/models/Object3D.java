@@ -33,7 +33,7 @@ public class Object3D implements IDrawable
    {
       int ret = 0;
 
-      while (d2 > m_lod_dist2s[ret] && ret < m_lod_dist2s.length - 1)
+      while (d2 > LoDDistances[ret] && ret < LoDDistances.length - 1)
          ret++;
 
       return ret;
@@ -41,15 +41,22 @@ public class Object3D implements IDrawable
 
    private void draw(IDraw draw, int lod)
    {
-      Model.draw(draw, Position, Orientation, lod);
+      Model.draw(draw, Position, Orientation, Elevation, lod);
    }
 
    @SuppressWarnings("CanBeFinal")
    public XYZ Position = new XYZ();
    @SuppressWarnings("CanBeFinal")
    public double Orientation = 0;
+   public double Elevation = 0;
 
    private final Model Model;
 
-   private static final double[] m_lod_dist2s = new double[] { 400, 900 };
+   public static final double[] LoDDistances = new double[] { 400, 900 };
+   public static final double[] FacetingFactors = new double[] { 0.1, 0.5, 4 };
+
+   static
+   {
+      assert LoDDistances.length + 1 == FacetingFactors.length;
+   }
 }

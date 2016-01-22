@@ -1,7 +1,9 @@
 package game;
 
 import engine.*;
-import entities.TestCylinder;
+import models.Model;
+import models.ModelBuilder;
+import models.Object3D;
 import processing.core.PApplet;
 
 import java.awt.event.KeyEvent;
@@ -17,7 +19,7 @@ public class Main extends processing.core.PApplet implements IDraw
    public Main()
    {
       m_config = new LevelGeneratorConfiguration(85);
-      m_generator = new LevelGenerator(30, m_config);
+      m_generator = new LevelGenerator(10, m_config);
    }
 
    @Override
@@ -218,6 +220,12 @@ public class Main extends processing.core.PApplet implements IDraw
       {
          draw3D();
       }
+
+      for(Object3D o : m_demo_objects)
+      {
+         o.Orientation += 0.01;
+         o.Elevation += 0.003;
+      }
    }
 
    void drawMap()
@@ -302,9 +310,65 @@ public class Main extends processing.core.PApplet implements IDraw
       m_keys.addKey(FORWARDS_KEY, KeyEvent.VK_UP);
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
 
-      TestCylinder tc = new TestCylinder();
-      tc.Position = new XYZ(m_player.getPosition().plus(new XY(2, 0)), 0);
-      m_level.addDrawable(tc);
+      {
+         ModelBuilder mb = new ModelBuilder(1);
+
+         ModelBuilder.MeshSet ms = mb.createCone(1, 0.5, 1, true, true);
+
+         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+
+         Model m = mb.makeModel();
+
+         Object3D o = new Object3D(m);
+         o.Position = m_player.getEye().plus(new XYZ(2, 0, 0));
+         m_demo_objects.add(o);
+         m_level.addDrawable(o);
+      }
+
+      {
+         ModelBuilder mb = new ModelBuilder(1);
+
+         ModelBuilder.MeshSet ms = mb.createCylinder(0.5, 1, true, true);
+
+         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+
+         Model m = mb.makeModel();
+
+         Object3D o = new Object3D(m);
+         o.Position = m_player.getEye().plus(new XYZ(0, 2, 0));
+         m_demo_objects.add(o);
+         m_level.addDrawable(o);
+      }
+
+      {
+         ModelBuilder mb = new ModelBuilder(1);
+
+         ModelBuilder.MeshSet ms = mb.createSphere(0.5, -0.25, 0.4, true, true);
+
+         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+
+         Model m = mb.makeModel();
+
+         Object3D o = new Object3D(m);
+         o.Position = m_player.getEye().plus(new XYZ(0, -2, 0));
+         m_demo_objects.add(o);
+         m_level.addDrawable(o);
+      }
+
+      {
+         ModelBuilder mb = new ModelBuilder(1);
+
+         ModelBuilder.MeshSet ms = mb.createCuboid(0.5, 0.25, 0.125);
+
+         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+
+         Model m = mb.makeModel();
+
+         Object3D o = new Object3D(m);
+         o.Position = m_player.getEye().plus(new XYZ(-2, 0, 0));
+         m_demo_objects.add(o);
+         m_level.addDrawable(o);
+      }
    }
 
    private void autoScale(Graph g, double low, double high)
@@ -657,4 +721,6 @@ public class Main extends processing.core.PApplet implements IDraw
    private final static int RIGHT_KEY = 1;
    private final static int FORWARDS_KEY = 2;
    private final static int BACKWARDS_KEY = 3;
+
+   private final ArrayList<Object3D> m_demo_objects = new ArrayList<>();
 }
