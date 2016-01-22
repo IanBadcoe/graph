@@ -17,8 +17,8 @@ public class TestCylinder extends Object3D
       Mesh mesh3 = Mesh.createCylinder(0.5, 1, 1, true, true);
 
       MeshInstance mi1 = new MeshInstance(mesh1, 0xff806040, new XYZ(0, 0, 2), 0, -Math.PI / 4);
-      MeshInstance mi2 = new MeshInstance(mesh2, 0xff806040, new XYZ(0, 0, 2), 0, -Math.PI / 4);
-      MeshInstance mi3 = new MeshInstance(mesh3, 0xff806040, new XYZ(0, 0, 2), 0, -Math.PI / 4);
+      MeshInstance mi2 = new MeshInstance(mesh2, 0xffFF6040, new XYZ(0, 0, 2), 0, -Math.PI / 4);
+      MeshInstance mi3 = new MeshInstance(mesh3, 0xffFFFFFF, new XYZ(0, 0, 2), 0, -Math.PI / 4);
 
       LoD l1 = new LoD(new MeshInstance[] { mi1 });
       LoD l2 = new LoD(new MeshInstance[] { mi2 });

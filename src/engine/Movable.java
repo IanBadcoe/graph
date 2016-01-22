@@ -23,9 +23,16 @@ public abstract class Movable implements ICollidable
    }
 
    @SuppressWarnings("WeakerAccess")
-   public void addVelocity(XY v)
+   public void addVelocity(XY v, double s)
    {
+      m_speed += s;
       m_velocity = m_velocity.plus(v);
+   }
+
+   @SuppressWarnings("WeakerAccess")
+   public double getSpeed()
+   {
+      return m_speed;
    }
 
    @SuppressWarnings("WeakerAccess")
@@ -36,7 +43,8 @@ public abstract class Movable implements ICollidable
 
    private void dampVelocity()
    {
-      m_velocity = m_velocity.multiply(0.95);
+      m_speed *= DampingFactor;
+      m_velocity = m_velocity.multiply(DampingFactor);
    }
 
    public void step(double timeStep, Collection<ICollidable> collisionCandidates)
@@ -189,8 +197,11 @@ public abstract class Movable implements ICollidable
 
    private XY m_position = new XY();
    private XY m_velocity = new XY();
+   private double m_speed = 0;
 
    private double m_orientation = 0;
 
    private final double m_radius;
+
+   private final double DampingFactor = 0.9;
 }

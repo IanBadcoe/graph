@@ -24,7 +24,7 @@ public class Main extends processing.core.PApplet implements IDraw
    public void settings()
    {
       size(500, 500, P3D);
-//      fullScreen(P3D);
+//      fullScreen(P3D, 1);
 
       s_app = this;
 
@@ -276,7 +276,7 @@ public class Main extends processing.core.PApplet implements IDraw
 
       if (m_keys.isPressed(BACKWARDS_KEY))
       {
-         m_player.brake();
+         m_player.reverse();
       }
    }
 

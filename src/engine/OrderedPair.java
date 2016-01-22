@@ -1,11 +1,11 @@
 package engine;
 
-class OrderedPair<T, U>
+public class OrderedPair<T, U>
 {
-   final T First;
-   final U Second;
+   public final T First;
+   public final U Second;
 
-   OrderedPair(T first, U second)
+   public OrderedPair(T first, U second)
    {
       First = first;
       Second = second;

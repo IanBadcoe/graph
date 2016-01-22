@@ -51,5 +51,5 @@ public class Object3D implements IDrawable
 
    private final Model Model;
 
-   private static final double[] m_lod_dist2s = new double[] { 100, 400 };
+   private static final double[] m_lod_dist2s = new double[] { 400, 900 };
 }

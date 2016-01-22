@@ -21,12 +21,34 @@ public class Player extends Movable implements IDrawable
 
    public void accelerate()
    {
-      addVelocity(XY.makeDirectionVector(getOrientation()).multiply(AcclerationFactor));
+      if (getSpeed() < -0.2)
+      {
+         addVelocity(getVelocity().asUnit().multiply(BrakingFactor), BrakingFactor);
+      }
+      else if (getSpeed() >= 0)
+      {
+         addVelocity(XY.makeDirectionVector(getOrientation()).multiply(AcclerationFactor), AcclerationFactor);
+      }
+      else
+      {
+         addVelocity(getVelocity().negate(), getVelocity().length());
+      }
    }
 
-   public void brake()
+   public void reverse()
    {
-      addVelocity(getVelocity().negate().asUnit().multiply(BrakingFactor));
+      if (getSpeed() > 0.2)
+      {
+         addVelocity(getVelocity().negate().asUnit().multiply(BrakingFactor), -BrakingFactor);
+      }
+      else if (getSpeed() <= 0)
+      {
+         addVelocity(XY.makeDirectionVector(getOrientation()).negate().multiply(ReverseFactor), -ReverseFactor);
+      }
+      else
+      {
+         addVelocity(getVelocity().negate(), -getVelocity().length());
+      }
    }
 
    @Override
@@ -57,7 +79,8 @@ public class Player extends Movable implements IDrawable
       return new XYZ(dir_2d, 0);
    }
 
-   private static final double AcclerationFactor = 1.0;
-   private static final double BrakingFactor = 2.0;
-   private static final double TurnFactor = Math.PI / 64;
+   private static final double AcclerationFactor = 0.7;
+   private static final double BrakingFactor = 1.4;
+   private static final double ReverseFactor = 0.35;
+   private static final double TurnFactor = Math.PI / 96;
 }
