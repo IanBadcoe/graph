@@ -51,16 +51,15 @@ class CircleCurve extends Curve
       Radius = radius;
       Rotation = rotation;
 
+      if (Position == null)
+         throw new NullPointerException("null position");
+
       if (Radius <= 0)
          throw new IllegalArgumentException("-ve or zero radius");
-
-      if (StartParam > Math.PI * 2 ||
-            paramRange() > Math.PI * 2)
-         throw new IllegalArgumentException("out-of-range parameter(s)");
    }
 
    @Override
-   public XY computePosInner(double param)
+   protected XY computePosInner(double param)
    {
       if (Rotation == RotationDirection.Forwards)
       {
@@ -164,7 +163,7 @@ class CircleCurve extends Curve
 
       CircleCurve c_cc = (CircleCurve)c_after;
 
-      if (Position != c_cc.Position)
+      if (!Position.equals(c_cc.Position))
          return null;
 
       if (Rotation != c_cc.Rotation)
@@ -213,7 +212,7 @@ class CircleCurve extends Curve
       if (p < StartParam)
          p += Math.PI * 2;
 
-      return p < EndParam;
+      return p < EndParam + tol;
    }
 
    boolean isCyclic()

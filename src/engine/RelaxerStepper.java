@@ -241,21 +241,6 @@ public class RelaxerStepper implements IStepper
       return ratio;
    }
 
-   void AdjustPathLengthsForRadii()
-   {
-      for(INode nj : m_graph.allGraphNodes())
-      {
-         int j = nj.getIdx();
-         for(INode nk : m_graph.allGraphNodes())
-         {
-            int k = nk.getIdx();
-
-            m_node_dists[j][k] = Math.min(nj.getRad() + nk.getRad(),
-                  m_node_dists[j][k]);
-         }
-      }
-   }
-
    private final Graph m_graph;
    private ArrayList<INode> m_nodes;
    private ArrayList<DirectedEdge> m_edges;

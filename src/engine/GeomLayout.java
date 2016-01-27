@@ -18,4 +18,14 @@ abstract public class GeomLayout
    // one of more -ve loops that put things like pillar back inside
    // the base geometry
    public abstract LoopSet makeDetailGeometry();
+
+   public static GeomLayout makeDefaultCorridor(DirectedEdge de)
+   {
+      // scale the corridor rectangle's width down slightly
+      // so that it doesn't precisely hit at a tangent to any adjoining junction-node's circle
+      // -- that causes awkward numerical precision problems in the curve-curve intersection routines
+      // which can throw out the union operation
+      return new RectangularGeomLayout(de.Start.getPos(),
+            de.End.getPos(), de.HalfWidth * 0.99);
+   }
 }

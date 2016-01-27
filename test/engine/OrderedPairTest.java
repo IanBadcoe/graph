@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 
 public class OrderedPairTest
 {
-
    @Test
    public void testHashCode() throws Exception
    {
@@ -41,5 +40,15 @@ public class OrderedPairTest
 
       //noinspection EqualsBetweenInconvertibleTypes
       assertFalse(op1.equals(1));
+   }
+
+   @Test
+   public void testSwap()
+   {
+      OrderedPair<Integer, Integer> p = new OrderedPair<>(1, 2);
+      OrderedPair<Integer, Integer> q = p.swap();
+
+      assertEquals(2, (int)q.First);
+      assertEquals(1, (int)q.Second);
    }
 }
