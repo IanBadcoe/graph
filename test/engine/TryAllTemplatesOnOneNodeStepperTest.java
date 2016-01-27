@@ -1,5 +1,6 @@
 package engine;
 
+import game.TemplateStore1;
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -5,12 +5,12 @@ import java.util.*;
 @SuppressWarnings("WeakerAccess")
 public class TemplateBuilder
 {
-   TemplateBuilder(String name, String codes)
+   public TemplateBuilder(String name, String codes)
    {
       this(name, codes, null);
    }
 
-   TemplateBuilder(String name, String codes, Template.IPostExpand post_expand)
+   public TemplateBuilder(String name, String codes, Template.IPostExpand post_expand)
    {
       m_name = name;
       m_codes = codes;
@@ -58,7 +58,7 @@ public class TemplateBuilder
       final String NodeName;
    }
 
-   void AddNode(Template.NodeType type, String name) throws TemplateException
+   public void AddNode(Template.NodeType type, String name) throws TemplateException
    {
       AddNode(type, name, false,
             "<target>", null, null,
@@ -66,7 +66,7 @@ public class TemplateBuilder
    }
 
    // types In and Out ignore all parameters after "name"
-   void AddNode(Template.NodeType type, String name, boolean nudge,
+   public void AddNode(Template.NodeType type, String name, boolean nudge,
          String positionOnName, String positionTowardsName,
          String positionAwayFromName,
          String codes, double radius) throws TemplateException
@@ -79,12 +79,12 @@ public class TemplateBuilder
    }
 
    @SuppressWarnings("WeakerAccess")
-   void AddNode(Template.NodeType type, String name, boolean nudge,
-                String positionOnName, String positionTowardsName,
-                String positionAwayFromName,
-                String codes, double radius,
-                @SuppressWarnings("SameParameterValue") int colour,
-                GeomLayout.IGeomLayoutCreateFromNode geomCreator) throws TemplateException
+   public void AddNode(Template.NodeType type, String name, boolean nudge,
+         String positionOnName, String positionTowardsName,
+         String positionAwayFromName,
+         String codes, double radius,
+         @SuppressWarnings("SameParameterValue") int colour,
+         GeomLayout.IGeomLayoutCreateFromNode geomCreator) throws TemplateException
    {
       if (name.contains("->"))
          throw new IllegalArgumentException("engine.Node name: '" + name + "' cannot contain '->'.");
@@ -254,7 +254,7 @@ public class TemplateBuilder
       m_num_internal_nodes = -1;
    }
 
-   Template Build()
+   public Template Build()
    {
       return new Template(this);
    }

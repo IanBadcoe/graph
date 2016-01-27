@@ -23,7 +23,9 @@ public class RelaxerStepper implements IStepper
       // (node <-> node and node <-> edge forces have to be stronger than edge forces
       // as we rely on edges stretching (in other cases) to tell ue when we need to
       // lengthen an edge (inserting a corner)
-      m_node_dists = ShortestPathFinder.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
+      ShortestPathFinder spf = new ShortestPathFinder();
+
+      m_node_dists = spf.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
 
       m_setup_done = true;
    }

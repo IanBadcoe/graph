@@ -241,6 +241,27 @@ public class UtilTest
       }
    }
 
+
+   @Test
+   public void testNodeEdgeDist_Exceptions()
+   {
+      XY xy1 = new XY();
+      XY xy2 = new XY(1, 0);
+
+      boolean thrown = false;
+
+      try
+      {
+         Util.nodeEdgeDist(xy2, xy1, xy1);
+      }
+      catch(UnsupportedOperationException e)
+      {
+         thrown = true;
+      }
+
+      assertTrue(thrown);
+   }
+
    @Test
    public void testNodeEdgeDist()
    {
@@ -474,6 +495,7 @@ public class UtilTest
    public void testCurveCurveIntersect_Exception()
    {
       CircleCurve cc = new CircleCurve(new XY(), 10);
+      LineCurve lc = new LineCurve(new XY(), new XY(1, 0), 10);
 
       Fake f = new Fake();
 
@@ -497,7 +519,37 @@ public class UtilTest
 
          try
          {
+            Util.curveCurveIntersect(lc, f);
+         }
+         catch(UnsupportedOperationException uoe)
+         {
+            thrown = true;
+         }
+
+         assertTrue(thrown);
+      }
+
+      {
+         boolean thrown = false;
+
+         try
+         {
             Util.curveCurveIntersect(f, cc);
+         }
+         catch(UnsupportedOperationException uoe)
+         {
+            thrown = true;
+         }
+
+         assertTrue(thrown);
+      }
+
+      {
+         boolean thrown = false;
+
+         try
+         {
+            Util.curveCurveIntersect(f, lc);
          }
          catch(UnsupportedOperationException uoe)
          {

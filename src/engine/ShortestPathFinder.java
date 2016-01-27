@@ -13,7 +13,7 @@ import java.util.function.Function;
 //
 class ShortestPathFinder
 {
-   public static double[][] FindPathLengths(Graph g, Function<DirectedEdge, Double> get_edge_length)
+   public double[][] FindPathLengths(Graph g, Function<DirectedEdge, Double> get_edge_length)
    {
       double[][] ret = new double[g.numNodes()][g.numNodes()];
 

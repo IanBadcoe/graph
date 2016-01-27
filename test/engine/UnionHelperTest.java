@@ -23,16 +23,18 @@ public class UnionHelperTest
          m_seen_things.add(de);
       }
 
+      // returning objects here increases coverage
+
       @Override
       public Loop makeBaseGeometry()
       {
-         return null;
+         return new Loop();
       }
 
       @Override
       public LoopSet makeDetailGeometry()
       {
-         return null;
+         return new LoopSet();
       }
    }
 
@@ -43,7 +45,8 @@ public class UnionHelperTest
 
       Graph g = new Graph();
 
-      INode n1 = g.addNode("", "", "", 0, ThingNoticer::new);
+      // having a start increases coverage
+      INode n1 = g.addNode("Start", "", "", 0, ThingNoticer::new);
       INode n2 = g.addNode("", "", "", 0, ThingNoticer::new);
 
       DirectedEdge de = g.connect(n1, n2, 0, 0, 0, ThingNoticer::new);

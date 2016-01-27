@@ -1,9 +1,9 @@
 package engine;
 
 @SuppressWarnings("WeakerAccess")
-class CircularGeomLayout extends GeomLayout
+public class CircularGeomLayout extends GeomLayout
 {
-   CircularGeomLayout(XY position, double radius)
+   public CircularGeomLayout(XY position, double radius)
    {
       m_position = position;
       m_rad = radius;

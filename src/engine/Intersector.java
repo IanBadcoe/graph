@@ -24,7 +24,7 @@ class Intersector
          if (!(o instanceof AnnotatedCurve))
             return false;
 
-         AnnotatedCurve aco = (AnnotatedCurve)o;
+         AnnotatedCurve aco = (AnnotatedCurve) o;
 
          return Curve == aco.Curve;
       }
@@ -49,8 +49,8 @@ class Intersector
       final AnnotatedCurve Loop2Out;
    }
 
-   public static LoopSet union(LoopSet ls1, LoopSet ls2, @SuppressWarnings("SameParameterValue") double tol,
-                               Random random)
+   public LoopSet union(LoopSet ls1, LoopSet ls2, @SuppressWarnings("SameParameterValue") double tol,
+         Random random)
    {
       if (ls1.size() == 0 && ls2.size() == 0)
          return null;
@@ -64,7 +64,7 @@ class Intersector
 
       HashMap<Integer, ArrayList<Curve>> working_loops1 = new HashMap<>();
 
-      for(Loop l : ls1)
+      for (Loop l : ls1)
       {
          working_loops1.put(loop_count, new ArrayList<>(l.getCurves()));
          loop_count++;
@@ -72,7 +72,7 @@ class Intersector
 
       HashMap<Integer, ArrayList<Curve>> working_loops2 = new HashMap<>();
 
-      for(Loop l : ls2)
+      for (Loop l : ls2)
       {
          working_loops2.put(loop_count, new ArrayList<>(l.getCurves()));
          loop_count++;
@@ -85,9 +85,9 @@ class Intersector
       // other set, they have no influence on any other loops and can be simply copied inchanged into
       // the output
 
-      HashMap <ArrayList<Curve>, Box> bound_map1 = new HashMap<>();
+      HashMap<ArrayList<Curve>, Box> bound_map1 = new HashMap<>();
 
-      for(ArrayList<Curve> alc1 : working_loops1.values())
+      for (ArrayList<Curve> alc1 : working_loops1.values())
       {
          Box bound = alc1.stream()
                .map(Curve::boundingBox)
@@ -96,9 +96,9 @@ class Intersector
          bound_map1.put(alc1, bound);
       }
 
-      HashMap <ArrayList<Curve>, Box> bound_map2 = new HashMap<>();
+      HashMap<ArrayList<Curve>, Box> bound_map2 = new HashMap<>();
 
-      for(ArrayList<Curve> alc2 : working_loops2.values())
+      for (ArrayList<Curve> alc2 : working_loops2.values())
       {
          Box bound = alc2.stream()
                .map(Curve::boundingBox)
@@ -111,7 +111,7 @@ class Intersector
       removeEasyLoops(working_loops2, ret, bound_map1.values(), bound_map2);
 
       // split all curves that intersect
-      for(ArrayList<Curve> alc1 : working_loops1.values())
+      for (ArrayList<Curve> alc1 : working_loops1.values())
       {
          for (ArrayList<Curve> alc2 : working_loops2.values())
          {
@@ -126,14 +126,14 @@ class Intersector
       HashMap<Curve, AnnotatedCurve> forward_annotations_map = new HashMap<>();
 
       // build forward and reverse chains of annotation-curves around both loops
-      for(Integer i : working_loops1.keySet())
+      for (Integer i : working_loops1.keySet())
       {
          ArrayList<Curve> alc1 = working_loops1.get(i);
 
          buildAnnotationChains(alc1, i, forward_annotations_map);
       }
 
-      for(Integer i : working_loops2.keySet())
+      for (Integer i : working_loops2.keySet())
       {
          ArrayList<Curve> alc1 = working_loops2.get(i);
 
@@ -146,7 +146,7 @@ class Intersector
 
       HashMap<Curve, Splice> endSpliceMap = new HashMap<>();
 
-      for(ArrayList<Curve> alc1 : working_loops1.values())
+      for (ArrayList<Curve> alc1 : working_loops1.values())
       {
          for (ArrayList<Curve> alc2 : working_loops2.values())
          {
@@ -192,57 +192,35 @@ class Intersector
       // bounding box allows us to create cutting lines that definitely exceed all loop boundaries
       Box bounds = all_curves.stream().map(Curve::boundingBox).reduce(new Box(), (b, a) -> a.union(b));
 
-//      if (visualise)
-//      {
-//         Random r = new Random(1);
-//
-//         Main.clear(255);
-//         XY pnt = working_loops1.get(0).get(2).startPos();
-//         Box size = new Box(pnt.minus(new XY(.001, .001)),
-//               pnt.plus(new XY(.001, .001)));
-////         engine.Box size = bounds;
-//         Main.scaleTo(size);
-//
-//         Main.fill(r.nextInt(256), r.nextInt(256), 256);
-//         for(Splice s : endSpliceMap.values())
-//         {
-//            Main.circle(s.Loop1Out.Curve.startPos().X,
-//                  s.Loop1Out.Curve.startPos().Y,
-//                  size.DX() * 0.004);
-//         }
-//
-//         for(ArrayList<Curve> alc1 : working_loops1.values())
-//         {
-//            Main.strokeWidth(size.DX() * 0.001);
-//            Main.stroke(256, r.nextInt(128), r.nextInt(128));
-//            Loop l = new Loop(alc1);
-//            Main.drawLoopPoints(l.facet(.3));
-//
-//            for(Curve c : l.getCurves())
-//            {
-//               XY end = c.endPos();
-//               Main.circle(end.X, end.Y, size.DX() * 0.002);
-//            }
-//         }
-//
-//         for (ArrayList<Curve> alc2 : working_loops2.values())
-//         {
-//            Main.stroke(r.nextInt(128), 256, r.nextInt(128));
-//            Loop l = new Loop(alc2);
-//            Main.drawLoopPoints(l.facet(.3));
-//
-//            for(Curve c : l.getCurves())
-//            {
-//               XY end = c.endPos();
-//               Main.circle(end.X, end.Y, size.DX() * 0.002);
-//            }
-//         }
-//      }
-
       // but all we need from that is the max length in the box
       Double diameter = bounds.diagonal().length();
 
-      for(Curve c : all_curves)
+      if (!extractInternalCurves(tol, random, forward_annotations_map, all_curves, open, curve_joints, diameter))
+         return null;
+
+      while (open.size() > 0)
+      {
+         AnnotatedCurve ac_current = open.stream().findFirst().get();
+
+         // take a loop that is part of the perimeter
+         ret.add(extractLoop(
+               open,
+               ac_current,
+               endSpliceMap));
+      }
+
+      // this would imply _everything_ was internal, which is impossible without
+      // a dimension warp
+      assert ret.size() > 0;
+
+      return ret;
+   }
+
+   boolean extractInternalCurves(double tol, Random random,
+         HashMap<Curve, AnnotatedCurve> forward_annotations_map, HashSet<Curve> all_curves,
+         HashSet<AnnotatedCurve> open, HashSet<XY> curve_joints, Double diameter)
+   {
+      for (Curve c : all_curves)
       {
          AnnotatedCurve ac_c = forward_annotations_map.get(c);
 
@@ -251,12 +229,13 @@ class Intersector
 
          XY mid_point = c.computePos((c.StartParam + c.EndParam) / 2);
 
-         ArrayList<OrderedPair<Curve, Integer>> intervals = tryFindIntersections(mid_point, all_curves, curve_joints, diameter, tol, random);
+         ArrayList<OrderedPair<Curve, Integer>> intervals = tryFindIntersections(mid_point, all_curves, curve_joints,
+               diameter, tol, random);
 
          // failure, don't really expect this has have had multiple tries and it
          // shouldn't be so hard to find a good cutting line
          if (intervals == null)
-            return null;
+            return false;
 
          // now use the intervals to decide what to do with the AnnotationEdges
          int prev_crossings = 0;
@@ -281,32 +260,18 @@ class Intersector
          }
       }
 
-      while(open.size() > 0)
-      {
-         AnnotatedCurve ac_current = open.stream().findFirst().get();
-
-         // take a loop that is part of the perimeter
-         ret.add(extractLoop(
-               open,
-               ac_current,
-               endSpliceMap));
-      }
-
-      if (ret.size() == 0)
-         return null;
-
-      return ret;
+      return true;
    }
 
    // non-private only for testing
    @SuppressWarnings("WeakerAccess")
-   static void removeEasyLoops(HashMap<Integer, ArrayList<Curve>> working_loops,
-                               LoopSet ret,
-                               Collection<Box> other_bounds,
-                               HashMap<ArrayList<Curve>, Box> bound_map)
+   void removeEasyLoops(HashMap<Integer, ArrayList<Curve>> working_loops,
+         LoopSet ret,
+         Collection<Box> other_bounds,
+         HashMap<ArrayList<Curve>, Box> bound_map)
    {
       ArrayList<Integer> keys = new ArrayList<>(working_loops.keySet());
-      for(Integer i : keys)
+      for (Integer i : keys)
       {
          ArrayList<Curve> alc1 = working_loops.get(i);
 
@@ -334,7 +299,7 @@ class Intersector
    }
 
    @SuppressWarnings("WeakerAccess")
-   static Loop extractLoop(
+   Loop extractLoop(
          HashSet<AnnotatedCurve> open,
          AnnotatedCurve start_ac,
          HashMap<Curve, Splice> endSpliceMap)
@@ -364,8 +329,8 @@ class Intersector
          }
          else
          {
-            if (splice.Loop1Out== start_ac
-                  || splice.Loop2Out== start_ac)
+            if (splice.Loop1Out == start_ac
+                  || splice.Loop2Out == start_ac)
                break;
 
             // at every splice, at least one of the two possible exits should be still open
@@ -379,7 +344,8 @@ class Intersector
             {
                curr_ac = splice.Loop1Out;
             }
-            // if both exit curves are still in open (happens with sculating circles)
+
+            // if both exit curves are still in open (happens with osculating circles)
             // we need to take the one that puts us on a different loop
             else if (curr_ac.LoopNumber != splice.Loop1Out.LoopNumber)
             {
@@ -402,12 +368,12 @@ class Intersector
       return new Loop(found_curves);
    }
 
-   private static void tidyLoop(ArrayList<Curve> curves)
+   private void tidyLoop(ArrayList<Curve> curves)
    {
       int prev = curves.size() - 1;
       Curve c_prev = curves.get(prev);
 
-      for(int i = 0; i < curves.size();)
+      for (int i = 0; i < curves.size(); )
       {
          Curve c_here = curves.get(i);
 
@@ -436,26 +402,16 @@ class Intersector
       }
    }
 
-
    // non-private for unit-testing only
-   static ArrayList<OrderedPair<Curve, Integer>>
-         tryFindIntersections(
+   ArrayList<OrderedPair<Curve, Integer>>
+   tryFindIntersections(
          XY mid_point,
          HashSet<Curve> all_curves,
          HashSet<XY> curve_joints,
          double diameter, double tol,
          Random random)
    {
-//      // don't keep eating random numbers if we're visualising the same frame over and over
-//      if (visualise && m_visualisation_line != null)
-//      {
-//         Main.stroke(0, 0, 0);
-//         Main.line(m_visualisation_line.startPos(), m_visualisation_line.endPos());
-//
-//         return null;
-//      }
-
-      for(int i = 0; i < 25; i++)
+      for (int i = 0; i < 25; i++)
       {
          double rand_ang = random.nextDouble() * Math.PI * 2;
          double dx = Math.sin(rand_ang);
@@ -478,14 +434,6 @@ class Intersector
 
          if (ret != null)
          {
-//            if (visualise)
-//            {
-//               m_visualisation_line = lc;
-//               Main.stroke(0, 0, 0);
-//               Main.line(m_visualisation_line.startPos(), m_visualisation_line.endPos());
-//               return null;
-//            }
-
             return ret;
          }
       }
@@ -493,9 +441,10 @@ class Intersector
       return null;
    }
 
-   private static boolean lineClearsPoints(LineCurve lc, HashSet<XY> curve_joints, double tol)
+   // public for testing
+   public boolean lineClearsPoints(LineCurve lc, HashSet<XY> curve_joints, double tol)
    {
-      for(XY pnt : curve_joints)
+      for (XY pnt : curve_joints)
       {
          if (Math.abs(pnt.minus(lc.Position).dot(lc.Direction.rot90())) < tol)
             return false;
@@ -513,14 +462,14 @@ class Intersector
    // the crossing number is implicitly zero before the first intersection
    //
    // non-private only for unit-testing
-   static ArrayList<OrderedPair<Curve, Integer>>
+   ArrayList<OrderedPair<Curve, Integer>>
    tryFindCurveIntersections(
-            LineCurve lc,
-            HashSet<Curve> all_curves)
+         LineCurve lc,
+         HashSet<Curve> all_curves)
    {
       HashSet<OrderedTriplet<Curve, Double, Double>> intersecting_curves = new HashSet<>();
 
-      for(Curve c : all_curves)
+      for (Curve c : all_curves)
       {
          ArrayList<OrderedPair<Double, Double>> intersections =
                Util.curveCurveIntersect(lc, c);
@@ -528,7 +477,7 @@ class Intersector
          if (intersections == null)
             continue;
 
-         for(OrderedPair<Double, Double> intersection : intersections)
+         for (OrderedPair<Double, Double> intersection : intersections)
          {
             double dot = c.tangent(intersection.Second).dot(lc.Direction.rot270());
 
@@ -541,16 +490,19 @@ class Intersector
          }
       }
 
+      if (intersecting_curves.size() == 0)
+         return null;
+
       // sort by distance down the line
       ArrayList<OrderedTriplet<Curve, Double, Double>> ordered =
-            intersecting_curves.stream().sorted((x, y) -> (int)Math.signum(x.Second - y.Second))
+            intersecting_curves.stream().sorted((x, y) -> (int) Math.signum(x.Second - y.Second))
                   .collect(Collectors.toCollection(ArrayList::new));
 
       int crossings = 0;
 
       ArrayList<OrderedPair<Curve, Integer>> ret = new ArrayList<>();
 
-      for(OrderedTriplet<Curve, Double, Double> entry : ordered)
+      for (OrderedTriplet<Curve, Double, Double> entry : ordered)
       {
          if (entry.Third > 0)
          {
@@ -567,21 +519,21 @@ class Intersector
       return ret;
    }
 
-   static void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
-                                  HashMap<Curve, AnnotatedCurve> forward_annotations_map,
-                                  HashMap<Curve, Splice> endSpliceMap,
-                                  double tol)
+   void findSplices(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2,
+         HashMap<Curve, AnnotatedCurve> forward_annotations_map,
+         HashMap<Curve, Splice> endSpliceMap,
+         double tol)
    {
       Curve l1prev = working_loop1.get(working_loop1.size() - 1);
 
-      for(Curve l1curr : working_loop1)
+      for (Curve l1curr : working_loop1)
       {
          XY l1_cur_start_pos = l1curr.startPos();
          assert l1prev.endPos().equals(l1_cur_start_pos, 1e-6);
 
          Curve l2prev = working_loop2.get(working_loop2.size() - 1);
 
-         for(Curve l2curr : working_loop2)
+         for (Curve l2curr : working_loop2)
          {
             XY l2_cur_start_pos = l2curr.startPos();
             assert l2prev.endPos().equals(l2_cur_start_pos, 1e-6);
@@ -607,12 +559,12 @@ class Intersector
    }
 
    // non-private only for unit-tests
-   static void splitCurvesAtIntersections(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2, double tol)
+   void splitCurvesAtIntersections(ArrayList<Curve> working_loop1, ArrayList<Curve> working_loop2, double tol)
    {
-      for(int i = 0; i < working_loop1.size(); i++)
+      for (int i = 0; i < working_loop1.size(); i++)
       {
          Curve c1 = working_loop1.get(i);
-         for(int j = 0; j < working_loop2.size(); j++)
+         for (int j = 0; j < working_loop2.size(); j++)
          {
             Curve c2 = working_loop2.get(j);
 
@@ -685,12 +637,12 @@ class Intersector
    }
 
    // only non-private for unit-testing
-   static void buildAnnotationChains(ArrayList<Curve> curves, int loop_number,
-                                     HashMap<Curve, AnnotatedCurve> forward_annotations_map)
+   void buildAnnotationChains(ArrayList<Curve> curves, int loop_number,
+         HashMap<Curve, AnnotatedCurve> forward_annotations_map)
    {
       Curve prev = null;
 
-      for(Curve curr : curves)
+      for (Curve curr : curves)
       {
          AnnotatedCurve ac_forward_curr = new AnnotatedCurve(curr, loop_number);
 
@@ -713,6 +665,70 @@ class Intersector
 
       ac_forward_last.Next = ac_forward_first;
    }
-
-   private static LineCurve m_visualisation_line;
 }
+
+//      if (visualise)
+//      {
+//         Random r = new Random(1);
+//
+//         Main.clear(255);
+//         XY pnt = working_loops1.get(0).get(2).startPos();
+//         Box size = new Box(pnt.minus(new XY(.001, .001)),
+//               pnt.plus(new XY(.001, .001)));
+////         engine.Box size = bounds;
+//         Main.scaleTo(size);
+//
+//         Main.fill(r.nextInt(256), r.nextInt(256), 256);
+//         for(Splice s : endSpliceMap.values())
+//         {
+//            Main.circle(s.Loop1Out.Curve.startPos().X,
+//                  s.Loop1Out.Curve.startPos().Y,
+//                  size.DX() * 0.004);
+//         }
+//
+//         for(ArrayList<Curve> alc1 : working_loops1.values())
+//         {
+//            Main.strokeWidth(size.DX() * 0.001);
+//            Main.stroke(256, r.nextInt(128), r.nextInt(128));
+//            Loop l = new Loop(alc1);
+//            Main.drawLoopPoints(l.facet(.3));
+//
+//            for(Curve c : l.getCurves())
+//            {
+//               XY end = c.endPos();
+//               Main.circle(end.X, end.Y, size.DX() * 0.002);
+//            }
+//         }
+//
+//         for (ArrayList<Curve> alc2 : working_loops2.values())
+//         {
+//            Main.stroke(r.nextInt(128), 256, r.nextInt(128));
+//            Loop l = new Loop(alc2);
+//            Main.drawLoopPoints(l.facet(.3));
+//
+//            for(Curve c : l.getCurves())
+//            {
+//               XY end = c.endPos();
+//               Main.circle(end.X, end.Y, size.DX() * 0.002);
+//            }
+//         }
+//      }
+
+//      // don't keep eating random numbers if we're visualising the same frame over and over
+//      if (visualise && m_visualisation_line != null)
+//      {
+//         Main.stroke(0, 0, 0);
+//         Main.line(m_visualisation_line.startPos(), m_visualisation_line.endPos());
+//
+//         return null;
+//      }
+
+//            if (visualise)
+//            {
+//               m_visualisation_line = lc;
+//               Main.stroke(0, 0, 0);
+//               Main.line(m_visualisation_line.startPos(), m_visualisation_line.endPos());
+//               return null;
+//            }
+
+// private static LineCurve m_visualisation_line;

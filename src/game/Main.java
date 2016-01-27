@@ -19,14 +19,14 @@ public class Main extends processing.core.PApplet implements IDraw
    public Main()
    {
       m_config = new LevelGeneratorConfiguration(85);
-      m_generator = new LevelGenerator(10, m_config);
+      m_generator = new LevelGenerator(10, m_config, new TemplateStore1());
    }
 
    @Override
    public void settings()
    {
-      size(500, 500, P3D);
-//      fullScreen(P3D, 1);
+//      size(500, 500, P3D);
+      fullScreen(P3D);
 
       s_app = this;
 

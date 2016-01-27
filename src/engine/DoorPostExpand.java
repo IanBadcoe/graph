@@ -1,7 +1,7 @@
 package engine;
 
 // a very simple approach to doors, just renaming door/key pairs to match one-another
-class DoorPostExpand implements Template.IPostExpand
+public class DoorPostExpand implements Template.IPostExpand
 {
    @Override
    public void AfterExpand(INode n)

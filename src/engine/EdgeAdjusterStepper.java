@@ -45,7 +45,7 @@ public class EdgeAdjusterStepper implements IStepper
    {
       INode c = m_graph.addNode("c", "", "EdgeExtend",
             m_edge.HalfWidth * 2,
-            n -> new CircularGeomLayout(n.getPos(), n.getRad() / 2));
+            m_geom_maker);
 
       XY mid = m_edge.Start.getPos().plus(m_edge.End.getPos()).divide(2);
 
@@ -61,6 +61,16 @@ public class EdgeAdjusterStepper implements IStepper
       de2.SetColour(m_edge.GetColour());
    }
 
+   public void setGeomMaker(GeomLayout.IGeomLayoutCreateFromNode maker)
+   {
+      m_geom_maker = maker;
+   }
+
+   public GeomLayout.IGeomLayoutCreateFromNode getGeomMaker()
+   {
+      return m_geom_maker;
+   }
+
    public static void SetChildFactory(IChildFactory factory)
    {
       m_child_factory = factory;
@@ -70,6 +80,8 @@ public class EdgeAdjusterStepper implements IStepper
    private final DirectedEdge m_edge;
    private final LevelGeneratorConfiguration m_config;
 
-
    private static IChildFactory m_child_factory;
+
+   private GeomLayout.IGeomLayoutCreateFromNode m_geom_maker
+         = n -> new CircularGeomLayout(n.getPos(), n.getRad() / 2);
 }

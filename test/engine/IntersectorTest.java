@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 
 public class IntersectorTest
 {
-
    class Fake extends Curve
    {
       Fake(String name)
@@ -107,7 +106,7 @@ public class IntersectorTest
 
       HashMap<Curve, Intersector.AnnotatedCurve> forward_annotations_map = new HashMap<>();
 
-      Intersector.buildAnnotationChains(curves, 1,
+      m_intersector.buildAnnotationChains(curves, 1,
             forward_annotations_map);
 
       for(Curve c : curves)
@@ -137,7 +136,7 @@ public class IntersectorTest
       ArrayList<Curve> curves2 = new ArrayList<>();
       curves2.add(cc2);
 
-      Intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
+      m_intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
 
       // we cut each curve twice, technically we could anneal the original curve across its
       // join at 2PI -> 0.0 but we don't currently try anything clever like that
@@ -172,7 +171,7 @@ public class IntersectorTest
       ArrayList<Curve> curves2 = new ArrayList<>();
       curves2.add(cc2);
 
-      Intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
+      m_intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
 
       assertEquals(2, curves1.size());
       assertEquals(2, curves2.size());
@@ -201,7 +200,7 @@ public class IntersectorTest
       ArrayList<Curve> curves2 = new ArrayList<>();
       curves2.add(cc2);
 
-      Intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
+      m_intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
 
       assertEquals(1, curves1.size());
       assertEquals(1, curves2.size());
@@ -231,7 +230,7 @@ public class IntersectorTest
          curves2.add(cc2);
       }
 
-      Intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
+      m_intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
 
       for(int i = 0; i < curves1.size(); i++)
       {
@@ -253,19 +252,19 @@ public class IntersectorTest
       ArrayList<Curve> curves2 = new ArrayList<>();
       curves2.add(cc2);
 
-      Intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
+      m_intersector.splitCurvesAtIntersections(curves1, curves2, 1e-6);
 
       HashMap<Curve, Intersector.AnnotatedCurve> forward_annotations_map = new HashMap<>();
 
-      Intersector.buildAnnotationChains(curves1, 1,
+      m_intersector.buildAnnotationChains(curves1, 1,
             forward_annotations_map);
 
-      Intersector.buildAnnotationChains(curves2, 2,
+      m_intersector.buildAnnotationChains(curves2, 2,
             forward_annotations_map);
 
       HashMap<Curve, Intersector.Splice> endSpliceMap = new HashMap<>();
 
-      Intersector.findSplices(curves1, curves2,
+      m_intersector.findSplices(curves1, curves2,
             forward_annotations_map,
             endSpliceMap,
             1e-6);
@@ -314,7 +313,7 @@ public class IntersectorTest
    @Test
    public void testTryFindIntersections()
    {
-      // one circle, expect [0,] 1, 0
+      // one circle, expect 1, 0
       {
          CircleCurve cc = new CircleCurve(new XY(), 5);
 
@@ -325,7 +324,7 @@ public class IntersectorTest
          curve_joints.add(cc.startPos());
 
          ArrayList<OrderedPair<Curve, Integer>> ret =
-               Intersector.tryFindIntersections(
+               m_intersector.tryFindIntersections(
                      new XY(0, -5),
                      all_curves,
                      curve_joints,
@@ -341,32 +340,7 @@ public class IntersectorTest
          assertEquals(0, (int)ret.get(1).Second);
       }
 
-      // one circle, built from two half-circles, should still work
-      // expect [0,] 1, 0
-      {
-         CircleCurve cc1 = new CircleCurve(new XY(), 5, 0, Math.PI);
-         CircleCurve cc2 = new CircleCurve(new XY(), 5, Math.PI, 2 * Math.PI);
-
-         HashSet<Curve> all_curves = new HashSet<>();
-         all_curves.add(cc1);
-         all_curves.add(cc2);
-
-         LineCurve lc = new LineCurve(new XY(-10, 0), new XY(1, 0), 20);
-
-         ArrayList<OrderedPair<Curve, Integer>> ret =
-               Intersector.tryFindCurveIntersections(
-                     lc,
-                     all_curves);
-
-         assertNotNull(ret);
-         assertEquals(2, ret.size());
-         assertEquals(cc2, ret.get(0).First);
-         assertEquals(1, (int)ret.get(0).Second);
-         assertEquals(cc1, ret.get(1).First);
-         assertEquals(0, (int)ret.get(1).Second);
-      }
-
-      // two concentric circles, expect [0,] 1, 2, 1, 0
+      // two concentric circles, expect 1, 2, 1, 0
       {
          CircleCurve cc1 = new CircleCurve(new XY(), 5);
          CircleCurve cc2 = new CircleCurve(new XY(), 3);
@@ -380,7 +354,7 @@ public class IntersectorTest
          curve_joints.add(cc2.startPos());
 
          ArrayList<OrderedPair<Curve, Integer>> ret =
-               Intersector.tryFindIntersections(
+               m_intersector.tryFindIntersections(
                      new XY(0, 0),  // use centre to force hitting both circles
                      all_curves,
                      curve_joints,
@@ -400,7 +374,7 @@ public class IntersectorTest
          assertEquals(0, (int)ret.get(3).Second);
       }
 
-      // two concentric circles, inner one -ve, expect [0,] 1, 0, 1, 0
+      // two concentric circles, inner one -ve, expect 1, 0, 1, 0
       {
          CircleCurve cc1 = new CircleCurve(new XY(), 5);
          CircleCurve cc2 = new CircleCurve(new XY(), 3, CircleCurve.RotationDirection.Reverse);
@@ -414,7 +388,7 @@ public class IntersectorTest
          curve_joints.add(cc2.startPos());
 
          ArrayList<OrderedPair<Curve, Integer>> ret =
-               Intersector.tryFindIntersections(
+               m_intersector.tryFindIntersections(
                      new XY(0, 0),  // use centre to force hitting both circles
                      all_curves,
                      curve_joints,
@@ -432,6 +406,72 @@ public class IntersectorTest
          assertEquals(1, (int)ret.get(2).Second);
          assertEquals(cc1, ret.get(3).First);
          assertEquals(0, (int)ret.get(3).Second);
+      }
+   }
+
+   @Test
+   public void testTryFindCurveIntersections()
+   {
+      // this was in the above, no idea why I went to the lower level routine in there
+      // but I need to do that now anyway...
+
+      // one circle, built from two half-circles, should still work
+      // expect 1, 0
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 5, 0, Math.PI);
+         CircleCurve cc2 = new CircleCurve(new XY(), 5, Math.PI, 2 * Math.PI);
+
+         HashSet<Curve> all_curves = new HashSet<>();
+         all_curves.add(cc1);
+         all_curves.add(cc2);
+
+         LineCurve lc = new LineCurve(new XY(-10, 0), new XY(1, 0), 20);
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               m_intersector.tryFindCurveIntersections(
+                     lc,
+                     all_curves);
+
+         assertNotNull(ret);
+         assertEquals(2, ret.size());
+         assertEquals(cc2, ret.get(0).First);
+         assertEquals(1, (int)ret.get(0).Second);
+         assertEquals(cc1, ret.get(1).First);
+         assertEquals(0, (int)ret.get(1).Second);
+      }
+
+      // miss the circle, expect null
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 5);
+
+         HashSet<Curve> all_curves = new HashSet<>();
+         all_curves.add(cc1);
+
+         LineCurve lc = new LineCurve(new XY(-10, 0), new XY(0, 1), 20);
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               m_intersector.tryFindCurveIntersections(
+                     lc,
+                     all_curves);
+
+         assertNull(ret);
+      }
+
+      // clip the circle, to simplify the analysis we disregard these, expect null
+      {
+         CircleCurve cc1 = new CircleCurve(new XY(), 5);
+
+         HashSet<Curve> all_curves = new HashSet<>();
+         all_curves.add(cc1);
+
+         LineCurve lc = new LineCurve(new XY(-5, -5), new XY(0, 1), 20);
+
+         ArrayList<OrderedPair<Curve, Integer>> ret =
+               m_intersector.tryFindCurveIntersections(
+                     lc,
+                     all_curves);
+
+         assertNull(ret);
       }
    }
 
@@ -458,7 +498,7 @@ public class IntersectorTest
          LoopSet ls1 = new LoopSet();
          LoopSet ls2 = new LoopSet();
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNull(ret);
       }
@@ -471,7 +511,7 @@ public class IntersectorTest
          Loop l1 = new Loop(new CircleCurve(new XY(), 1));
          ls1.add(l1);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -486,7 +526,7 @@ public class IntersectorTest
          Loop l2 = new Loop(new CircleCurve(new XY(), 1));
          ls2.add(l2);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -507,7 +547,7 @@ public class IntersectorTest
          // paranoia
          assertEquals(ls1, ls2);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -525,7 +565,7 @@ public class IntersectorTest
          Loop l2 = new Loop(new CircleCurve(new XY(1, 0), 1));
          ls2.add(l2);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(1, ret.size());
@@ -579,7 +619,7 @@ public class IntersectorTest
          ls2.add(l2a);
          ls2.add(l2b);
 
-         LoopSet ret = Intersector.union(ls1, ls2, 1e-6, new Random(1));
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
 
          assertNotNull(ret);
          assertEquals(3, ret.size());
@@ -588,7 +628,318 @@ public class IntersectorTest
          checkLoop(ret.get(1), 2);
          checkLoop(ret.get(2), 2);
       }
+
+      // osculating circles, outside each other
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Loop l2 = new Loop(new CircleCurve(new XY(2, 0), 1));
+         ls2.add(l2);
+
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(2, ret.get(0).numCurves());
+         Curve c1 = ret.get(0).getCurves().get(0);
+         Curve c2 = ret.get(0).getCurves().get(1);
+         assertTrue(c1 instanceof CircleCurve);
+         assertTrue(c2 instanceof CircleCurve);
+
+         CircleCurve cc1 = (CircleCurve)c1;
+         CircleCurve cc2 = (CircleCurve)c2;
+
+         // same radii
+         assertEquals(1, cc1.Radius, 1e-6);
+         assertEquals(1, cc2.Radius, 1e-6);
+
+         // same direction
+         assertEquals(CircleCurve.RotationDirection.Forwards, cc1.Rotation);
+         assertEquals(CircleCurve.RotationDirection.Forwards, cc2.Rotation);
+
+         // joined end-to-end
+         assertTrue(cc1.startPos().equals(cc2.endPos(), 1e-6));
+         assertTrue(cc2.startPos().equals(cc1.endPos(), 1e-6));
+
+         CircleCurve left = cc1.Position.X < cc2.Position.X ? cc1 : cc2;
+         CircleCurve right = cc1.Position.X > cc2.Position.X ? cc1 : cc2;
+
+         assertEquals(new XY(0, 0), left.Position);
+         assertEquals(new XY(2, 0), right.Position);
+
+         assertEquals(Math.PI * 2 * 3 / 12, left.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 15 / 12, left.EndParam, 1e-6);
+
+         assertEquals(Math.PI * 2 * 9 / 12, right.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 21 / 12, right.EndParam, 1e-6);
+      }
+
+      // osculating circles, outside each other
+      // other way around
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Loop l2 = new Loop(new CircleCurve(new XY(2, 0), 1));
+         ls2.add(l2);
+
+         LoopSet ret = m_intersector.union(ls2, ls1, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(2, ret.get(0).numCurves());
+         Curve c1 = ret.get(0).getCurves().get(0);
+         Curve c2 = ret.get(0).getCurves().get(1);
+         assertTrue(c1 instanceof CircleCurve);
+         assertTrue(c2 instanceof CircleCurve);
+
+         CircleCurve cc1 = (CircleCurve)c1;
+         CircleCurve cc2 = (CircleCurve)c2;
+
+         // same radii
+         assertEquals(1, cc1.Radius, 1e-6);
+         assertEquals(1, cc2.Radius, 1e-6);
+
+         // same direction
+         assertEquals(CircleCurve.RotationDirection.Forwards, cc1.Rotation);
+         assertEquals(CircleCurve.RotationDirection.Forwards, cc2.Rotation);
+
+         // joined end-to-end
+         assertTrue(cc1.startPos().equals(cc2.endPos(), 1e-6));
+         assertTrue(cc2.startPos().equals(cc1.endPos(), 1e-6));
+
+         CircleCurve left = cc1.Position.X < cc2.Position.X ? cc1 : cc2;
+         CircleCurve right = cc1.Position.X > cc2.Position.X ? cc1 : cc2;
+
+         assertEquals(new XY(0, 0), left.Position);
+         assertEquals(new XY(2, 0), right.Position);
+
+         assertEquals(Math.PI * 2 * 3 / 12, left.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 15 / 12, left.EndParam, 1e-6);
+
+         assertEquals(Math.PI * 2 * 9 / 12, right.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 21 / 12, right.EndParam, 1e-6);
+      }
+
+      // osculating circles, one smaller, reversed and inside the other
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Loop l2 = new Loop(new CircleCurve(new XY(0.5, 0), 0.5, CircleCurve.RotationDirection.Reverse));
+         ls2.add(l2);
+
+         LoopSet ret = m_intersector.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNotNull(ret);
+         assertEquals(1, ret.size());
+         assertEquals(2, ret.get(0).numCurves());
+         Curve c1 = ret.get(0).getCurves().get(0);
+         Curve c2 = ret.get(0).getCurves().get(1);
+         assertTrue(c1 instanceof CircleCurve);
+         assertTrue(c2 instanceof CircleCurve);
+
+         CircleCurve cc1 = (CircleCurve)c1;
+         CircleCurve cc2 = (CircleCurve)c2;
+
+         // joined end-to-end
+         assertTrue(cc1.startPos().equals(cc2.endPos(), 1e-6));
+         assertTrue(cc2.startPos().equals(cc1.endPos(), 1e-6));
+
+         CircleCurve left = cc1.Position.X < cc2.Position.X ? cc1 : cc2;
+         CircleCurve right = cc1.Position.X > cc2.Position.X ? cc1 : cc2;
+
+         // same radii
+         assertEquals(1, left.Radius, 1e-6);
+         assertEquals(0.5, right.Radius, 1e-6);
+
+         // same direction
+         assertEquals(CircleCurve.RotationDirection.Forwards, left.Rotation);
+         assertEquals(CircleCurve.RotationDirection.Reverse, right.Rotation);
+
+         assertEquals(new XY(0, 0), left.Position);
+         assertEquals(new XY(0.5, 0), right.Position);
+
+         assertEquals(Math.PI * 2 * 3 / 12, left.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 15 / 12, left.EndParam, 1e-6);
+
+         assertEquals(Math.PI * 2 * 9 / 12, right.StartParam, 1e-6);
+         assertEquals(Math.PI * 2 * 21 / 12, right.EndParam, 1e-6);
+      }
    }
+
+   @Test
+   public void testAnnotatedCurve()
+   {
+      Curve c1 = new CircleCurve(new XY(), 1);
+      Curve c2 = new CircleCurve(new XY(), 1);
+
+      Intersector.AnnotatedCurve ac1 = new Intersector.AnnotatedCurve(c1, 1);
+      Intersector.AnnotatedCurve ac1b = new Intersector.AnnotatedCurve(c1, 1);
+      Intersector.AnnotatedCurve ac2 = new Intersector.AnnotatedCurve(c2, 1);
+
+      assertEquals(c1.hashCode(), ac1.hashCode());
+
+      assertTrue(ac1.equals(ac1b));
+      assertFalse(ac1.equals(ac2));
+      //noinspection EqualsBetweenInconvertibleTypes
+      assertFalse(ac1.equals(0));
+   }
+
+   class IntersectorDummy1 extends Intersector
+   {
+      @Override
+      protected boolean extractInternalCurves(double tol, Random random,
+            HashMap<Curve, AnnotatedCurve> forward_annotations_map, HashSet<Curve> all_curves,
+            HashSet<AnnotatedCurve> open, HashSet<XY> curve_joints, Double diameter)
+      {
+         return false;
+      }
+   }
+
+   class IntersectorDummy2 extends Intersector
+   {
+      @Override
+      ArrayList<OrderedPair<Curve, Integer>>
+      tryFindIntersections(
+            XY mid_point,
+            HashSet<Curve> all_curves,
+            HashSet<XY> curve_joints,
+            double diameter, double tol,
+            Random random)
+      {
+         return null;
+      }
+   }
+
+   class IntersectorDummy3 extends Intersector
+   {
+      @Override
+      public boolean lineClearsPoints(LineCurve lc, HashSet<XY> curve_joints, double tol)
+      {
+         return false;
+      }
+   }
+
+   @Test
+   public void testUnion_Errors()
+   {
+      // if extractInternalCurves fails, we bail...
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Intersector i = new IntersectorDummy1();
+
+         LoopSet ret = i.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNull(ret);
+      }
+
+      // if tryFindIntersections fails, we bail
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Loop l2 = new Loop(new CircleCurve(new XY(0.5, 0), 1));
+         ls2.add(l2);
+
+         Intersector i = new IntersectorDummy2();
+
+         LoopSet ret = i.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNull(ret);
+      }
+
+      // if tryFindIntersections fails, we bail
+      {
+         LoopSet ls1 = new LoopSet();
+         LoopSet ls2 = new LoopSet();
+
+         Loop l1 = new Loop(new CircleCurve(new XY(), 1));
+         ls1.add(l1);
+
+         Loop l2 = new Loop(new CircleCurve(new XY(0.5, 0), 1));
+         ls2.add(l2);
+
+         Intersector i = new IntersectorDummy3();
+
+         LoopSet ret = i.union(ls1, ls2, 1e-6, new Random(1));
+
+         assertNull(ret);
+      }
+   }
+
+   @Test
+   public void testLineClearsPoints()
+   {
+      LineCurve lc1 = new LineCurve(new XY(), new XY(1, 0), 10);
+      LineCurve lc2 = new LineCurve(new XY(), new XY(1 / Math.sqrt(2), 1 / Math.sqrt(2)), 10);
+
+      {
+         HashSet<XY> hs = new HashSet<>();
+         hs.add(new XY(1, 1));
+
+         assertTrue(m_intersector.lineClearsPoints(lc1, hs, 1e-6));
+         assertFalse(m_intersector.lineClearsPoints(lc2, hs, 1e-6));
+      }
+
+      {
+         HashSet<XY> hs = new HashSet<>();
+         hs.add(new XY(0, 0));
+
+         assertFalse(m_intersector.lineClearsPoints(lc1, hs, 1e-6));
+         assertFalse(m_intersector.lineClearsPoints(lc2, hs, 1e-6));
+      }
+
+      {
+         HashSet<XY> hs = new HashSet<>();
+         hs.add(new XY(2, 0));
+
+         assertFalse(m_intersector.lineClearsPoints(lc1, hs, 1e-6));
+         assertTrue(m_intersector.lineClearsPoints(lc2, hs, 1e-6));
+      }
+   }
+
+// This one asserts because it somehow tries to make a discontinuous loop
+// but, pragmatically, I don't need this test yet
+//   @Test
+//   public void testUnion_ManyPoints()
+//   {
+//      LoopSet ls1 = new LoopSet();
+//
+//      Random r = new Random(1);
+//
+//      for(int i = 0; i < 1000; i++)
+//      {
+//         LoopSet ls2 = new LoopSet();
+//
+//         Loop l2 = new Loop(new CircleCurve(new XY(r.nextDouble(), r.nextDouble()), .1));
+//         ls2.add(l2);
+//
+//         // try to make sure we have some lines hit some points
+//         // (to his that return false in lineClearsPoints)
+//         ls1 = m_intersector.union(ls1, ls2, 1e-2, r);
+//
+//         assertNotNull(ls1);
+//      }
+//   }
 
 // This reproduces a numerical precision problem I had when I was placing the rectangle for a corridor
 // so that it's corners exactly hit the perimeter of the circle at the corridor junctions
@@ -630,4 +981,6 @@ public class IntersectorTest
 //
 //      engine.Intersector.splitCurvesAtIntersections(alc1, alc2, 1e-6);
 //   }
+
+   private final Intersector m_intersector = new Intersector();
 }

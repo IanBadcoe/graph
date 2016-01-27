@@ -2,12 +2,12 @@ package engine;
 
 abstract public class GeomLayout
 {
-   interface IGeomLayoutCreateFromNode
+   public interface IGeomLayoutCreateFromNode
    {
       GeomLayout create(INode n);
    }
 
-   interface IGeomLayoutCreateFromDirectedEdge
+   public interface IGeomLayoutCreateFromDirectedEdge
    {
       GeomLayout create(DirectedEdge de);
    }

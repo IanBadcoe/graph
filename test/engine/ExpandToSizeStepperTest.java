@@ -1,5 +1,6 @@
 package engine;
 
+import game.TemplateStore1;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -31,43 +32,76 @@ public class ExpandToSizeStepperTest
 
    class SimpleAddNodeStepper implements IStepper
    {
-      SimpleAddNodeStepper(Graph g)
+      SimpleAddNodeStepper(int m_max, Graph g)
       {
+         this.m_max = m_max;
          m_graph = g;
       }
 
       @Override
       public StepperController.StatusReportInner step(StepperController.Status status)
       {
+         // lets us send a fail to the expander, after some initial successes
+         if (m_graph.numNodes() >= m_max)
+            return new StepperController.StatusReportInner(StepperController.Status.StepOutFailure,
+                  null, "");
+
          m_graph.addNode("", "", "", 0);
 
          return new StepperController.StatusReportInner(StepperController.Status.StepOutSuccess,
                null, "");
       }
 
+      final int m_max;
       final Graph m_graph;
    }
 
    @Test
    public void testGrowToSize() throws Exception
    {
-      ExpandToSizeStepper.SetChildFactory(
-            (a, b, c) -> new SimpleAddNodeStepper(a));
-
-      Graph g = new Graph();
-
-      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
-
-      StepperController.StatusReport ret;
-
-      do
       {
-         ret = e.Step();
-      }
-      while(!ret.Complete);
+         ExpandToSizeStepper.SetChildFactory(
+               (a, b, c) -> new SimpleAddNodeStepper(1000, a));
 
-      assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
-      assertEquals(10, g.numNodes());
+         Graph g = new Graph();
+
+         StepperController e = new StepperController(g,
+               new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
+
+         StepperController.StatusReport ret;
+
+         do
+         {
+            ret = e.Step();
+         }
+         while (!ret.Complete);
+
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
+         assertEquals(10, g.numNodes());
+      }
+
+      // partial success, when we can add some nodes but not enough, is counted
+      // as a success
+      {
+         ExpandToSizeStepper.SetChildFactory(
+               (a, b, c) -> new SimpleAddNodeStepper(5, a));
+
+         Graph g = new Graph();
+
+         StepperController e = new StepperController(g,
+               new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
+
+         StepperController.StatusReport ret;
+
+         do
+         {
+            ret = e.Step();
+         }
+         while (!ret.Complete);
+
+         assertEquals(StepperController.Status.StepOutSuccess, ret.Status);
+         assertEquals(5, g.numNodes());
+      }
    }
 
    @Test

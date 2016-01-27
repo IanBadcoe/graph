@@ -4,10 +4,13 @@ import java.util.*;
 
 public class LevelGenerator
 {
-   public LevelGenerator(int reqSize, LevelGeneratorConfiguration config)
+   public LevelGenerator(int reqSize,
+         LevelGeneratorConfiguration config,
+         TemplateStore ts)
    {
       m_reqSize = reqSize;
       m_config = config;
+      m_templates = ts;
    }
 
    public StepperController.StatusReport step()
@@ -198,7 +201,7 @@ public class LevelGenerator
 
    private Graph m_graph;
 
-   private final TemplateStore m_templates = new TemplateStore1();
+   private final TemplateStore m_templates;
 
    @SuppressWarnings("FieldCanBeLocal")
    private final int m_reqSize;

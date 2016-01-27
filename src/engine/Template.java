@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Template
 {
-   enum NodeType
+   public enum NodeType
    {
       In,
       Out,

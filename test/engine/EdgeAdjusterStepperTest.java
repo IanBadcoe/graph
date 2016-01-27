@@ -15,6 +15,17 @@ public class EdgeAdjusterStepperTest
    }
 
    @Test
+   public void testDefaultGeomMaker()
+   {
+      EdgeAdjusterStepper eas = new EdgeAdjusterStepper(null, null, m_config);
+
+      INode n = new Node("", "", "", 1);
+      GeomLayout gl = eas.getGeomMaker().create(n);
+
+      assertNotNull(gl);
+   }
+
+   @Test
    public void testStep_Fail() throws Exception
    {
       EdgeAdjusterStepper.SetChildFactory(
@@ -25,7 +36,10 @@ public class EdgeAdjusterStepperTest
       INode n2 = g.addNode("", "", "", 0);
       DirectedEdge de = g.connect(n1, n2, 0, 0, 0);
 
-      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
+      EdgeAdjusterStepper eas = new EdgeAdjusterStepper(g, de, m_config);
+      eas.setGeomMaker(null);
+
+      StepperController e = new StepperController(g, eas);
 
       StepperController.StatusReport ret;
 

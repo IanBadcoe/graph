@@ -1,6 +1,8 @@
-package engine;
+package game;
 
-class TemplateStore1 extends TemplateStore
+import engine.*;
+
+public class TemplateStore1 extends TemplateStore
 {
    public TemplateStore1()
    {
