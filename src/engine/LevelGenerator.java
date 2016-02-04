@@ -62,7 +62,7 @@ public class LevelGenerator
             new ExpandToSizeStepper(m_ioc_container, m_graph, m_reqSize, m_templates,
                   m_config));
 
-      LevelGeneratorConfiguration temp = new LevelGeneratorConfiguration(m_config);
+      LevelGeneratorConfiguration temp = LevelGeneratorConfiguration.shallowCopy(m_config);
       temp.RelaxationForceTarget /= 5;
       temp.RelaxationMoveTarget /= 5;
 

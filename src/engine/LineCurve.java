@@ -1,18 +1,22 @@
 package engine;
 
-import java.security.InvalidParameterException;
-
 public class LineCurve extends Curve
 {
    public LineCurve(XY position, XY directionCosines, double length)
    {
       super(0, length);
 
+      if (position == null)
+         throw new NullPointerException("'position' cannot be null");
+
+      if (directionCosines == null)
+         throw new NullPointerException("'directionCosines' cannot be null");
+
       Position = position;
       Direction = directionCosines;
 
       if (!Direction.isUnit())
-         throw new InvalidParameterException();
+         throw new IllegalArgumentException();
    }
 
    LineCurve(XY position, XY directionCosines, double start, double end)
@@ -24,7 +28,7 @@ public class LineCurve extends Curve
    }
 
    @Override
-   public XY computePosInner(double param)
+   protected XY computePosInner(double param)
    {
       return Position.plus(Direction.multiply(param));
    }
@@ -77,10 +81,10 @@ public class LineCurve extends Curve
       // could loop for coaxial line swith different origins here
       // but current use is more to re-merge stuff we temporarily split
       // and that all leaves Position the same in both halves
-      if (Position != c_lc.Position)
+      if (!Position.equals(c_lc.Position))
          return null;
 
-      if (Direction != c_lc.Direction)
+      if (!Direction.equals(c_lc.Direction))
          return null;
 
       if (EndParam != c_lc.StartParam)
@@ -121,7 +125,7 @@ public class LineCurve extends Curve
 
       LineCurve lc_o = (LineCurve)o;
 
-      return Position.equals(lc_o.Position) && Direction == lc_o.Direction;
+      return Position.equals(lc_o.Position) && Direction.equals(lc_o.Direction);
    }
 
    public final XY Position;
