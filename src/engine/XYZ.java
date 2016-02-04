@@ -29,7 +29,7 @@ public class XYZ
 
    public boolean equals(XYZ xyo, double tol)
    {
-      return this.minus(xyo).length() < tol;
+      return this.minus(xyo).length() <= tol;
    }
 
    @Override
@@ -110,7 +110,8 @@ public class XYZ
 
    public boolean isUnit()
    {
-      return Math.abs(length() - 1) < 1e-6;
+      double d = length() - 1;
+      return Math.abs(d) < 1e-6;
    }
 
    public XYZ asUnit()

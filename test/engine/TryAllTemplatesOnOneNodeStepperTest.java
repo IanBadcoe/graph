@@ -30,8 +30,12 @@ public class TryAllTemplatesOnOneNodeStepperTest
    @Test
    public void testTryAllTemplates() throws Exception
    {
-      TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new FailStepperLoggingTemplates(c));
+      IoCContainer ioc_container = new IoCContainer(
+            null,
+            null,
+            null,
+            (x, a, b, c, d) -> new FailStepperLoggingTemplates(c),
+            null);
 
       Graph g = new Graph();
 
@@ -40,7 +44,8 @@ public class TryAllTemplatesOnOneNodeStepperTest
       TemplateStore ts = new TemplateStore1();
 
       StepperController e = new StepperController(g,
-            new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
+            new TryAllTemplatesOnOneNodeStepper(ioc_container,
+                  g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -65,8 +70,12 @@ public class TryAllTemplatesOnOneNodeStepperTest
    @Test
    public void testSuccess() throws Exception
    {
-      TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            (a, b, c, d) -> new TestStepper(true, null));
+      IoCContainer ioc_container = new IoCContainer(
+            null,
+            null,
+            null,
+            (x, a, b, c, d) -> new TestStepper(true, null),
+            null);
 
       Graph g = new Graph();
 
@@ -75,7 +84,8 @@ public class TryAllTemplatesOnOneNodeStepperTest
       TemplateStore ts = new TemplateStore1();
 
       StepperController e = new StepperController(g,
-            new TryAllTemplatesOnOneNodeStepper(g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
+            new TryAllTemplatesOnOneNodeStepper(ioc_container,
+                  g, n1, ts.GetTemplatesCopy(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 

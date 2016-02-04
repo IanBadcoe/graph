@@ -8,6 +8,16 @@ import static org.junit.Assert.*;
 public class XYTest
 {
    @Test
+   public void testCtor()
+   {
+      XYZ xyz = new XYZ(11, 12, 13);
+
+      XY xy = new XY(xyz);
+
+      assertTrue(new XY(11, 12).equals(xy));
+   }
+
+   @Test
    public void testEquals() throws Exception
    {
       XY xy1 = new XY(0, 0);
@@ -186,5 +196,37 @@ public class XYTest
       assertEquals(0, xy2.dot(xy1), 1e-6);
       assertEquals(0, xy2.dot(xy3), 1e-6);
       assertEquals(-0.5, xy2.dot(xy4), 1e-6);
+   }
+
+   @Test
+   public void testInterpolate()
+   {
+      XY xy1 = new XY(1, 2);
+      XY xy2 = new XY(3, 4);
+
+      XY ret = XY.interpolate(xy1, xy2, 0);
+      assertTrue(xy1.equals(ret));
+
+      ret = XY.interpolate(xy1, xy2, 1);
+      assertTrue(xy2.equals(ret));
+
+      ret = XY.interpolate(xy1, xy2, 0.5);
+      assertTrue(new XY(2, 3).equals(ret));
+   }
+
+   @Test
+   public void testMakeDirectionVector()
+   {
+      XY ret = XY.makeDirectionVector(0);
+      assertTrue(new XY(0, 1).equals(ret, 1e-6));
+
+      ret = XY.makeDirectionVector(Math.PI / 2);
+      assertTrue(new XY(1, 0).equals(ret, 1e-6));
+
+      ret = XY.makeDirectionVector(Math.PI);
+      assertTrue(new XY(0, -1).equals(ret, 1e-6));
+
+      ret = XY.makeDirectionVector(3 * Math.PI / 2);
+      assertTrue(new XY(-1, 0).equals(ret, 1e-6));
    }
 }

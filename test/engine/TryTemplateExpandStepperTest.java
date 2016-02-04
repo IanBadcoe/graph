@@ -18,7 +18,7 @@ public class TryTemplateExpandStepperTest
       INode n1 = g.addNode("", "", "", 0);
 
       StepperController e = new StepperController(g,
-            new TryTemplateExpandStepper(g, n1, tb.Build(), new LevelGeneratorConfiguration(1)));
+            new TryTemplateExpandStepper(null, g, n1, tb.Build(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -36,8 +36,12 @@ public class TryTemplateExpandStepperTest
    @Test
    public void testExpandedTemplateRelaxFail() throws Exception
    {
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b) -> new TestStepper(false, () -> m_fail_count++));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(false, () -> m_fail_count++),
+            null,
+            null,
+            null,
+            null);
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -52,7 +56,7 @@ public class TryTemplateExpandStepperTest
       g.connect(n1, n2, 0, 0, 0);
 
       StepperController e = new StepperController(g,
-            new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
+            new TryTemplateExpandStepper(ioc_container, g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -73,10 +77,12 @@ public class TryTemplateExpandStepperTest
    @Test
    public void testEdgeAdjustFail()
    {
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b) -> new TestStepper(true, () -> m_success_count++));
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b, c) -> new TestStepper(false, () -> m_fail_count++));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(true, () -> m_success_count++),
+            null,
+            null,
+            null,
+            (x, a, b, c) -> new TestStepper(false, () -> m_fail_count++));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -95,7 +101,7 @@ public class TryTemplateExpandStepperTest
       n2.setPos(new XY(10, 0));
 
       StepperController e = new StepperController(g,
-            new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
+            new TryTemplateExpandStepper(ioc_container, g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -139,8 +145,12 @@ public class TryTemplateExpandStepperTest
    @Test
    public void testEdgeAdjustSucceed()
    {
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b) -> new TestStepper(true, () -> m_success_count++));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(true, () -> m_success_count++),
+            null,
+            null,
+            null,
+            (x, a, b, c) -> new SimpleEdgeAdjuster(b));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -158,12 +168,8 @@ public class TryTemplateExpandStepperTest
       // be "stressed"
       n2.setPos(new XY(10, 0));
 
-      // move n1 as n2 will have been replaced by the template
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b, c) -> new SimpleEdgeAdjuster(b));
-
       StepperController e = new StepperController(g,
-            new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
+            new TryTemplateExpandStepper(ioc_container, g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -188,8 +194,12 @@ public class TryTemplateExpandStepperTest
    @Test
    public void testEdgeTwoAdjustsSucceed()
    {
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b) -> new TestStepper(true, () -> m_success_count++));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(true, () -> m_success_count++),
+            null,
+            null,
+            null,
+            (x, a, b, c) -> new SimpleEdgeAdjuster(b));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -212,11 +222,9 @@ public class TryTemplateExpandStepperTest
       n2.setPos(new XY(10, 0));
 
       // move n1 as n2 will have been replaced by the template
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b, c) -> new SimpleEdgeAdjuster(b));
 
       StepperController e = new StepperController(g,
-            new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
+            new TryTemplateExpandStepper(ioc_container, g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -242,11 +250,13 @@ public class TryTemplateExpandStepperTest
    @Test
    public void testNoEdgeAdjustRequired()
    {
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b) -> new TestStepper(true, () -> m_success_count++));
-      // won't be called
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b, c) -> new TestStepper(false, () -> assertTrue(false)));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(true, () -> m_success_count++),
+            null,
+            null,
+            null,
+            // won't be called
+            (x, a, b, c) -> new TestStepper(false, () -> assertTrue(false)));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -264,7 +274,7 @@ public class TryTemplateExpandStepperTest
       n2.setPos(new XY(5, 0));
 
       StepperController e = new StepperController(g,
-            new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
+            new TryTemplateExpandStepper(ioc_container, g, n2, tb.Build(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -289,8 +299,13 @@ public class TryTemplateExpandStepperTest
    @Test
    public void testCrazyPrevStatus_1()
    {
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b) -> new TestStepper(true, () -> m_success_count++));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(true, () -> m_success_count++),
+            null,
+            null,
+            null,
+            // won't be called
+            (x, a, b, c) -> new SimpleEdgeAdjuster(b));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -309,10 +324,8 @@ public class TryTemplateExpandStepperTest
       n2.setPos(new XY(10, 0));
 
       // move n1 as n2 will have been replaced by the template
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b, c) -> new SimpleEdgeAdjuster(b));
 
-      IStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1));
+      IStepper tes = new TryTemplateExpandStepper(ioc_container, g, n2, tb.Build(), new LevelGeneratorConfiguration(1));
       StepperController e = new StepperController(g, tes);
 
       for(int i = 0; i < 4; i++)
@@ -339,8 +352,13 @@ public class TryTemplateExpandStepperTest
    @Test
    public void testCrazyPrevStatus_2()
    {
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            (a, b) -> new TestStepper(true, () -> m_success_count++));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(true, () -> m_success_count++),
+            null,
+            null,
+            null,
+            // won't be called
+            (x, a, b, c) -> new SimpleEdgeAdjuster(b));
 
       TemplateBuilder tb = new TemplateBuilder("", "");
       tb.AddNode(Template.NodeType.In, "in1");
@@ -359,10 +377,8 @@ public class TryTemplateExpandStepperTest
       n2.setPos(new XY(10, 0));
 
       // move n1 as n2 will have been replaced by the template
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            (a, b, c) -> new SimpleEdgeAdjuster(b));
 
-      IStepper tes = new TryTemplateExpandStepper(g, n2, tb.Build(), new LevelGeneratorConfiguration(1));
+      IStepper tes = new TryTemplateExpandStepper(ioc_container, g, n2, tb.Build(), new LevelGeneratorConfiguration(1));
       StepperController e = new StepperController(g, tes);
 
       for(int i = 0; i < 2; i++)

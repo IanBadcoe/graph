@@ -6,15 +6,11 @@ import java.util.stream.Collectors;
 
 public class TryAllNodesExpandStepper implements IStepper
 {
-   public interface IChildFactory
-   {
-      IStepper MakeChild(Graph g, INode n, Collection<Template> templates,
-                               LevelGeneratorConfiguration c);
-   }
 
-   public TryAllNodesExpandStepper(Graph graph, TemplateStore templates,
-                            LevelGeneratorConfiguration c)
+   public TryAllNodesExpandStepper(IoCContainer m_ioc_container, Graph graph, TemplateStore templates,
+         LevelGeneratorConfiguration c)
    {
+      this.m_ioc_container = m_ioc_container;
       m_graph = graph;
       m_templates = templates;
       m_all_nodes = graph.allGraphNodes().stream().filter(n -> n.getCodes().contains("e"))
@@ -50,17 +46,12 @@ public class TryAllNodesExpandStepper implements IStepper
          templates = templates.stream().filter(t -> t.GetCodes().contains("e"))
                .collect(Collectors.toCollection(ArrayList::new));
 
-      IStepper child = s_child_factory.MakeChild(
-            m_graph, node, templates, m_config);
+      IStepper child = m_ioc_container.NodeExpanderFactory.makeNodeExpander(
+            m_ioc_container, m_graph, node, templates, m_config);
 
       //noinspection ConstantConditions
       return new StepperController.StatusReportInner(StepperController.Status.StepIn,
             child, "Trying to expand node: " + node.getName());
-   }
-
-   public static void SetChildFactory(IChildFactory factory)
-   {
-      s_child_factory = factory;
    }
 
    private final Graph m_graph;
@@ -68,5 +59,5 @@ public class TryAllNodesExpandStepper implements IStepper
    private final Collection<INode> m_all_nodes;
    private final LevelGeneratorConfiguration m_config;
 
-   private static IChildFactory s_child_factory;
+   private final IoCContainer m_ioc_container;
 }

@@ -19,7 +19,16 @@ public class Main extends processing.core.PApplet implements IDraw
    public Main()
    {
       m_config = new LevelGeneratorConfiguration(85);
-      m_generator = new LevelGenerator(10, m_config, new TemplateStore1());
+
+      // configure our crude IoC system
+      m_ioc_container = new IoCContainer(
+            RelaxerStepper::new,
+            TryAllNodesExpandStepper::new,
+            TryAllTemplatesOnOneNodeStepper::new,
+            TryTemplateExpandStepper::new,
+            EdgeAdjusterStepper::new);
+
+      m_generator = new LevelGenerator(m_ioc_container, 10, m_config, new TemplateStore1());
    }
 
    @Override
@@ -30,19 +39,6 @@ public class Main extends processing.core.PApplet implements IDraw
 
       s_app = this;
 
-      // configure our crude IoC system
-      TryAllNodesExpandStepper.SetChildFactory(
-            TryAllTemplatesOnOneNodeStepper::new);
-      TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            TryTemplateExpandStepper::new);
-      ExpandToSizeStepper.SetChildFactory(
-            TryAllNodesExpandStepper::new);
-      EdgeAdjusterStepper.SetChildFactory(
-            RelaxerStepper::new);
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            RelaxerStepper::new);
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            EdgeAdjusterStepper::new);
    }
 
    @Override
@@ -723,4 +719,6 @@ public class Main extends processing.core.PApplet implements IDraw
    private final static int BACKWARDS_KEY = 3;
 
    private final ArrayList<Object3D> m_demo_objects = new ArrayList<>();
+
+   private final IoCContainer m_ioc_container;
 }
