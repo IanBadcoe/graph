@@ -7,23 +7,87 @@ import static org.junit.Assert.*;
 public class XYZTest
 {
    @Test
+   public void testCtor()
+   {
+      {
+         XYZ xyz = new XYZ();
+         assertEquals(0, xyz.X, 0);
+         assertEquals(0, xyz.Y, 0);
+         assertEquals(0, xyz.Z, 0);
+      }
+
+      {
+         XYZ xyz = new XYZ(1, 2, 3);
+         assertEquals(0, xyz.X, 1);
+         assertEquals(0, xyz.Y, 2);
+         assertEquals(0, xyz.Z, 3);
+      }
+
+      {
+         XYZ xyz = new XYZ(new XY(3, 2), 1);
+         assertEquals(0, xyz.X, 3);
+         assertEquals(0, xyz.Y, 2);
+         assertEquals(0, xyz.Z, 1);
+      }
+   }
+
+   @Test
    public void testEquals() throws Exception
    {
-      XYZ xy1 = new XYZ(0, 0, 0);
-      XYZ xy2 = new XYZ(0, 0, 0);
-      XYZ xy3 = new XYZ(1, 0, 0);
-      XYZ xy4 = new XYZ(0, 1, 0);
-      XYZ xy5 = new XYZ(1, 1, 0);
-      XYZ xy6 = new XYZ(0, 0, 1);
+      // absolute equals
+      {
+         XYZ xy1 = new XYZ(0, 0, 0);
+         XYZ xy2 = new XYZ(0, 0, 0);
+         XYZ xy3 = new XYZ(1, 0, 0);
+         XYZ xy4 = new XYZ(0, 1, 0);
+         XYZ xy5 = new XYZ(1, 1, 0);
+         XYZ xy6 = new XYZ(0, 0, 1);
 
-      assertTrue(xy1.equals(xy2));
-      assertFalse(xy1.equals(xy3));
-      assertFalse(xy1.equals(xy4));
-      assertFalse(xy1.equals(xy5));
-      assertFalse(xy1.equals(xy6));
+         assertTrue(xy1.equals(xy2));
+         assertFalse(xy1.equals(xy3));
+         assertFalse(xy1.equals(xy4));
+         assertFalse(xy1.equals(xy5));
+         assertFalse(xy1.equals(xy6));
 
-      //noinspection EqualsBetweenInconvertibleTypes
-      assertFalse(xy1.equals("frog"));
+         //noinspection EqualsBetweenInconvertibleTypes
+         assertFalse(xy1.equals("frog"));
+      }
+
+      // equals with tolerance
+      {
+         XYZ xy1 = new XYZ(0, 0, 0);
+         XYZ xy2 = new XYZ(0.1, 0, 0);
+         XYZ xy3 = new XYZ(0, 0.1, 0);
+         XYZ xy4 = new XYZ(0.1, 0.1, 0);
+         XYZ xy5 = new XYZ(0, 0, 0.1);
+         XYZ xy6 = new XYZ(0.1, 0, 0.1);
+         XYZ xy7 = new XYZ(0, 0.1, 0.1);
+         XYZ xy8 = new XYZ(0.1, 0.1, 0.1);
+
+         assertTrue(xy1.equals(xy1, 0));
+         assertFalse(xy1.equals(xy2, 0));
+         assertFalse(xy1.equals(xy3, 0));
+         assertFalse(xy1.equals(xy4, 0));
+         assertFalse(xy1.equals(xy5, 0));
+         assertFalse(xy1.equals(xy6, 0));
+         assertFalse(xy1.equals(xy7, 0));
+         assertFalse(xy1.equals(xy8, 0));
+
+         assertTrue(xy1.equals(xy2, 0.1));
+         assertTrue(xy1.equals(xy3, 0.1));
+         assertFalse(xy1.equals(xy4, 0.1));
+         assertTrue(xy1.equals(xy5, 0.1));
+         assertFalse(xy1.equals(xy6, 0.1));
+         assertFalse(xy1.equals(xy7, 0.1));
+         assertFalse(xy1.equals(xy8, 0.1));
+
+         assertTrue(xy1.equals(xy4, 0.15));
+         assertTrue(xy1.equals(xy6, 0.15));
+         assertTrue(xy1.equals(xy7, 0.15));
+         assertFalse(xy1.equals(xy8, 0.15));
+
+         assertTrue(xy1.equals(xy8, 0.2));
+      }
    }
 
    @Test
@@ -202,5 +266,44 @@ public class XYZTest
       assertEquals(0, xy2.dot(xy5), 1e-6);
       assertEquals(0.7, xy6.dot(xy5), 1e-6);
       assertEquals(0.7, xy5.dot(xy6), 1e-6);
+   }
+
+   @Test
+   public void testIsUnit()
+   {
+      XYZ xyz1 = new XYZ(1, 0, 0);
+      XYZ xyz2 = new XYZ(1, 1, 0);
+      XYZ xyz3 = new XYZ(1 / Math.sqrt(3), 1 / Math.sqrt(3), 1 / Math.sqrt(3));
+
+      assertTrue(xyz1.isUnit());
+      assertFalse(xyz2.isUnit());
+      assertTrue(xyz3.isUnit());
+   }
+
+   @Test
+   public void testAsUnit()
+   {
+      XYZ xyz1 = new XYZ(1, 0, 0);
+      XYZ xyz2 = new XYZ(1, 1, 0);
+      XYZ xyz3 = new XYZ(1, 1, 1);
+
+      XYZ xyzu1 = xyz1.asUnit();
+      XYZ xyzu2 = xyz2.asUnit();
+      XYZ xyzu3 = xyz3.asUnit();
+
+      assert(xyz1.equals(xyzu1));
+      assert(new XYZ(1 / Math.sqrt(2), 1 / Math.sqrt(2), 0).equals(xyzu2));
+      assert(new XYZ(1 / Math.sqrt(3), 1 / Math.sqrt(3), 1 / Math.sqrt(3)).equals(xyzu3));
+   }
+
+   @Test
+   public void testInterpolate()
+   {
+      XYZ xyz1 = new XYZ();
+      XYZ xyz2 = new XYZ(1, 2, 3);
+
+      assertTrue(xyz1.equals(XYZ.interpolate(xyz1, xyz2, 0)));
+      assertTrue(xyz2.equals(XYZ.interpolate(xyz1, xyz2, 1)));
+      assertTrue(new XYZ(0.5, 1, 1.5).equals(XYZ.interpolate(xyz1, xyz2, 0.5)));
    }
 }

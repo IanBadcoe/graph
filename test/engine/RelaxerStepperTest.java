@@ -1,6 +1,5 @@
 package engine;
 
-import engine.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,6 +12,7 @@ public class RelaxerStepperTest
    public void setUp() throws Exception
    {
       m_config = new LevelGeneratorConfiguration(1);
+      // run it to a tighter convergence than usual
       m_config.RelaxationMoveTarget = 1e-3;
       m_config.RelaxationForceTarget = 1e-4;
       m_config.RelaxationMinimumSeparation = 0;
@@ -42,8 +42,7 @@ public class RelaxerStepperTest
       g.connect(n3, n4, 120, 120, 0);
       g.connect(n1, n5, 40, 40, 0);
 
-      // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -105,7 +104,7 @@ public class RelaxerStepperTest
       g.connect(n3, n1, 40, 40, 0);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -148,7 +147,7 @@ public class RelaxerStepperTest
       n2.setPos(new XY(-100, 0));
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -182,7 +181,7 @@ public class RelaxerStepperTest
       n2.setPos(new XY(  -1,    0));
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -224,7 +223,7 @@ public class RelaxerStepperTest
       g.connect(n3, n4, 20, 20, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -270,7 +269,7 @@ public class RelaxerStepperTest
       g.connect(n3, n4, 20, 20, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -314,7 +313,7 @@ public class RelaxerStepperTest
       g.connect(n1, n2, 100, 100, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -359,7 +358,7 @@ public class RelaxerStepperTest
       g.connect(n3, n4, 100, 100, 10);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -402,7 +401,7 @@ public class RelaxerStepperTest
          g.connect(n2, n3, 100, 100, 10);
 
          // run it to a tighter convergence than usual
-         RelaxerStepper rs = new RelaxerStepper(g, m_config);
+         RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
          StepperController.StatusReportInner ret;
          int count = 0;
@@ -440,7 +439,7 @@ public class RelaxerStepperTest
          g.connect(n1, n2, 100, 100, 10);
 
          // run it to a tighter convergence than usual
-         RelaxerStepper rs = new RelaxerStepper(g, m_config);
+         RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
          StepperController.StatusReportInner ret;
          int count = 0;
@@ -478,7 +477,7 @@ public class RelaxerStepperTest
       g.connect(n1, n2, 100, 100, 0);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -525,7 +524,7 @@ public class RelaxerStepperTest
       g.connect(n4, n5, 2, 2, 0);
 
       // run it to a tighter convergence than usual
-      RelaxerStepper rs = new RelaxerStepper(g, m_config);
+      RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
       StepperController.StatusReportInner ret;
       int count = 0;
@@ -572,7 +571,7 @@ public class RelaxerStepperTest
          // run it to a tighter convergence than usual
          // add 1 unit of extra separation
          m_config.RelaxationMinimumSeparation = 1;
-         RelaxerStepper rs = new RelaxerStepper(g, m_config);
+         RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
          StepperController.StatusReportInner ret;
          int count = 0;
@@ -613,7 +612,7 @@ public class RelaxerStepperTest
          // run it to a tighter convergence than usual
          // add an extra separation of 1 unit
          m_config.RelaxationMinimumSeparation = 1;
-         RelaxerStepper rs = new RelaxerStepper(g, m_config);
+         RelaxerStepper rs = new RelaxerStepper(null, g, m_config);
 
          StepperController.StatusReportInner ret;
          int count = 0;

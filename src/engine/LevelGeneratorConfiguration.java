@@ -10,20 +10,27 @@ public class LevelGeneratorConfiguration
       Rand = new Random(rand_seed);
    }
 
-   LevelGeneratorConfiguration(LevelGeneratorConfiguration old)
+   public static LevelGeneratorConfiguration shallowCopy(LevelGeneratorConfiguration old)
    {
-      RelaxationMinimumSeparation = old.RelaxationMinimumSeparation;
+      LevelGeneratorConfiguration lcg = new LevelGeneratorConfiguration(0);
 
-      EdgeToNodeForceScale = old.EdgeToNodeForceScale;
-      EdgeLengthForceScale = old.EdgeLengthForceScale;
-      NodeToNodeForceScale = old.NodeToNodeForceScale;
+      lcg.RelaxationMinimumSeparation = old.RelaxationMinimumSeparation;
 
-      RelaxationMaxMove = old.RelaxationMaxMove;
+      lcg.EdgeToNodeForceScale = old.EdgeToNodeForceScale;
+      lcg.EdgeLengthForceScale = old.EdgeLengthForceScale;
+      lcg.NodeToNodeForceScale = old.NodeToNodeForceScale;
 
-      RelaxationForceTarget = old.RelaxationForceTarget;
-      RelaxationMoveTarget = old.RelaxationMoveTarget;
+      lcg.RelaxationMaxMove = old.RelaxationMaxMove;
 
-      Rand = old.Rand;
+      lcg.RelaxationForceTarget = old.RelaxationForceTarget;
+      lcg.RelaxationMoveTarget = old.RelaxationMoveTarget;
+
+      lcg.Rand = old.Rand;
+
+      lcg.CellSize = old.CellSize;
+      lcg.WallFacetLength = old.WallFacetLength;
+
+      return lcg;
    }
 
    // --------------------------------------------------------------------------------------------------------------

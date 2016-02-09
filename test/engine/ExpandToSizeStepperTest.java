@@ -10,14 +10,18 @@ public class ExpandToSizeStepperTest
    @Test
    public void testAllTemplatesFail() throws Exception
    {
-      ExpandToSizeStepper.SetChildFactory(
-            (a, b, c) -> new TestStepper(false, null));
+      IoCContainer ioc_container = new IoCContainer(
+            null,
+            (x, a, b, c) -> new TestStepper(false, null),
+            null,
+            null,
+            null);
 
       Graph g = new Graph();
 
       TemplateStore ts = new TemplateStore1();
 
-      StepperController e = new StepperController(g, new ExpandToSizeStepper(g, 1, ts, new LevelGeneratorConfiguration(1)));
+      StepperController e = new StepperController(g, new ExpandToSizeStepper(ioc_container, g, 1, ts, new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -60,13 +64,17 @@ public class ExpandToSizeStepperTest
    public void testGrowToSize() throws Exception
    {
       {
-         ExpandToSizeStepper.SetChildFactory(
-               (a, b, c) -> new SimpleAddNodeStepper(1000, a));
+         IoCContainer ioc_container = new IoCContainer(
+               null,
+               (x, a, b, c) -> new SimpleAddNodeStepper(1000, a),
+               null,
+               null,
+               null);
 
          Graph g = new Graph();
 
          StepperController e = new StepperController(g,
-               new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
+               new ExpandToSizeStepper(ioc_container, g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
 
          StepperController.StatusReport ret;
 
@@ -83,13 +91,17 @@ public class ExpandToSizeStepperTest
       // partial success, when we can add some nodes but not enough, is counted
       // as a success
       {
-         ExpandToSizeStepper.SetChildFactory(
-               (a, b, c) -> new SimpleAddNodeStepper(5, a));
+         IoCContainer ioc_container = new IoCContainer(
+               null,
+               (x, a, b, c) -> new SimpleAddNodeStepper(5, a),
+               null,
+               null,
+               null);
 
          Graph g = new Graph();
 
          StepperController e = new StepperController(g,
-               new ExpandToSizeStepper(g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
+               new ExpandToSizeStepper(ioc_container, g, 10, new TemplateStore1(), new LevelGeneratorConfiguration(1)));
 
          StepperController.StatusReport ret;
 
@@ -113,7 +125,7 @@ public class ExpandToSizeStepperTest
       try
       {
          // none of these parameters used in this case
-         ExpandToSizeStepper etss = new ExpandToSizeStepper(null, 0, null, null);
+         ExpandToSizeStepper etss = new ExpandToSizeStepper(null, null, 0, null, null);
 
          etss.step(StepperController.Status.Iterate);
       }

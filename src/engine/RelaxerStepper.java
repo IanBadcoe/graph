@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 public class RelaxerStepper implements IStepper
 {
-   public RelaxerStepper(Graph graph, LevelGeneratorConfiguration c)
+   public RelaxerStepper(IoCContainer m_ioc_container, Graph graph, LevelGeneratorConfiguration c)
    {
       m_graph = graph;
+      this.m_ioc_container = m_ioc_container;
 
       m_config = c;
    }
@@ -256,4 +257,6 @@ public class RelaxerStepper implements IStepper
    private final LevelGeneratorConfiguration m_config;
 
    private boolean m_setup_done = false;
+
+   final private IoCContainer m_ioc_container;
 }

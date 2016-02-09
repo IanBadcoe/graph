@@ -23,8 +23,12 @@ public class TryAllNodesExpandStepperTest
    @Test
    public void testTryAllNodes() throws Exception
    {
-      TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new TestStepperLoggingNodes(b));
+      IoCContainer ioc_container = new IoCContainer(
+            null,
+            null,
+            (x, a, b, c, d) -> new TestStepperLoggingNodes(b),
+            null,
+            null);
 
       Graph g = new Graph();
 
@@ -34,7 +38,7 @@ public class TryAllNodesExpandStepperTest
       INode n3 = g.addNode("", "e", "", 0);
 
       StepperController e = new StepperController(g,
-            new TryAllNodesExpandStepper(g, new TemplateStore(), new LevelGeneratorConfiguration(1)));
+            new TryAllNodesExpandStepper(ioc_container, g, new TemplateStore(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 
@@ -57,8 +61,12 @@ public class TryAllNodesExpandStepperTest
    @Test
    public void testSuccess()
    {
-      TryAllNodesExpandStepper.SetChildFactory(
-            (a, b, c, d) -> new TestStepper(true, null));
+      IoCContainer ioc_container = new IoCContainer(
+            null,
+            null,
+            (x, a, b, c, d) -> new TestStepper(true, null),
+            null,
+            null);
 
       Graph g = new Graph();
 
@@ -68,7 +76,7 @@ public class TryAllNodesExpandStepperTest
       g.addNode("", "e", "", 0);
 
       StepperController e = new StepperController(g,
-            new TryAllNodesExpandStepper(g, new TemplateStore(), new LevelGeneratorConfiguration(1)));
+            new TryAllNodesExpandStepper(ioc_container, g, new TemplateStore(), new LevelGeneratorConfiguration(1)));
 
       StepperController.StatusReport ret;
 

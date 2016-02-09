@@ -4,10 +4,11 @@ import java.util.*;
 
 public class LevelGenerator
 {
-   public LevelGenerator(int reqSize,
+   public LevelGenerator(IoCContainer m_ioc_container, int reqSize,
          LevelGeneratorConfiguration config,
          TemplateStore ts)
    {
+      this.m_ioc_container = m_ioc_container;
       m_reqSize = reqSize;
       m_config = config;
       m_templates = ts;
@@ -58,15 +59,15 @@ public class LevelGenerator
       m_graph = MakeSeed();
 
       m_expander = new StepperController(m_graph,
-            new ExpandToSizeStepper(m_graph, m_reqSize, m_templates,
+            new ExpandToSizeStepper(m_ioc_container, m_graph, m_reqSize, m_templates,
                   m_config));
 
-      LevelGeneratorConfiguration temp = new LevelGeneratorConfiguration(m_config);
+      LevelGeneratorConfiguration temp = LevelGeneratorConfiguration.shallowCopy(m_config);
       temp.RelaxationForceTarget /= 5;
       temp.RelaxationMoveTarget /= 5;
 
       m_final_relaxer = new StepperController(m_graph,
-            new RelaxerStepper(m_graph, temp));
+            new RelaxerStepper(m_ioc_container, m_graph, temp));
 
       m_phase = Phase.GraphExpand;
 
@@ -221,4 +222,6 @@ public class LevelGenerator
    private Level m_level;
 
    private UnionHelper m_union_helper;
+
+   private final IoCContainer m_ioc_container;
 }
