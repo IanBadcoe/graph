@@ -2,7 +2,7 @@
   <configuration default="false" name="Debug Tests" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
-        <option name="PATTERN" value="models.*" />
+        <option name="PATTERN" value="engine.objects.*" />
         <option name="ENABLED" value="true" />
       </pattern>
       <pattern>

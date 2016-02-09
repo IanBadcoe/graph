@@ -1,12 +1,12 @@
-package models;
+package engine.objects;
 
 import engine.IDraw;
 import engine.XYZ;
 
 @SuppressWarnings("WeakerAccess")
-public class Model
+public class LoDModel
 {
-   public Model(LoD[] loDs, double radius)
+   public LoDModel(LoD[] loDs, double radius)
    {
       LoDs = loDs;
       Radius = radius;

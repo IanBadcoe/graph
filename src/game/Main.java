@@ -1,10 +1,9 @@
 package game;
 
 import engine.*;
-import models.Model;
-import models.ModelBuilder;
-import models.Object3D;
-import processing.core.PApplet;
+import engine.objects.LoDModel;
+import engine.objects.LoDModelBuilder;
+import engine.objects.LoDDrawable;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ public class Main extends processing.core.PApplet implements IDraw
    {
 //      size(500, 500, P3D);
       fullScreen(P3D);
-
-      s_app = this;
 
       // configure our crude IoC system
       TryAllNodesExpandStepper.SetChildFactory(
@@ -221,7 +218,7 @@ public class Main extends processing.core.PApplet implements IDraw
          draw3D();
       }
 
-      for(Object3D o : m_demo_objects)
+      for(LoDDrawable o : m_demo_objects)
       {
          o.Orientation += 0.01;
          o.Elevation += 0.003;
@@ -244,9 +241,9 @@ public class Main extends processing.core.PApplet implements IDraw
          rotate((float)(Math.PI + m_decaying_ori));
       }
 
-      translate(m_player.getPosition().negate());
+      translate(m_player.getPos2D().negate());
 
-      drawLevel(m_level, m_player.getPosition());
+      drawLevel(m_level, m_player.getPos2D());
    }
 
    void draw3D()
@@ -254,7 +251,7 @@ public class Main extends processing.core.PApplet implements IDraw
       camera(m_player.getEye(), m_player.getEye().plus(m_player.getViewDir()), new XYZ(0, 0, -1));
       perspective((float)Math.PI / 3, (float)width/height, (float)0.1, (float)500);
 
-      drawLevel3D(m_level, m_player.getEye());
+      m_level.drawLevel3D(m_player, this);
    }
 
    private void camera(XYZ eye, XYZ target, XYZ up)
@@ -311,60 +308,60 @@ public class Main extends processing.core.PApplet implements IDraw
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
 
       {
-         ModelBuilder mb = new ModelBuilder(1);
+         LoDModelBuilder mb = new LoDModelBuilder(1);
 
-         ModelBuilder.MeshSet ms = mb.createCone(1, 0.5, 1, true, true);
+         LoDModelBuilder.MeshSet ms = mb.createCone(1, 0.5, 1, true, true);
 
          mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
 
-         Model m = mb.makeModel();
+         LoDModel m = mb.makeModel();
 
-         Object3D o = new Object3D(m);
+         LoDDrawable o = new LoDDrawable(m);
          o.Position = m_player.getEye().plus(new XYZ(2, 0, 0));
          m_demo_objects.add(o);
          m_level.addDrawable(o);
       }
 
       {
-         ModelBuilder mb = new ModelBuilder(1);
+         LoDModelBuilder mb = new LoDModelBuilder(1);
 
-         ModelBuilder.MeshSet ms = mb.createCylinder(0.5, 1, true, true);
+         LoDModelBuilder.MeshSet ms = mb.createCylinder(0.5, 1, true, true);
 
          mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
 
-         Model m = mb.makeModel();
+         LoDModel m = mb.makeModel();
 
-         Object3D o = new Object3D(m);
+         LoDDrawable o = new LoDDrawable(m);
          o.Position = m_player.getEye().plus(new XYZ(0, 2, 0));
          m_demo_objects.add(o);
          m_level.addDrawable(o);
       }
 
       {
-         ModelBuilder mb = new ModelBuilder(1);
+         LoDModelBuilder mb = new LoDModelBuilder(1);
 
-         ModelBuilder.MeshSet ms = mb.createSphere(0.5, -0.25, 0.4, true, true);
+         LoDModelBuilder.MeshSet ms = mb.createSphere(0.5, -0.25, 0.4, true, true);
 
          mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
 
-         Model m = mb.makeModel();
+         LoDModel m = mb.makeModel();
 
-         Object3D o = new Object3D(m);
+         LoDDrawable o = new LoDDrawable(m);
          o.Position = m_player.getEye().plus(new XYZ(0, -2, 0));
          m_demo_objects.add(o);
          m_level.addDrawable(o);
       }
 
       {
-         ModelBuilder mb = new ModelBuilder(1);
+         LoDModelBuilder mb = new LoDModelBuilder(1);
 
-         ModelBuilder.MeshSet ms = mb.createCuboid(0.5, 0.25, 0.125);
+         LoDModelBuilder.MeshSet ms = mb.createCuboid(0.5, 0.25, 0.125);
 
          mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
 
-         Model m = mb.makeModel();
+         LoDModel m = mb.makeModel();
 
-         Object3D o = new Object3D(m);
+         LoDDrawable o = new LoDDrawable(m);
          o.Position = m_player.getEye().plus(new XYZ(-2, 0, 0));
          m_demo_objects.add(o);
          m_level.addDrawable(o);
@@ -410,16 +407,16 @@ public class Main extends processing.core.PApplet implements IDraw
 
    void drawNode(INode n)
    {
-      s_app.noStroke();
-      s_app.fill(n.getColour());
-      s_app.ellipse((float) n.getPos().X, (float) n.getPos().Y,
+      noStroke();
+      fill(n.getColour());
+      ellipse((float) n.getPos().X, (float) n.getPos().Y,
             (float) n.getRad(), (float) n.getRad());
    }
 
    void drawLabel(INode n)
    {
-      s_app.fill(255, 255, 255);
-      s_app.text(n.getName(),
+      fill(255, 255, 255);
+      text(n.getName(),
             (float) n.getPos().X, (float) n.getPos().Y);
    }
 
@@ -428,7 +425,7 @@ public class Main extends processing.core.PApplet implements IDraw
       // in connections are drawn by the other node...
       for(DirectedEdge e : n.getOutConnections())
       {
-         s_app.stroke(e.GetColour());
+         stroke(e.GetColour());
          strokeWidth(e.HalfWidth * 1.9, false);
          line(e.Start.getPos(), e.End.getPos());
 
@@ -447,26 +444,26 @@ public class Main extends processing.core.PApplet implements IDraw
 
    void drawLevel(Level level, XY visibility_pos)
    {
-      s_app.background(0xff201010);
+      background(0xff201010);
 
-      s_app.stroke(0xff808080);
+      stroke(0xff808080);
       strokeWidth(2, true);
 
-      s_app.stroke(0xff808080);
-      s_app.fill(180, 120, 120);
+      stroke(0xff808080);
+      fill(180, 120, 120);
 
       Box bounds = level.getBounds();
 
-      s_app.beginShape();
-      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Max.Y + 1000);
-      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Max.Y + 1000);
-      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
-      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
+      beginShape();
+      vertex((float)bounds.Max.X + 1000, (float)bounds.Max.Y + 1000);
+      vertex((float)bounds.Min.X - 1000, (float)bounds.Max.Y + 1000);
+      vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
+      vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
 
       level.getWallLoops().forEach(this::drawWallLoop);
-      s_app.endShape(CLOSE);
+      endShape(CLOSE);
 
-      s_app.stroke(0xfff0f0f0);
+      stroke(0xfff0f0f0);
       strokeWidth(2, true);
 
       for(Wall w : level.getVisibleWalls(visibility_pos))
@@ -481,59 +478,14 @@ public class Main extends processing.core.PApplet implements IDraw
       }
    }
 
-   void drawLevel3D(Level level, XYZ visibility_pos)
-   {
-      s_app.background(0xff201010);
-
-      pointLight(140, 140, 140,
-            (float)m_player.getPosition().X, (float)m_player.getPosition().Y, 3);
-
-      noStroke();
-      // floor
-      s_app.fill(120, 120, 120);
-
-      level.getWallLoops().forEach(x -> drawWallLoop3D(x, 0));
-
-      // ceiling
-      s_app.fill(180, 180, 180);
-
-      level.getWallLoops().forEach(x -> drawWallLoop3D(x, 4));
-
-      s_app.fill(160, 160, 160);
-      s_app.stroke(128, 0, 0);
-      s_app.strokeWeight(1);
-
-      for(Wall w : level.getVisibleWalls(new  XY(visibility_pos)))
-      {
-         beginShape();
-         vertex((float)w.Start.X, (float)w.Start.Y, 0);
-         vertex((float)w.End.X, (float)w.End.Y, 0);
-         vertex((float)w.End.X, (float)w.End.Y, 4);
-         vertex((float)w.Start.X, (float)w.Start.Y, 4);
-         endShape();
-      }
-
-      level.getDrawables().stream().filter(id -> id != m_player).forEach(id -> id.draw3D(this, visibility_pos));
-   }
-
-   private void drawWallLoop3D(WallLoop wl, double height)
-   {
-      s_app.beginShape();
-      for(Wall w : wl)
-      {
-         s_app.vertex((float)w.Start.X, (float)w.Start.Y, (float)height);
-      }
-      s_app.endShape();
-   }
-
    void drawWallLoop(WallLoop wl)
    {
-      s_app.beginContour();
+      beginContour();
       for(Wall w : wl)
       {
-         s_app.vertex((float)w.Start.X, (float)w.Start.Y);
+         vertex((float)w.Start.X, (float)w.Start.Y);
       }
-      s_app.endContour();
+      endContour();
    }
 
    void drawLoopPoints(ArrayList<XY> pnts)
@@ -593,31 +545,25 @@ public class Main extends processing.core.PApplet implements IDraw
    @Override
    public void line(XY from, XY to)
    {
-      s_app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
+      line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
    }
 
    @Override
    public void text(String text, XY pos)
    {
-      s_app.text(text, (float)pos.X, (float)pos.Y);
-   }
-
-   @Override
-   public void stroke(int red, int green, int blue)
-   {
-      s_app.stroke(red, green, blue);
-   }
-
-   @Override
-   public void fill(int red, int green, int blue)
-   {
-      s_app.fill(red, green, blue);
+      text(text, (float)pos.X, (float)pos.Y);
    }
 
    @Override
    public void circle(XY pos, double rad)
    {
-      s_app.ellipse((float)pos.X, (float)pos.Y, (float)rad, (float)rad);
+      ellipse((float)pos.X, (float)pos.Y, (float)rad, (float)rad);
+   }
+
+   @Override
+   public void fill(int red, int green, int blue)
+   {
+      super.fill(red, green, blue);
    }
 
    @Override
@@ -649,35 +595,47 @@ public class Main extends processing.core.PApplet implements IDraw
       endShape();
    }
 
+   @Override
+   public void pointLight(int r, int g, int b, XYZ pos)
+   {
+      pointLight(r, g, b, (float)pos.X, (float)pos.Y, (float)pos.Z);
+   }
+
    private void normal(XYZ n)
    {
       assert n.isUnit();
       normal((float)n.X, (float)n.Y, (float)n.Z);
    }
 
-   private void vertex(XYZ v)
+   public void vertex(XYZ v)
    {
       vertex((float)v.X, (float)v.Y, (float)v.Z);
    }
 
    void scaleTo(Box b)
    {
-      double shorter_display = Math.min(s_app.width, s_app.height);
+      double shorter_display = Math.min(width, height);
 
       double larger_box = Math.max(b.DX(), b.DY());
 
       larger_box *= 1.1;
 
-      s_app.translate(s_app.width / 2, s_app.height / 2);
+      translate(width / 2, height / 2);
 
-      s_app.scale((float)(shorter_display / larger_box));
+      scale((float)(shorter_display / larger_box));
 
-      s_app.translate((float)-b.Min.X,(float)-b.Min.Y);
+      translate((float)-b.Min.X,(float)-b.Min.Y);
    }
 
-   void clear(@SuppressWarnings("SameParameterValue") int c)
+   public void clear(@SuppressWarnings("SameParameterValue") int c)
    {
-      s_app.background(c);
+      background(c);
+   }
+
+   @Override
+   public void stroke(int red, int green, int blue)
+   {
+      super.stroke(red, green, blue);
    }
 
    @Override
@@ -686,10 +644,8 @@ public class Main extends processing.core.PApplet implements IDraw
       if (scaling)
          d /= m_scale;
 
-      s_app.strokeWeight((float)d);
+      strokeWeight((float)d);
    }
-
-   private static PApplet s_app;
 
    // UI data
    private boolean m_auto_scale = true;
@@ -722,5 +678,5 @@ public class Main extends processing.core.PApplet implements IDraw
    private final static int FORWARDS_KEY = 2;
    private final static int BACKWARDS_KEY = 3;
 
-   private final ArrayList<Object3D> m_demo_objects = new ArrayList<>();
+   private final ArrayList<LoDDrawable> m_demo_objects = new ArrayList<>();
 }

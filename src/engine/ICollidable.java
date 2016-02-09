@@ -1,5 +1,7 @@
 package engine;
 
+import engine.objects.Movable;
+
 public interface ICollidable
 {
    ColRet collide(Movable m, XY where, XY direction, XY wherePrevious);

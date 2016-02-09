@@ -1,8 +1,8 @@
-package models;
+package engine.objects;
 
 import engine.IDraw;
-import engine.XYZ;
 import engine.OrderedPair;
+import engine.XYZ;
 
 public class Mesh
 {

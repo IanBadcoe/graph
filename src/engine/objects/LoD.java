@@ -1,4 +1,4 @@
-package models;
+package engine.objects;
 
 import engine.IDraw;
 

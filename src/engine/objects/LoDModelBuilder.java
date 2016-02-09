@@ -1,18 +1,18 @@
-package models;
+package engine.objects;
 
 import engine.XYZ;
 
 import java.util.ArrayList;
 
-public class ModelBuilder
+public class LoDModelBuilder
 {
-   public ModelBuilder(double radius)
+   public LoDModelBuilder(double radius)
    {
-      this(Object3D.FacetingFactors, radius);
+      this(LoDDrawable.FacetingFactors, radius);
    }
 
    @SuppressWarnings("WeakerAccess")
-   public ModelBuilder(double[] lodFacetFactors, double radius)
+   public LoDModelBuilder(double[] lodFacetFactors, double radius)
    {
       LoDFacetFactors = lodFacetFactors;
       Radius = radius;
@@ -25,7 +25,7 @@ public class ModelBuilder
       }
    }
 
-   public Model makeModel()
+   public LoDModel makeModel()
    {
       LoD[] lods = new LoD[NumLoDs];
 
@@ -36,7 +36,7 @@ public class ModelBuilder
          lods[i] = new LoD(mis);
       }
 
-      return new Model(lods, Radius);
+      return new LoDModel(lods, Radius);
    }
 
    static class LoDBuilder

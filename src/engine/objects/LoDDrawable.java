@@ -1,4 +1,4 @@
-package models;
+package engine.objects;
 
 import engine.IDraw;
 import engine.IDrawable;
@@ -6,22 +6,28 @@ import engine.XY;
 import engine.XYZ;
 
 @SuppressWarnings("WeakerAccess")
-public class Object3D implements IDrawable
+public class LoDDrawable implements IDrawable
 {
-   public Object3D(Model model)
+   public LoDDrawable(LoDModel loDModel)
    {
-      assert model != null;
-
-      this.Model = model;
+      this.LoDModel = loDModel;
    }
 
    public void draw2D(IDraw draw)
    {
-      draw.circle(new XY(Position), Model.Radius);
+      // cover the case where something could have a model but doesn't in this instance
+      if (LoDModel == null)
+         return;
+
+      draw.circle(new XY(Position), LoDModel.Radius);
    }
 
    public void draw3D(IDraw draw, XYZ eye)
    {
+      // cover the case where something could have a model but doesn't in this instance
+      if (LoDModel == null)
+         return;
+
       double d2 = Position.minus(eye).length2();
 
       int lod = findLoD(d2);
@@ -41,7 +47,7 @@ public class Object3D implements IDrawable
 
    private void draw(IDraw draw, int lod)
    {
-      Model.draw(draw, Position, Orientation, Elevation, lod);
+      LoDModel.draw(draw, Position, Orientation, Elevation, lod);
    }
 
    @SuppressWarnings("CanBeFinal")
@@ -50,7 +56,7 @@ public class Object3D implements IDrawable
    public double Orientation = 0;
    public double Elevation = 0;
 
-   private final Model Model;
+   private final LoDModel LoDModel;
 
    public static final double[] LoDDistances = new double[] { 400, 900 };
    public static final double[] FacetingFactors = new double[] { 0.1, 0.5, 4 };

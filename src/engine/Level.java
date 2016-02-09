@@ -1,5 +1,8 @@
 package engine;
 
+import engine.objects.Movable;
+import engine.objects.WorldObject;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,6 +75,51 @@ public class Level implements ICollidable
    public void addDrawable(IDrawable drawable)
    {
       m_static_objects.add(drawable);
+   }
+
+   public void drawLevel3D(WorldObject viewer, IDraw draw)
+   {
+      draw.clear(0xff201010);
+
+      draw.pointLight(140, 140, 140,
+            new XYZ(viewer.getPos2D(), 3));
+
+      draw.noStroke();
+      // floor
+      draw.fill(120, 120, 120);
+
+      getWallLoops().forEach(x -> drawWallLoop3D(x, 0, draw));
+
+      // ceiling
+      draw.fill(180, 180, 180);
+
+      getWallLoops().forEach(x -> drawWallLoop3D(x, 4, draw));
+
+      draw.fill(160, 160, 160);
+      draw.stroke(128, 0, 0);
+      draw.strokeWidth(1, false);
+
+      for(Wall w : getVisibleWalls(viewer.getPos2D()))
+      {
+         draw.beginShape();
+         draw.vertex(new XYZ(w.Start, 0));
+         draw.vertex(new XYZ(w.End, 0));
+         draw.vertex(new XYZ(w.End, 4));
+         draw.vertex(new XYZ(w.Start, 4));
+         draw.endShape();
+      }
+
+      getDrawables().stream().filter(id -> id != viewer).forEach(id -> id.draw3D(draw, viewer.getEye()));
+   }
+
+   private void drawWallLoop3D(WallLoop wl, double height, IDraw draw)
+   {
+      draw.beginShape();
+      for(Wall w : wl)
+      {
+         draw.vertex(new XYZ(w.Start, height));
+      }
+      draw.endShape();
    }
 
    public static class RayCollision

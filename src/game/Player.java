@@ -1,12 +1,15 @@
 package game;
 
 import engine.*;
+import engine.objects.Movable;
 
-public class Player extends Movable implements IDrawable
+public class Player extends Movable
 {
    public Player()
    {
-      super(2);
+      // to draw the player from outside, we will eventually need a model here
+      // but for the moment skip that
+      super(null, 2);
    }
 
    public void turnLeft()
@@ -56,9 +59,9 @@ public class Player extends Movable implements IDrawable
    {
       draw.stroke(200, 200, 200);
       draw.strokeWidth(1, true);
-      draw.circle(getPosition(), getRadius());
+      draw.circle(getPos2D(), getRadius());
       draw.strokeWidth(1, false);
-      draw.line(getPosition(), getPosition().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
+      draw.line(getPos2D(), getPos2D().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
    }
 
    @Override
@@ -69,7 +72,7 @@ public class Player extends Movable implements IDrawable
 
    public XYZ getEye()
    {
-      return new XYZ(getPosition(), 2);
+      return new XYZ(getPos2D(), 2);
    }
 
    public XYZ getViewDir()

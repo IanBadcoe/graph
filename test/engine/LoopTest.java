@@ -1,6 +1,5 @@
 package engine;
 
-import engine.*;
 import org.junit.Test;
 
 import java.util.ArrayList;

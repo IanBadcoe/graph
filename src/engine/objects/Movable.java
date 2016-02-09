@@ -1,14 +1,19 @@
-package engine;
+package engine.objects;
+
+import engine.ICollidable;
+import engine.Util;
+import engine.XY;
 
 import java.util.Collection;
 
 // for the moment, not separating physically simulated from movable, but if required later, could split this
 // into a base class of Movable and a derived class of PhysicallyMovable, giving us scope for other derived
 // classes such as NonPhysicallyMoving for unstoppable things
-public abstract class Movable implements ICollidable
+public abstract class Movable extends WorldObject
 {
-   protected Movable(double m_radius)
+   protected Movable(LoDModel loDModel, double m_radius)
    {
+      super(loDModel);
       this.m_radius = m_radius;
    }
 
@@ -17,7 +22,7 @@ public abstract class Movable implements ICollidable
       m_position = pos;
    }
 
-   public XY getPosition()
+   public XY getPos2D()
    {
       return m_position;
    }
@@ -67,7 +72,7 @@ public abstract class Movable implements ICollidable
    {
       XY direction = getVelocity().asUnit();
 
-      assert collideWith(collisionCandidates, getPosition(), direction, getPosition()) == null;
+      assert collideWith(collisionCandidates, getPos2D(), direction, getPos2D()) == null;
 
       double dist = m_velocity.length() * timeStep;
 
@@ -77,9 +82,9 @@ public abstract class Movable implements ICollidable
 
       XY where = m_position.plus(m_velocity.multiply(timeStep));
 
-      XY start_where = getPosition();
+      XY start_where = getPos2D();
 
-      ColRet col = collideWith(collisionCandidates, where, direction, start_where);
+      ICollidable.ColRet col = collideWith(collisionCandidates, where, direction, start_where);
 
       if (col == null)
       {
@@ -99,7 +104,7 @@ public abstract class Movable implements ICollidable
          double mid = (start + end) / 2;
          where = m_position.plus(m_velocity.multiply(timeStep * mid));
 
-         ColRet temp = collideWith(collisionCandidates, where, direction, start_where);
+         ICollidable.ColRet temp = collideWith(collisionCandidates, where, direction, start_where);
 
          if (temp == null)
          {
@@ -149,11 +154,11 @@ public abstract class Movable implements ICollidable
       return m_radius;
    }
 
-   private ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where, XY direction, XY wherePrevious)
+   private ICollidable.ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where, XY direction, XY wherePrevious)
    {
       for(ICollidable ic : collisionCandidates)
       {
-         ColRet ret = ic.collide(this, where, direction, wherePrevious);
+         ICollidable.ColRet ret = ic.collide(this, where, direction, wherePrevious);
 
          if (ret != null)
          {
@@ -165,25 +170,25 @@ public abstract class Movable implements ICollidable
    }
 
    @Override
-   public ColRet collide(Movable m, XY where, XY direction, XY wherePrevious)
+   public ICollidable.ColRet collide(Movable m, XY where, XY direction, XY wherePrevious)
    {
       // can set this null if we're not in motion
       // which makes this a _slightly_ different test
       if (direction != null)
       {
-         XY center_dir = where.minus(getPosition()).asUnit();
+         XY center_dir = where.minus(getPos2D()).asUnit();
          double dot = center_dir.dot(direction);
 
          if (dot > ICollidable.NormalTolerance)
             return null;
       }
 
-      if (Util.circleCircleIntersect(getPosition(), getRadius(),
+      if (Util.circleCircleIntersect(getPos2D(), getRadius(),
             where, m.getRadius()) != null)
       {
          // we use wherePrevious for this because that is where m will be placed (previous non-colliding position)
          // if this turns out to be end-point of the collision search
-         return new ColRet(getPosition().minus(wherePrevious).asUnit());
+         return new ICollidable.ColRet(getPos2D().minus(wherePrevious).asUnit());
       }
 
       return null;
