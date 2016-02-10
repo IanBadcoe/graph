@@ -70,16 +70,21 @@ public class Player extends Movable
       // HUD??
    }
 
+   @Override
+   public XYZ getPos3D()
+   {
+      return new XYZ(getPos2D(), 0);
+   }
+
+   @Override
+   public double getElevation()
+   {
+      return 0;
+   }
+
    public XYZ getEye()
    {
       return new XYZ(getPos2D(), 2);
-   }
-
-   public XYZ getViewDir()
-   {
-      XY dir_2d = XY.makeDirectionVector(getOrientation());
-
-      return new XYZ(dir_2d, 0);
    }
 
    private static final double AcclerationFactor = 0.7;

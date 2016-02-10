@@ -39,4 +39,8 @@ public interface IDraw
    void vertex(XYZ pos);
 
    void endShape();
+
+   void perspective(double angleOfView, double aspectRatio, double nearDistance, double farDistance);
+
+   void camera(XYZ eye, XYZ target, XYZ up);
 }

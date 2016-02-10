@@ -19,7 +19,10 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
       super(loDModel);
    }
 
-   public abstract XY getPos2D();
+   public XYZ getViewDir()
+   {
+      XY dir_2d = XY.makeDirectionVector(getOrientation());
 
-   public abstract XYZ getEye();
+      return new XYZ(dir_2d, 0);
+   }
 }

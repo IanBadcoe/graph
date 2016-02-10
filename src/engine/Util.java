@@ -2,7 +2,7 @@ package engine;
 
 import java.util.*;
 
-class Util
+public class Util
 {
    public static HashSet<DirectedEdgePair> findCrossingEdges(Collection<DirectedEdge> edges)
    {

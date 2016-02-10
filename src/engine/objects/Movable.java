@@ -1,14 +1,11 @@
 package engine.objects;
 
 import engine.ICollidable;
-import engine.Util;
 import engine.XY;
 
+import engine.Util;
 import java.util.Collection;
 
-// for the moment, not separating physically simulated from movable, but if required later, could split this
-// into a base class of Movable and a derived class of PhysicallyMovable, giving us scope for other derived
-// classes such as NonPhysicallyMoving for unstoppable things
 public abstract class Movable extends WorldObject
 {
    protected Movable(LoDModel loDModel, double m_radius)

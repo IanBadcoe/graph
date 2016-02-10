@@ -4,6 +4,7 @@ import engine.*;
 import engine.objects.LoDModel;
 import engine.objects.LoDModelBuilder;
 import engine.objects.LoDDrawable;
+import engine.objects.Static;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -212,12 +213,6 @@ public class Main extends processing.core.PApplet implements IDraw
       {
          draw3D();
       }
-
-      for(LoDDrawable o : m_demo_objects)
-      {
-         o.Orientation += 0.01;
-         o.Elevation += 0.003;
-      }
    }
 
    void drawMap()
@@ -243,13 +238,11 @@ public class Main extends processing.core.PApplet implements IDraw
 
    void draw3D()
    {
-      camera(m_player.getEye(), m_player.getEye().plus(m_player.getViewDir()), new XYZ(0, 0, -1));
-      perspective((float)Math.PI / 3, (float)width/height, (float)0.1, (float)500);
-
-      m_level.drawLevel3D(m_player, this);
+      m_level.drawLevel3D(m_player, this, width, height);
    }
 
-   private void camera(XYZ eye, XYZ target, XYZ up)
+   @Override
+   public void camera(XYZ eye, XYZ target, XYZ up)
    {
       camera(
             (float)eye.X, (float)eye.Y, (float)eye.Z,
@@ -289,7 +282,7 @@ public class Main extends processing.core.PApplet implements IDraw
       m_player.setPosition(m_level.startPos());
       m_player.setOrientation(Math.PI / 4);
 
-      m_level.addMovable(m_player);
+      m_level.addObject(m_player);
 
       m_playing = true;
 
@@ -311,10 +304,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
          LoDModel m = mb.makeModel();
 
-         LoDDrawable o = new LoDDrawable(m);
-         o.Position = m_player.getEye().plus(new XYZ(2, 0, 0));
-         m_demo_objects.add(o);
-         m_level.addDrawable(o);
+         Static o = new Static(m, m_player.getEye().plus(new XYZ(2, 0, 0)), 0.01);
+         m_level.addObject(o);
       }
 
       {
@@ -326,10 +317,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
          LoDModel m = mb.makeModel();
 
-         LoDDrawable o = new LoDDrawable(m);
-         o.Position = m_player.getEye().plus(new XYZ(0, 2, 0));
-         m_demo_objects.add(o);
-         m_level.addDrawable(o);
+         Static o = new Static(m, m_player.getEye().plus(new XYZ(0, 2, 0)), 0.01);
+         m_level.addObject(o);
       }
 
       {
@@ -341,10 +330,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
          LoDModel m = mb.makeModel();
 
-         LoDDrawable o = new LoDDrawable(m);
-         o.Position = m_player.getEye().plus(new XYZ(0, -2, 0));
-         m_demo_objects.add(o);
-         m_level.addDrawable(o);
+         Static o = new Static(m, m_player.getEye().plus(new XYZ(0, -2, 0)), 0.01);
+         m_level.addObject(o);
       }
 
       {
@@ -356,10 +343,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
          LoDModel m = mb.makeModel();
 
-         LoDDrawable o = new LoDDrawable(m);
-         o.Position = m_player.getEye().plus(new XYZ(-2, 0, 0));
-         m_demo_objects.add(o);
-         m_level.addDrawable(o);
+         Static o = new Static(m, m_player.getEye().plus(new XYZ(-2, 0, 0)), 0.01);
+         m_level.addObject(o);
       }
    }
 
@@ -467,7 +452,7 @@ public class Main extends processing.core.PApplet implements IDraw
 //         line(w.midPoint(), w.midPoint().plus(w.Normal.multiply(10)));
       }
 
-      for(IDrawable id : level.getDrawables())
+      for(IDrawable id : level.getObjects())
       {
          id.draw2D(this);
       }
@@ -607,6 +592,12 @@ public class Main extends processing.core.PApplet implements IDraw
       vertex((float)v.X, (float)v.Y, (float)v.Z);
    }
 
+   @Override
+   public void perspective(double angleOfView, double aspectRatio, double nearDistance, double farDistance)
+   {
+      perspective((float)angleOfView, (float)aspectRatio, (float)nearDistance, (float)farDistance);
+   }
+
    void scaleTo(Box b)
    {
       double shorter_display = Math.min(width, height);
@@ -672,8 +663,6 @@ public class Main extends processing.core.PApplet implements IDraw
    private final static int RIGHT_KEY = 1;
    private final static int FORWARDS_KEY = 2;
    private final static int BACKWARDS_KEY = 3;
-
-   private final ArrayList<LoDDrawable> m_demo_objects = new ArrayList<>();
 
    private final IoCContainer m_ioc_container;
 }

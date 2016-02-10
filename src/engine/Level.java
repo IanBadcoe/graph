@@ -1,6 +1,7 @@
 package engine;
 
 import engine.objects.Movable;
+import engine.objects.Static;
 import engine.objects.WorldObject;
 
 import java.util.*;
@@ -53,32 +54,26 @@ public class Level implements ICollidable
       m_wall_loops.add(wl);
    }
 
-   public Collection<IDrawable> getDrawables()
-   {
-      return
-            Stream.concat(
-                  m_movable_objects.stream()
-                     .filter(x -> x instanceof IDrawable)  // possibly in time we'll relaise all movables are drawables
-                     .map(x -> (IDrawable)x),
-                  m_static_objects.stream()
-            ).collect(Collectors.toCollection(ArrayList::new));
-   }
-
    public void step(double stepSize)
    {
-      for(Movable m : m_movable_objects)
+      for(WorldObject wo : m_objects)
       {
-         stepMovable(m, stepSize);
+         if (wo instanceof Movable)
+         {
+            stepMovable((Movable)wo, stepSize);
+         }
+         else
+         {
+            stepScenery((Static)wo, stepSize);
+         }
       }
    }
 
-   public void addDrawable(IDrawable drawable)
+   public void drawLevel3D(WorldObject viewer, IDraw draw, double width, double height)
    {
-      m_static_objects.add(drawable);
-   }
+      draw.camera(viewer.getEye(), viewer.getEye().plus(viewer.getViewDir()), new XYZ(0, 0, -1));
+      draw.perspective((float)Math.PI / 3, (float)width/height, (float)0.1, (float)500);
 
-   public void drawLevel3D(WorldObject viewer, IDraw draw)
-   {
       draw.clear(0xff201010);
 
       draw.pointLight(140, 140, 140,
@@ -109,7 +104,7 @@ public class Level implements ICollidable
          draw.endShape();
       }
 
-      getDrawables().stream().filter(id -> id != viewer).forEach(id -> id.draw3D(draw, viewer.getEye()));
+      getObjects().stream().filter(id -> id != viewer).forEach(id -> id.draw3D(draw, viewer.getEye()));
    }
 
    private void drawWallLoop3D(WallLoop wl, double height, IDraw draw)
@@ -299,19 +294,24 @@ public class Level implements ICollidable
    {
       ArrayList<ICollidable> collideWith = new ArrayList<>();
       collideWith.add(this);
-      collideWith.addAll(m_movable_objects.stream().filter(ic -> ic != m).collect(Collectors.toList()));
+      collideWith.addAll(m_objects.stream().filter(ic -> ic != m).collect(Collectors.toList()));
 
       m.step(timeStep, collideWith);
    }
 
-   public void addMovable(Movable m)
+   private void stepScenery(Static s, double timeStep)
    {
-      m_movable_objects.addLast(m);
+      s.step(timeStep);
    }
 
-   public Collection<Movable> getMovables()
+   public void addObject(WorldObject m)
    {
-      return Collections.unmodifiableCollection(m_movable_objects);
+      m_objects.addLast(m);
+   }
+
+   public Collection<WorldObject> getObjects()
+   {
+      return Collections.unmodifiableCollection(m_objects);
    }
 
    private final HashMap<CC, ArrayList<Wall>> m_wall_map
@@ -327,6 +327,5 @@ public class Level implements ICollidable
 
    private final XY m_start_pos;
 
-   private final LinkedList<Movable> m_movable_objects = new LinkedList<>();
-   private final LinkedList<IDrawable> m_static_objects = new LinkedList<>();
+   private final LinkedList<WorldObject> m_objects = new LinkedList<>();
 }

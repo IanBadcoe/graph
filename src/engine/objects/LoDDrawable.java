@@ -6,7 +6,7 @@ import engine.XY;
 import engine.XYZ;
 
 @SuppressWarnings("WeakerAccess")
-public class LoDDrawable implements IDrawable
+public abstract class LoDDrawable implements IDrawable
 {
    public LoDDrawable(LoDModel loDModel)
    {
@@ -19,7 +19,7 @@ public class LoDDrawable implements IDrawable
       if (LoDModel == null)
          return;
 
-      draw.circle(new XY(Position), LoDModel.Radius);
+      draw.circle(getPos2D(), LoDModel.Radius);
    }
 
    public void draw3D(IDraw draw, XYZ eye)
@@ -28,7 +28,7 @@ public class LoDDrawable implements IDrawable
       if (LoDModel == null)
          return;
 
-      double d2 = Position.minus(eye).length2();
+      double d2 = getPos3D().minus(eye).length2();
 
       int lod = findLoD(d2);
 
@@ -47,14 +47,15 @@ public class LoDDrawable implements IDrawable
 
    private void draw(IDraw draw, int lod)
    {
-      LoDModel.draw(draw, Position, Orientation, Elevation, lod);
+      LoDModel.draw(draw, getPos3D(), getOrientation(), getElevation(), lod);
    }
 
-   @SuppressWarnings("CanBeFinal")
-   public XYZ Position = new XYZ();
-   @SuppressWarnings("CanBeFinal")
-   public double Orientation = 0;
-   public double Elevation = 0;
+   public abstract XYZ getPos3D();
+   public abstract XY getPos2D();
+   public abstract double getOrientation();
+   public abstract double getElevation();
+   public abstract XYZ getEye();
+
 
    private final LoDModel LoDModel;
 
