@@ -23,7 +23,7 @@ public class UnionHelperTest
          m_seen_things.add(de);
       }
 
-      // returning objects here increases coverage
+      // returning modelling here increases coverage
 
       @Override
       public Loop makeBaseGeometry()

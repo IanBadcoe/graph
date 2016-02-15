@@ -1,10 +1,6 @@
 package game;
 
 import engine.*;
-import engine.objects.LoDModel;
-import engine.objects.LoDModelBuilder;
-import engine.objects.LoDDrawable;
-import engine.objects.Static;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -279,7 +275,7 @@ public class Main extends processing.core.PApplet implements IDraw
       m_config = null;
 
       m_player = new Player();
-      m_player.setPosition(m_level.startPos());
+      m_player.setPos3D(new XYZ(m_level.startPos(), 0));
       m_player.setOrientation(Math.PI / 4);
 
       m_level.addObject(m_player);
@@ -294,58 +290,58 @@ public class Main extends processing.core.PApplet implements IDraw
       m_keys.addKey(RIGHT_KEY, KeyEvent.VK_RIGHT);
       m_keys.addKey(FORWARDS_KEY, KeyEvent.VK_UP);
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
-
-      {
-         LoDModelBuilder mb = new LoDModelBuilder(1);
-
-         LoDModelBuilder.MeshSet ms = mb.createCone(1, 0.5, 1, true, true);
-
-         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
-
-         LoDModel m = mb.makeModel();
-
-         Static o = new Static(m, m_player.getEye().plus(new XYZ(2, 0, 0)), 0.01);
-         m_level.addObject(o);
-      }
-
-      {
-         LoDModelBuilder mb = new LoDModelBuilder(1);
-
-         LoDModelBuilder.MeshSet ms = mb.createCylinder(0.5, 1, true, true);
-
-         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
-
-         LoDModel m = mb.makeModel();
-
-         Static o = new Static(m, m_player.getEye().plus(new XYZ(0, 2, 0)), 0.01);
-         m_level.addObject(o);
-      }
-
-      {
-         LoDModelBuilder mb = new LoDModelBuilder(1);
-
-         LoDModelBuilder.MeshSet ms = mb.createSphere(0.5, -0.25, 0.4, true, true);
-
-         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
-
-         LoDModel m = mb.makeModel();
-
-         Static o = new Static(m, m_player.getEye().plus(new XYZ(0, -2, 0)), 0.01);
-         m_level.addObject(o);
-      }
-
-      {
-         LoDModelBuilder mb = new LoDModelBuilder(1);
-
-         LoDModelBuilder.MeshSet ms = mb.createCuboid(0.5, 0.25, 0.125);
-
-         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
-
-         LoDModel m = mb.makeModel();
-
-         Static o = new Static(m, m_player.getEye().plus(new XYZ(-2, 0, 0)), 0.01);
-         m_level.addObject(o);
-      }
+//
+//      {
+//         LoDModelBuilder mb = new LoDModelBuilder(1);
+//
+//         LoDModelBuilder.MeshSet ms = mb.createCone(1, 0.5, 1, true, true);
+//
+//         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+//
+//         LoDModel m = mb.makeModel();
+//
+//         Static o = new Static(m, m_player.getEye().plus(new XYZ(2, 0, 0)));
+//         m_level.addObject(o);
+//      }
+//
+//      {
+//         LoDModelBuilder mb = new LoDModelBuilder(1);
+//
+//         LoDModelBuilder.MeshSet ms = mb.createCylinder(0.5, 1, true, true);
+//
+//         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+//
+//         LoDModel m = mb.makeModel();
+//
+//         Static o = new Static(m, m_player.getEye().plus(new XYZ(0, 2, 0)), 0.01);
+//         m_level.addObject(o);
+//      }
+//
+//      {
+//         LoDModelBuilder mb = new LoDModelBuilder(1);
+//
+//         LoDModelBuilder.MeshSet ms = mb.createSphere(0.5, -0.25, 0.4, true, true);
+//
+//         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+//
+//         LoDModel m = mb.makeModel();
+//
+//         Static o = new Static(m, m_player.getEye().plus(new XYZ(0, -2, 0)), 0.01);
+//         m_level.addObject(o);
+//      }
+//
+//      {
+//         LoDModelBuilder mb = new LoDModelBuilder(1);
+//
+//         LoDModelBuilder.MeshSet ms = mb.createCuboid(0.5, 0.25, 0.125);
+//
+//         mb.insertMeshSet(ms, 0xffa08060, new XYZ(0, 0, 0), 0, Math.PI / 4);
+//
+//         LoDModel m = mb.makeModel();
+//
+//         Static o = new Static(m, m_player.getEye().plus(new XYZ(-2, 0, 0)), 0.01);
+//         m_level.addObject(o);
+//      }
    }
 
    private void autoScale(Graph g, double low, double high)

@@ -1,6 +1,6 @@
 package engine;
 
-import engine.objects.Movable;
+import engine.modelling.Movable;
 
 public interface ICollidable
 {

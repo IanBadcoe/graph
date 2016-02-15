@@ -1,12 +1,11 @@
 package engine;
 
-import engine.objects.Movable;
-import engine.objects.Static;
-import engine.objects.WorldObject;
+import engine.modelling.Movable;
+import engine.modelling.Static;
+import engine.modelling.WorldObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Level implements ICollidable
 {

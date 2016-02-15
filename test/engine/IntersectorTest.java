@@ -35,7 +35,7 @@ public class IntersectorTest
       @Override
       public boolean equals(Object o)
       {
-         // we're only going to want to compare unique objects for the test cases
+         // we're only going to want to compare unique modelling for the test cases
          return this == o;
       }
 

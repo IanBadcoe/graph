@@ -1,7 +1,7 @@
 package game;
 
 import engine.*;
-import engine.objects.Movable;
+import engine.modelling.Movable;
 
 public class Player extends Movable
 {
@@ -9,7 +9,7 @@ public class Player extends Movable
    {
       // to draw the player from outside, we will eventually need a model here
       // but for the moment skip that
-      super(null, 2);
+      super(null, new XYZ(), 2);
    }
 
    public void turnLeft()

@@ -1,27 +1,19 @@
-package engine.objects;
+package engine.modelling;
 
 import engine.ICollidable;
 import engine.XY;
 
 import engine.Util;
+import engine.XYZ;
+
 import java.util.Collection;
 
 public abstract class Movable extends WorldObject
 {
-   protected Movable(LoDModel loDModel, double m_radius)
+   protected Movable(LoDModel loDModel, XYZ pos, double m_radius)
    {
-      super(loDModel);
+      super(loDModel, pos);
       this.m_radius = m_radius;
-   }
-
-   public void setPosition(XY pos)
-   {
-      m_position = pos;
-   }
-
-   public XY getPos2D()
-   {
-      return m_position;
    }
 
    @SuppressWarnings("WeakerAccess")
@@ -77,7 +69,7 @@ public abstract class Movable extends WorldObject
       if (dist < resolution / 2)
          return timeStep;
 
-      XY where = m_position.plus(m_velocity.multiply(timeStep));
+      XY where = getPos2D().plus(m_velocity.multiply(timeStep));
 
       XY start_where = getPos2D();
 
@@ -85,7 +77,7 @@ public abstract class Movable extends WorldObject
 
       if (col == null)
       {
-         m_position = where;
+         setPos2D(where);
          return timeStep;
       }
 
@@ -99,7 +91,7 @@ public abstract class Movable extends WorldObject
       while (end - start > here_res)
       {
          double mid = (start + end) / 2;
-         where = m_position.plus(m_velocity.multiply(timeStep * mid));
+         where = getPos2D().plus(m_velocity.multiply(timeStep * mid));
 
          ICollidable.ColRet temp = collideWith(collisionCandidates, where, direction, start_where);
 
@@ -116,8 +108,8 @@ public abstract class Movable extends WorldObject
       }
 
       // we can move as far as start
-      where = m_position.plus(m_velocity.multiply(timeStep * start));
-      setPosition(where);
+      where = getPos2D().plus(m_velocity.multiply(timeStep * start));
+      setPos2D(where);
 
 //      Main.addAnnotation(new AnnPoint(0xffff0000, where, 1, true));
 //      Main.addAnnotation(new AnnArrow(0xff00ff00, where, where.plus(m_velocity.asUnit().multiply(100)), 0.5, true));
@@ -197,7 +189,6 @@ public abstract class Movable extends WorldObject
       m_orientation += angle;
    }
 
-   private XY m_position = new XY();
    private XY m_velocity = new XY();
    private double m_speed = 0;
 

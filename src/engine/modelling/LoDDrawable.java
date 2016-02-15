@@ -1,4 +1,4 @@
-package engine.objects;
+package engine.modelling;
 
 import engine.IDraw;
 import engine.IDrawable;

@@ -1,4 +1,4 @@
-package engine.objects;
+package engine.modelling;
 
 import engine.IDraw;
 import engine.OrderedPair;
@@ -59,6 +59,13 @@ public class Mesh
 
    // base of cylinder is at (0, 0, 0) facing up X
    static public Mesh createCylinder(double radius, double length, double facetingFactor,
+                                     boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp)
+   {
+      return createCone(radius, radius, length, facetingFactor,
+            capBase, capTop, maxSlicesRound, maxSlicesUp);
+   }
+
+   static public Mesh createCylinder(double radius, double length, double facetingFactor,
                                      boolean capBase, boolean capTop)
    {
       return createCone(radius, radius, length, facetingFactor,
@@ -68,12 +75,24 @@ public class Mesh
    public static Mesh createCone(double baseRadius, double topRadius, double length, double facetingFactor,
                                  boolean capBase, boolean capTop)
    {
+      return createCone(baseRadius, topRadius, length, facetingFactor, capBase, capTop, -1, -1);
+   }
+
+   public static Mesh createCone(double baseRadius, double topRadius, double length, double facetingFactor,
+                                 boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp)
+   {
       double max_rad = Math.max(baseRadius, topRadius);
 
       // must at least be a triangular prism
       int radius_steps = (int)Math.max(Math.PI * 2 * max_rad / facetingFactor, 3);
       //with at least two rings of points
       int length_steps = (int)Math.max(length / facetingFactor, 2);
+
+      if (maxSlicesRound != -1)
+         radius_steps = Math.min(radius_steps, maxSlicesRound);
+
+      if (maxSlicesUp != -1)
+         length_steps = Math.min(length_steps, maxSlicesUp);
 
       int points_size = radius_steps * length_steps;
       int normals_size = points_size;
@@ -197,6 +216,13 @@ public class Mesh
    public static Mesh createSphere(double radius, double baseHeight, double topHeight, double facetingFactor,
                                    boolean capBase, boolean capTop)
    {
+      return createSphere(radius, baseHeight, topHeight, facetingFactor,
+            capBase, capTop, -1, -1);
+   }
+
+   public static Mesh createSphere(double radius, double baseHeight, double topHeight, double facetingFactor,
+                                   boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp)
+   {
       assert topHeight >= -radius && topHeight <= radius;
       assert baseHeight >= -radius && baseHeight <= radius;
       assert topHeight > baseHeight;
@@ -207,6 +233,12 @@ public class Mesh
       int radius_steps = (int)Math.max(Math.PI * 2 * radius / facetingFactor, 3);
       //with at least two rings of points
       int length_steps = (int)Math.max(length / facetingFactor, 2);
+
+      if (maxSlicesRound != -1)
+         radius_steps = Math.min(radius_steps, maxSlicesRound);
+
+      if (maxSlicesUp != -1)
+         length_steps = Math.min(length_steps, maxSlicesUp);
 
       int points_size = radius_steps * length_steps;
       int normals_size = points_size;
