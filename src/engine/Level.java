@@ -57,7 +57,7 @@ public class Level implements ICollidable
    {
       for(WorldObject wo : m_objects)
       {
-         stepObject((Movable)wo, stepSize);
+         stepObject(wo, stepSize);
       }
    }
 

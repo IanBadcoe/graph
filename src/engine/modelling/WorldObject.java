@@ -42,7 +42,7 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
    {
       if (m_controller != null)
       {
-         m_controller.step(timeStep, this, level);
+         m_controller.timeStep(timeStep, this, level);
       }
    }
 

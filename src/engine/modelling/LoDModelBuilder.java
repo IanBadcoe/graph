@@ -85,11 +85,20 @@ public class LoDModelBuilder
    public MeshSet createCylinder(double radius, double length,
                                  boolean capBase, boolean capTop)
    {
+      return createCylinder(radius, length, capBase, capTop, -1, -1);
+   }
+
+   public MeshSet createCylinder(double radius, double length,
+                                 boolean capBase, boolean capTop,
+                                 int maxSlicesRound, int maxSlicesUp)
+   {
       Mesh[] meshes = new Mesh[NumLoDs];
 
       for(int i = 0; i < NumLoDs; i++)
       {
-         meshes[i] = Mesh.createCylinder(radius, length, LoDFacetFactors[i], capBase, capTop);
+         meshes[i] = Mesh.createCylinder(radius, length, LoDFacetFactors[i],
+               capBase, capTop,
+               maxSlicesRound, maxSlicesUp);
       }
 
       return new MeshSet(meshes);
@@ -98,11 +107,20 @@ public class LoDModelBuilder
    public MeshSet createCone(double baseRadius, double topRadius, double length,
                              boolean capBase, boolean capTop)
    {
+      return createCone(baseRadius, topRadius, length, capBase, capTop, -1, -1);
+   }
+
+   public MeshSet createCone(double baseRadius, double topRadius, double length,
+                             boolean capBase, boolean capTop,
+                             int maxSlicesRound, int maxSlicesUp)
+   {
       Mesh[] meshes = new Mesh[NumLoDs];
 
       for(int i = 0; i < NumLoDs; i++)
       {
-         meshes[i] = Mesh.createCone(baseRadius, topRadius, length, LoDFacetFactors[i], capBase, capTop);
+         meshes[i] = Mesh.createCone(baseRadius, topRadius, length, LoDFacetFactors[i],
+               capBase, capTop,
+               maxSlicesRound, maxSlicesUp);
       }
 
       return new MeshSet(meshes);
@@ -111,11 +129,20 @@ public class LoDModelBuilder
    public MeshSet createSphere(double radius, double baseHeight, double topHeight,
                                boolean capBase, boolean capTop)
    {
+      return createSphere(radius, baseHeight, topHeight, capBase, capTop, -1, -1);
+   }
+
+   public MeshSet createSphere(double radius, double baseHeight, double topHeight,
+                               boolean capBase, boolean capTop,
+                               int maxSlicesRound, int maxSlicesUp)
+   {
       Mesh[] meshes = new Mesh[NumLoDs];
 
       for(int i = 0; i < NumLoDs; i++)
       {
-         meshes[i] = Mesh.createSphere(radius, baseHeight, topHeight, LoDFacetFactors[i], capBase, capTop);
+         meshes[i] = Mesh.createSphere(radius, baseHeight, topHeight, LoDFacetFactors[i],
+               capBase, capTop,
+               maxSlicesRound, maxSlicesUp);
       }
 
       return new MeshSet(meshes);
