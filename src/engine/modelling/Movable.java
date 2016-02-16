@@ -1,12 +1,10 @@
 package engine.modelling;
 
-import engine.ICollidable;
-import engine.XY;
+import engine.*;
 
-import engine.Util;
-import engine.XYZ;
-
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public abstract class Movable extends WorldObject
 {
@@ -41,15 +39,23 @@ public abstract class Movable extends WorldObject
       m_velocity = m_velocity.multiply(DampingFactor);
    }
 
-   public void step(double timeStep, Collection<ICollidable> collisionCandidates)
+   public void timeStep(double timeStep, Level level)
    {
+      // first we'll run any controller we might have
+      super.timeStep(timeStep, level);
+
+      // now do our moveable movement resolution...
+      ArrayList<ICollidable> collideWith = new ArrayList<>();
+      collideWith.add(level);
+      collideWith.addAll(level.getObjects().stream().filter(ic -> ic != this).collect(Collectors.toList()));
+
       double used_time = 0;
 
       int attempts = 0;
       while(used_time < timeStep && attempts < 3)
       {
          attempts++;
-         used_time += tryStep(timeStep - used_time, collisionCandidates, 0.1);
+         used_time += tryStep(timeStep - used_time, collideWith, 0.1);
       }
 
       // to simplify movement maths, do this once and indivisibly

@@ -57,14 +57,7 @@ public class Level implements ICollidable
    {
       for(WorldObject wo : m_objects)
       {
-         if (wo instanceof Movable)
-         {
-            stepMovable((Movable)wo, stepSize);
-         }
-         else
-         {
-            stepScenery((Static)wo, stepSize);
-         }
+         stepObject((Movable)wo, stepSize);
       }
    }
 
@@ -289,18 +282,9 @@ public class Level implements ICollidable
       return ret;
    }
 
-   private void stepMovable(Movable m, double timeStep)
+   private void stepObject(WorldObject wo, double timeStep)
    {
-      ArrayList<ICollidable> collideWith = new ArrayList<>();
-      collideWith.add(this);
-      collideWith.addAll(m_objects.stream().filter(ic -> ic != m).collect(Collectors.toList()));
-
-      m.step(timeStep, collideWith);
-   }
-
-   private void stepScenery(Static s, double timeStep)
-   {
-      s.step(timeStep);
+      wo.timeStep(timeStep, this);
    }
 
    public void addObject(WorldObject m)

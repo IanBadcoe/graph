@@ -1,9 +1,6 @@
 package engine.modelling;
 
-import engine.ICollidable;
-import engine.IDrawable;
-import engine.XY;
-import engine.XYZ;
+import engine.*;
 import engine.controllers.IController;
 
 // base class for "real" things that can be inserted into levels
@@ -41,11 +38,11 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
       return new XYZ(dir_2d, 0);
    }
 
-   public void step(double timeStep)
+   public void timeStep(double timeStep, Level level)
    {
       if (m_controller != null)
       {
-         m_controller.step(timeStep, this);
+         m_controller.step(timeStep, this, level);
       }
    }
 
