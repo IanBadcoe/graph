@@ -2,7 +2,7 @@ package engine;
 
 import java.util.*;
 
-class Util
+public class Util
 {
    public static HashSet<DirectedEdgePair> findCrossingEdges(Collection<DirectedEdge> edges)
    {
@@ -413,20 +413,6 @@ class Util
       }
 
       return new OrderedPair<>(p1, p2);
-   }
-
-   public static boolean loopsIntersect(Loop l1, Loop l2)
-   {
-      for(Curve c1 : l1.getCurves())
-      {
-         for(Curve c2 : l2.getCurves())
-         {
-            if (curveCurveIntersect(c1, c2) != null)
-               return true;
-         }
-      }
-
-      return false;
    }
 
    public static double atan2(XY vec)

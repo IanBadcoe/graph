@@ -6,6 +6,12 @@ import java.util.List;
 
 public class Loop
 {
+   // only used in unit-tests atm
+   Loop()
+   {
+      m_param_range = 0;
+   }
+
    Loop(Curve c)
    {
       m_curves.add(c);

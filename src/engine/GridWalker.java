@@ -15,6 +15,8 @@ class GridWalker
 
    // if we're examining around a point, then there's no point "walking" as we'll have to look at
    // everything around that point -- there's no ordering
+   //
+   // cell_radius here just because we've almost certainly already calculated it
    public static Collection<CC> pointSample(double cell_size, double cell_radius,
          XY point, double feature_radius)
    {
@@ -262,11 +264,6 @@ class GridWalker
       return (int)Math.floor(ord / cellSize);
    }
 
-   private CC positionToCell(XY pos)
-   {
-      return positionToCell(pos, m_cell_size);
-   }
-
    public static CC positionToCell(XY pos, double cellSize)
    {
       return new CC((int)Math.floor(pos.X / cellSize), (int)Math.floor(pos.Y / cellSize));
@@ -281,11 +278,6 @@ class GridWalker
    public static XY cellToEdgePosition(CC cell, double cellSize)
    {
       return new XY(cell.First * cellSize, cell.Second * cellSize);
-   }
-
-   public XY cellToCentrePosition(CC cell)
-   {
-      return cellToCentrePosition(cell, m_cell_size);
    }
 
    @SuppressWarnings("WeakerAccess")

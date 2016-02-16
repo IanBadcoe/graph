@@ -15,17 +15,35 @@ public class EdgeAdjusterStepperTest
    }
 
    @Test
+   public void testDefaultGeomMaker()
+   {
+      EdgeAdjusterStepper eas = new EdgeAdjusterStepper(null, null, null, m_config);
+
+      INode n = new Node("", "", "", 1);
+      GeomLayout gl = eas.getGeomMaker().create(n);
+
+      assertNotNull(gl);
+   }
+
+   @Test
    public void testStep_Fail() throws Exception
    {
-      EdgeAdjusterStepper.SetChildFactory(
-            (a, b) -> new TestStepper(false, null));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(false, null),
+            null,
+            null,
+            null,
+            null);
 
       Graph g = new Graph();
       INode n1 = g.addNode("", "", "", 0);
       INode n2 = g.addNode("", "", "", 0);
       DirectedEdge de = g.connect(n1, n2, 0, 0, 0);
 
-      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
+      EdgeAdjusterStepper eas = new EdgeAdjusterStepper(ioc_container, g, de, m_config);
+      eas.setGeomMaker(null);
+
+      StepperController e = new StepperController(g, eas);
 
       StepperController.StatusReport ret;
 
@@ -41,15 +59,19 @@ public class EdgeAdjusterStepperTest
    @Test
    public void testStep_Succeed() throws Exception
    {
-      EdgeAdjusterStepper.SetChildFactory(
-            (a, b) -> new TestStepper(true, null));
+      IoCContainer ioc_container = new IoCContainer(
+            (x, a, b) -> new TestStepper(true, null),
+            null,
+            null,
+            null,
+            null);
 
       Graph g = new Graph();
       INode n1 = g.addNode("", "", "", 0);
       INode n2 = g.addNode("", "", "", 0);
       DirectedEdge de = g.connect(n1, n2, 0, 0, 0);
 
-      StepperController e = new StepperController(g, new EdgeAdjusterStepper(g, de, m_config));
+      StepperController e = new StepperController(g, new EdgeAdjusterStepper(ioc_container, g, de, m_config));
 
       StepperController.StatusReport ret;
 
@@ -81,7 +103,7 @@ public class EdgeAdjusterStepperTest
       try
       {
          // none of these parameters used in this case
-         EdgeAdjusterStepper etss = new EdgeAdjusterStepper(null, null, null);
+         EdgeAdjusterStepper etss = new EdgeAdjusterStepper(null, null, null, null);
 
          etss.step(StepperController.Status.Iterate);
       }

@@ -59,7 +59,7 @@ public class Graph
          double min_length, double max_length, double half_width)
    {
       return connect(from, to, min_length, max_length, half_width,
-            DirectedEdge::makeDefaultCorridor);
+            GeomLayout::makeDefaultCorridor);
    }
 
    DirectedEdge connect(INode from, INode to,

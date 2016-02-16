@@ -1,12 +1,12 @@
 package engine;
 
 @SuppressWarnings("WeakerAccess")
-class CircularGeomLayout extends GeomLayout
+public class CircularGeomLayout extends GeomLayout
 {
-   CircularGeomLayout(XY position, double radius)
+   public CircularGeomLayout(XY position, double radius)
    {
-      m_position = position;
-      m_rad = radius;
+      Position = position;
+      Radius = radius;
    }
 
    static CircularGeomLayout createFromNode(INode n)
@@ -17,7 +17,7 @@ class CircularGeomLayout extends GeomLayout
    @Override
    public Loop makeBaseGeometry()
    {
-      return new Loop(new CircleCurve(m_position, m_rad));
+      return new Loop(new CircleCurve(Position, Radius));
    }
 
    @Override
@@ -26,6 +26,6 @@ class CircularGeomLayout extends GeomLayout
       return null;
    }
 
-   private final XY m_position;
-   private final double m_rad;
+   public final XY Position;
+   public final double Radius;
 }

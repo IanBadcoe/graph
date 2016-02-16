@@ -1,7 +1,8 @@
-package Annotations;
+package annotations;
 
 import engine.IDraw;
 import engine.XY;
+import engine.XYZ;
 
 public class AnnLine extends Annotation
 {
@@ -16,11 +17,17 @@ public class AnnLine extends Annotation
    }
 
    @Override
-   public void draw(IDraw draw)
+   public void draw2D(IDraw draw)
    {
       draw.stroke(m_colour);
       draw.strokeWidth(m_thickness, m_scaling);
       draw.line(m_from, m_to);
+   }
+
+   @Override
+   public void draw3D(IDraw draw, XYZ eye)
+   {
+      // nothing
    }
 
    private final XY m_from;

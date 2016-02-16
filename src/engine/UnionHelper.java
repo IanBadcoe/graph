@@ -37,7 +37,7 @@ public class UnionHelper
          Loop l = m_base_loops.get(0);
          LoopSet ls = new LoopSet(l);
 
-         m_merged_loops = Intersector.union(m_merged_loops, ls, 1e-6, r);
+         m_merged_loops = m_intersector.union(m_merged_loops, ls, 1e-6, r);
 
          assert m_merged_loops != null;
 
@@ -50,7 +50,7 @@ public class UnionHelper
       {
          LoopSet ls = m_detail_loop_sets.remove(0);
 
-         m_merged_loops = Intersector.union(m_merged_loops, ls, 1e-6, r);
+         m_merged_loops = m_intersector.union(m_merged_loops, ls, 1e-6, r);
 
          assert m_merged_loops != null;
 
@@ -174,4 +174,6 @@ public class UnionHelper
 
    private Box m_bounds;
    private XY m_start_pos;
+
+   private final Intersector m_intersector = new Intersector();
 }

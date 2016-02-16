@@ -9,13 +9,10 @@ public class TryTemplateExpandStepper implements IStepper
       IStepper MakeRelaxer(Graph g, LevelGeneratorConfiguration c);
    }
 
-   public interface IAdjusterFactory
+   public TryTemplateExpandStepper(IoCContainer m_ioc_container, Graph graph, INode node, Template template,
+         LevelGeneratorConfiguration c)
    {
-      IStepper MakeAdjuster(Graph graph, DirectedEdge edge, LevelGeneratorConfiguration c);
-   }
-
-   public TryTemplateExpandStepper(Graph graph, INode node, Template template, LevelGeneratorConfiguration c)
-   {
+      this.m_ioc_container = m_ioc_container;
       m_graph = graph;
       m_node = node;
       m_template = template;
@@ -31,7 +28,7 @@ public class TryTemplateExpandStepper implements IStepper
       {
          if (m_template.Expand(m_graph, m_node, m_config.Rand))
          {
-            IStepper child = m_relaxer_factory.MakeRelaxer(m_graph, m_config);
+            IStepper child = m_ioc_container.RelaxerFactory.makeRelaxer(m_ioc_container, m_graph, m_config);
 
             return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                   child, "Relaxing successful expansion.");
@@ -114,7 +111,7 @@ public class TryTemplateExpandStepper implements IStepper
          return null;
       }
 
-      IStepper child = m_adjuster_factory.MakeAdjuster(m_graph, e, m_config);
+      IStepper child = m_ioc_container.AdjusterFactory.MakeAdjuster(m_ioc_container, m_graph, e, m_config);
 
       return new StepperController.StatusReportInner(StepperController.Status.StepIn,
             child, "Adjusting an edge.");
@@ -146,16 +143,6 @@ public class TryTemplateExpandStepper implements IStepper
       EdgeCorrection
    }
 
-   public static void SetRelaxerFactory(IRelaxerFactory factory)
-   {
-      m_relaxer_factory = factory;
-   }
-
-   public static void SetAdjusterFactory(IAdjusterFactory factory)
-   {
-      m_adjuster_factory = factory;
-   }
-
    private final Graph m_graph;
    private final INode m_node;
    private final Template m_template;
@@ -163,6 +150,5 @@ public class TryTemplateExpandStepper implements IStepper
 
    private Phase m_phase;
 
-   private static IRelaxerFactory m_relaxer_factory;
-   private static IAdjusterFactory m_adjuster_factory;
+   private final IoCContainer m_ioc_container;
 }

@@ -35,7 +35,9 @@ public class ShortestPathFinderTest
       g.connect(n4, n5, 2.1, 2, 0);
       g.connect(n3, n5, 3.1, 3, 0);
 
-      double[][] ans = ShortestPathFinder.FindPathLengths(g, x -> x.MinLength);
+      ShortestPathFinder spf = new ShortestPathFinder();
+
+      double[][] ans = spf.FindPathLengths(g, x -> x.MinLength);
 
       double[][] exp = new double[][]
             {{0, 10.1, 13.2, 14.2, 16.3},

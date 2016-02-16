@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 public class RelaxerStepper implements IStepper
 {
-   public RelaxerStepper(Graph graph, LevelGeneratorConfiguration c)
+   public RelaxerStepper(IoCContainer m_ioc_container, Graph graph, LevelGeneratorConfiguration c)
    {
       m_graph = graph;
+      this.m_ioc_container = m_ioc_container;
 
       m_config = c;
    }
@@ -23,7 +24,9 @@ public class RelaxerStepper implements IStepper
       // (node <-> node and node <-> edge forces have to be stronger than edge forces
       // as we rely on edges stretching (in other cases) to tell ue when we need to
       // lengthen an edge (inserting a corner)
-      m_node_dists = ShortestPathFinder.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
+      ShortestPathFinder spf = new ShortestPathFinder();
+
+      m_node_dists = spf.FindPathLengths(m_graph, x -> (x.MaxLength + x.MinLength) / 2);
 
       m_setup_done = true;
    }
@@ -239,21 +242,6 @@ public class RelaxerStepper implements IStepper
       return ratio;
    }
 
-   void AdjustPathLengthsForRadii()
-   {
-      for(INode nj : m_graph.allGraphNodes())
-      {
-         int j = nj.getIdx();
-         for(INode nk : m_graph.allGraphNodes())
-         {
-            int k = nk.getIdx();
-
-            m_node_dists[j][k] = Math.min(nj.getRad() + nk.getRad(),
-                  m_node_dists[j][k]);
-         }
-      }
-   }
-
    private final Graph m_graph;
    private ArrayList<INode> m_nodes;
    private ArrayList<DirectedEdge> m_edges;
@@ -269,4 +257,6 @@ public class RelaxerStepper implements IStepper
    private final LevelGeneratorConfiguration m_config;
 
    private boolean m_setup_done = false;
+
+   final private IoCContainer m_ioc_container;
 }

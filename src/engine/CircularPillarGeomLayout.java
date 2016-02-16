@@ -1,7 +1,7 @@
 package engine;
 
 @SuppressWarnings("WeakerAccess")
-class CircularPillarGeomLayout extends GeomLayout
+public class CircularPillarGeomLayout extends GeomLayout
 {
    CircularPillarGeomLayout(XY position, double radius)
    {
@@ -9,7 +9,7 @@ class CircularPillarGeomLayout extends GeomLayout
       m_rad = radius;
    }
 
-   static GeomLayout createFromNode(INode n)
+   public static GeomLayout createFromNode(INode n)
    {
       return new CircularPillarGeomLayout(n.getPos(), n.getRad());
    }

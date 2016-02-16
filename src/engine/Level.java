@@ -1,5 +1,9 @@
 package engine;
 
+import engine.modelling.Movable;
+import engine.modelling.Static;
+import engine.modelling.WorldObject;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,20 +53,60 @@ public class Level implements ICollidable
       m_wall_loops.add(wl);
    }
 
-   public Collection<IDrawable> getDrawables()
-   {
-      return m_movable_objects.stream()
-            .filter(x -> x instanceof IDrawable)
-            .map(x -> (IDrawable)x)
-            .collect(Collectors.toCollection(ArrayList::new));
-   }
-
    public void step(double stepSize)
    {
-      for(Movable m : m_movable_objects)
+      for(WorldObject wo : m_objects)
       {
-         stepMovable(m, stepSize);
+         stepObject(wo, stepSize);
       }
+   }
+
+   public void drawLevel3D(WorldObject viewer, IDraw draw, double width, double height)
+   {
+      draw.camera(viewer.getEye(), viewer.getEye().plus(viewer.getViewDir()), new XYZ(0, 0, -1));
+      draw.perspective((float)Math.PI / 3, (float)width/height, (float)0.1, (float)500);
+
+      draw.clear(0xff201010);
+
+      draw.pointLight(140, 140, 140,
+            new XYZ(viewer.getPos2D(), 3));
+
+      draw.noStroke();
+      // floor
+      draw.fill(120, 120, 120);
+
+      getWallLoops().forEach(x -> drawWallLoop3D(x, 0, draw));
+
+      // ceiling
+      draw.fill(180, 180, 180);
+
+      getWallLoops().forEach(x -> drawWallLoop3D(x, 4, draw));
+
+      draw.fill(160, 160, 160);
+      draw.stroke(128, 0, 0);
+      draw.strokeWidth(1, false);
+
+      for(Wall w : getVisibleWalls(viewer.getPos2D()))
+      {
+         draw.beginShape();
+         draw.vertex(new XYZ(w.Start, 0));
+         draw.vertex(new XYZ(w.End, 0));
+         draw.vertex(new XYZ(w.End, 4));
+         draw.vertex(new XYZ(w.Start, 4));
+         draw.endShape();
+      }
+
+      getObjects().stream().filter(id -> id != viewer).forEach(id -> id.draw3D(draw, viewer.getEye()));
+   }
+
+   private void drawWallLoop3D(WallLoop wl, double height, IDraw draw)
+   {
+      draw.beginShape();
+      for(Wall w : wl)
+      {
+         draw.vertex(new XYZ(w.Start, height));
+      }
+      draw.endShape();
    }
 
    public static class RayCollision
@@ -200,6 +244,7 @@ public class Level implements ICollidable
    public Collection<Wall> getVisibleWalls(XY visibility_pos)
    {
       HashSet<Wall> ret = new HashSet<>();
+      HashSet<Wall> extras = new HashSet<>();
 
       for(WallLoop wl : m_wall_loops)
       {
@@ -215,43 +260,41 @@ public class Level implements ICollidable
                RayCollision wcr = nearestWall(visibility_pos,
                      dir, l + 1);
 
+               assert wcr.WallHit != null;
+
                ret.add(wcr.WallHit);
+               // can see some walls whose mid-points are out of sight
+               // trying to examine wall start and end points is twice as expensive, and also
+               // introduces fp problems when we skim past the end of the wall
+               //
+               // so, seems like a good hack to just bring both neightbours along with a wall we can see
+               //
+               // "extras" rather than "ret" as we can't early out on basis of something being a neighbour
+               // (because nothing would examine its neighbours...)
+               extras.add(wcr.WallHit.getNext());
+               extras.add(wcr.WallHit.getPrev());
             }
          }
       }
 
+      ret.addAll(extras);
+
       return ret;
    }
 
-//   public void stepNextMovable(double timeStep)
-//   {
-//      Movable m = m_movable_objects.pollFirst();
-//
-//      if (m == null)
-//         return;
-//
-//      stepMovable(m, timeStep);
-//
-//      m_movable_objects.addLast(m);
-//   }
-
-   private void stepMovable(Movable m, double timeStep)
+   private void stepObject(WorldObject wo, double timeStep)
    {
-      ArrayList<ICollidable> collideWith = new ArrayList<>();
-      collideWith.add(this);
-      collideWith.addAll(m_movable_objects.stream().filter(ic -> ic != m).collect(Collectors.toList()));
-
-      m.step(timeStep, collideWith);
+      wo.timeStep(timeStep, this);
    }
 
-   public void addMovable(Movable m)
+   public void addObject(WorldObject m)
    {
-      m_movable_objects.addLast(m);
+      m_objects.addLast(m);
    }
 
-   public Collection<Movable> getMovables()
+   public Collection<WorldObject> getObjects()
    {
-      return Collections.unmodifiableCollection(m_movable_objects);
+      return Collections.unmodifiableCollection(m_objects);
    }
 
    private final HashMap<CC, ArrayList<Wall>> m_wall_map
@@ -267,4 +310,5 @@ public class Level implements ICollidable
 
    private final XY m_start_pos;
 
-   private final LinkedList<Movable> m_movable_objects = new LinkedList<>();}
+   private final LinkedList<WorldObject> m_objects = new LinkedList<>();
+}

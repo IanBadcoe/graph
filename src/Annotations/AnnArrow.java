@@ -1,7 +1,8 @@
-package Annotations;
+package annotations;
 
 import engine.IDraw;
 import engine.XY;
+import engine.XYZ;
 
 public class AnnArrow extends Annotation
 {
@@ -16,7 +17,7 @@ public class AnnArrow extends Annotation
    }
 
    @Override
-   public void draw(IDraw draw)
+   public void draw2D(IDraw draw)
    {
       draw.stroke(m_colour);
       draw.strokeWidth(m_thickness, m_scaling);
@@ -25,6 +26,12 @@ public class AnnArrow extends Annotation
       XY offset = m_to.minus(m_from).divide(10);
       draw.line(m_to, m_to.minus(offset).plus(offset.rot90()));
       draw.line(m_to, m_to.minus(offset).plus(offset.rot270()));
+   }
+
+   @Override
+   public void draw3D(IDraw draw, XYZ eye)
+   {
+      // nothing
    }
 
    private final XY m_from;

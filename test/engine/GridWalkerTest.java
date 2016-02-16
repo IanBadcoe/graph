@@ -258,7 +258,7 @@ public class GridWalkerTest
    @Test
    public void testPosToCell() throws Exception
    {
-      assertEquals(new CC(1, 1), GridWalker.positionToCell(new XY(11.0, 11.0), 10));
+      assertEquals(new CC(1, 0), GridWalker.positionToCell(new XY(11.0, 1.0), 10));
    }
 
    @Test
@@ -371,9 +371,66 @@ public class GridWalkerTest
                   assertTrue(cells.contains(cell));
                }
 
-               // could assert others not in but problem is
+               // could assert others not in but problem is that relies on a really precise definition of
+               // what should be out, which kind-of assumes how the search is done, so for moment
+               // leave as just checking everything in that should be...
             }
          }
+      }
+   }
+
+   @Test
+   public void testPointSample()
+   {
+      {
+         XY point = new XY(0, 0);
+
+         HashSet<CC> cells = new HashSet<>();
+
+         cells.addAll(GridWalker.pointSample(10, Math.sqrt(200), point, 1));
+
+         assertEquals(4, cells.size());
+         assertTrue(cells.contains(new CC(0, 0)));
+         assertTrue(cells.contains(new CC(-1, 0)));
+         assertTrue(cells.contains(new CC(0, -1)));
+         assertTrue(cells.contains(new CC(-1, -1)));
+      }
+
+      {
+         XY point = new XY(0, 10);
+
+         HashSet<CC> cells = new HashSet<>();
+
+         cells.addAll(GridWalker.pointSample(10, Math.sqrt(200), point, 11));
+
+         assertEquals(16, cells.size());
+         assertTrue(cells.contains(new CC(-2, -1)));
+         assertTrue(cells.contains(new CC(-1, 0)));
+         assertTrue(cells.contains(new CC(0, 1)));
+         assertTrue(cells.contains(new CC(1, 2)));
+         assertTrue(cells.contains(new CC(-2, -1)));
+         assertTrue(cells.contains(new CC(-1, 0)));
+         assertTrue(cells.contains(new CC(0, 1)));
+         assertTrue(cells.contains(new CC(1, 2)));
+         assertTrue(cells.contains(new CC(-2, -1)));
+         assertTrue(cells.contains(new CC(-1, 0)));
+         assertTrue(cells.contains(new CC(0, 1)));
+         assertTrue(cells.contains(new CC(1, 2)));
+         assertTrue(cells.contains(new CC(-2, -1)));
+         assertTrue(cells.contains(new CC(-1, 0)));
+         assertTrue(cells.contains(new CC(0, 1)));
+         assertTrue(cells.contains(new CC(1, 2)));
+      }
+
+      {
+         XY point = new XY(5, 5);
+
+         HashSet<CC> cells = new HashSet<>();
+
+         cells.addAll(GridWalker.pointSample(10, Math.sqrt(200), point, 1));
+
+         assertEquals(1, cells.size());
+         assertTrue(cells.contains(new CC(0, 0)));
       }
    }
 }

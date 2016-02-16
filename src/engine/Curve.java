@@ -52,11 +52,9 @@ public abstract class Curve
    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
    boolean equals_inner(Object o)
    {
-      if (o == this)
-         return true;
-
-      if (!(o instanceof Curve))
-         return false;
+      // need caller to have checked these
+      assert o instanceof Curve;
+      assert o != this;
 
       Curve co = (Curve)o;
 

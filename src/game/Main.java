@@ -1,7 +1,8 @@
 package game;
 
 import engine.*;
-import processing.core.PApplet;
+import engine.modelling.Static;
+import engine.objects.TurretFactory;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -16,30 +17,23 @@ public class Main extends processing.core.PApplet implements IDraw
    public Main()
    {
       m_config = new LevelGeneratorConfiguration(85);
-      m_generator = new LevelGenerator(10, m_config);
+
+      // configure our crude IoC system
+      m_ioc_container = new IoCContainer(
+            RelaxerStepper::new,
+            TryAllNodesExpandStepper::new,
+            TryAllTemplatesOnOneNodeStepper::new,
+            TryTemplateExpandStepper::new,
+            EdgeAdjusterStepper::new);
+
+      m_generator = new LevelGenerator(m_ioc_container, 10, m_config, new TemplateStore1());
    }
 
    @Override
    public void settings()
    {
-//      size(500, 500);
-      fullScreen();
-
-      s_app = this;
-
-      // configure our crude IoC system
-      TryAllNodesExpandStepper.SetChildFactory(
-            TryAllTemplatesOnOneNodeStepper::new);
-      TryAllTemplatesOnOneNodeStepper.SetChildFactory(
-            TryTemplateExpandStepper::new);
-      ExpandToSizeStepper.SetChildFactory(
-            TryAllNodesExpandStepper::new);
-      EdgeAdjusterStepper.SetChildFactory(
-            RelaxerStepper::new);
-      TryTemplateExpandStepper.SetRelaxerFactory(
-            RelaxerStepper::new);
-      TryTemplateExpandStepper.SetAdjusterFactory(
-            EdgeAdjusterStepper::new);
+      size(1000, 1000, P3D);
+//      fullScreen(P3D);
    }
 
    @Override
@@ -98,32 +92,51 @@ public class Main extends processing.core.PApplet implements IDraw
       {
          m_arrows = !m_arrows;
       }
+
+      if (m_complete && key == 'p')
+      {
+         startPlay();
+      }
    }
 
    private void playKeyPressed()
    {
-      m_keys.keyPressed(keyCode);
-
-      if (key == 'r')
+      if (m_keys != null)
       {
-         m_rotating = !m_rotating;
+         m_keys.keyPressed(keyCode);
       }
 
-      if (key == '+')
+      if (key == 'm')
       {
-         m_scale += 0.5;
+         m_map = !m_map;
       }
 
-      if (key == '=')
+      if (m_map)
       {
-         m_scale -= 0.5;
+         if (key == 'r')
+         {
+            m_rotating = !m_rotating;
+         }
+
+         if (key == '+')
+         {
+            m_scale += 0.5;
+         }
+
+         if (key == '=')
+         {
+            m_scale -= 0.5;
+         }
       }
    }
 
    @Override
    public void keyReleased()
    {
-      m_keys.keyReleased(keyCode);
+      if (m_keys != null)
+      {
+         m_keys.keyReleased(keyCode);
+      }
    }
 
    @Override
@@ -142,7 +155,7 @@ public class Main extends processing.core.PApplet implements IDraw
 
       StepperController.StatusReport ret;
 
-      if (m_generator != null)
+      if (m_generator != null && !m_complete)
       {
          ret = m_generator.step();
 
@@ -156,10 +169,7 @@ public class Main extends processing.core.PApplet implements IDraw
                exit();
             }
 
-            m_generator = null;
-            m_config = null;
-
-            startPlay();
+            m_complete = true;
          }
       }
 
@@ -193,6 +203,21 @@ public class Main extends processing.core.PApplet implements IDraw
 
       m_level.step(0.1);
 
+      if (m_map)
+      {
+         drawMap();
+      }
+      else
+      {
+         draw3D();
+      }
+   }
+
+   void drawMap()
+   {
+      camera();
+      perspective();
+
       translate((float)(width / 2), (float)(height / 2));
 
       scale((float)m_scale);
@@ -204,14 +229,23 @@ public class Main extends processing.core.PApplet implements IDraw
          rotate((float)(Math.PI + m_decaying_ori));
       }
 
-      translate((float)(-m_player.getPosition().X), (float)(-m_player.getPosition().Y));
+      translate(m_player.getPos2D().negate());
 
-      drawLevel(m_level, m_player.getPosition());
+      drawLevel(m_level, m_player.getPos2D());
+   }
 
-//      for(Annotations.Annotation annotation : m_annotations)
-//      {
-//         annotation.draw(this);
-//      }
+   void draw3D()
+   {
+      m_level.drawLevel3D(m_player, this, width, height);
+   }
+
+   @Override
+   public void camera(XYZ eye, XYZ target, XYZ up)
+   {
+      camera(
+            (float)eye.X, (float)eye.Y, (float)eye.Z,
+            (float)target.X, (float)target.Y, (float)target.Z,
+            (float)up.X, (float)up.Y, (float)up.Z);
    }
 
    private void processKeys()
@@ -233,17 +267,20 @@ public class Main extends processing.core.PApplet implements IDraw
 
       if (m_keys.isPressed(BACKWARDS_KEY))
       {
-         m_player.brake();
+         m_player.reverse();
       }
    }
 
    private void startPlay()
    {
+      m_generator = null;
+      m_config = null;
+
       m_player = new Player();
-      m_player.setPosition(m_level.startPos());
+      m_player.setPos3D(new XYZ(m_level.startPos(), 0));
       m_player.setOrientation(Math.PI / 4);
 
-      m_level.addMovable(m_player);
+      m_level.addObject(m_player);
 
       m_playing = true;
 
@@ -255,6 +292,13 @@ public class Main extends processing.core.PApplet implements IDraw
       m_keys.addKey(RIGHT_KEY, KeyEvent.VK_RIGHT);
       m_keys.addKey(FORWARDS_KEY, KeyEvent.VK_UP);
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
+
+      {
+         Static s = TurretFactory.makeTurret(TurretFactory.TurretType.TwinGun,
+               m_player.getPos3D().plus(new XYZ(5, 0, 0)));
+
+         m_level.addObject(s);
+      }
    }
 
    private void autoScale(Graph g, double low, double high)
@@ -296,16 +340,16 @@ public class Main extends processing.core.PApplet implements IDraw
 
    void drawNode(INode n)
    {
-      s_app.noStroke();
-      s_app.fill(n.getColour());
-      s_app.ellipse((float) n.getPos().X, (float) n.getPos().Y,
+      noStroke();
+      fill(n.getColour());
+      ellipse((float) n.getPos().X, (float) n.getPos().Y,
             (float) n.getRad(), (float) n.getRad());
    }
 
    void drawLabel(INode n)
    {
-      s_app.fill(255, 255, 255);
-      s_app.text(n.getName(),
+      fill(255, 255, 255);
+      text(n.getName(),
             (float) n.getPos().X, (float) n.getPos().Y);
    }
 
@@ -314,7 +358,7 @@ public class Main extends processing.core.PApplet implements IDraw
       // in connections are drawn by the other node...
       for(DirectedEdge e : n.getOutConnections())
       {
-         s_app.stroke(e.GetColour());
+         stroke(e.GetColour());
          strokeWidth(e.HalfWidth * 1.9, false);
          line(e.Start.getPos(), e.End.getPos());
 
@@ -333,26 +377,26 @@ public class Main extends processing.core.PApplet implements IDraw
 
    void drawLevel(Level level, XY visibility_pos)
    {
-      s_app.background(0xff201010);
+      background(0xff201010);
 
-      s_app.stroke(0xff808080);
+      stroke(0xff808080);
       strokeWidth(2, true);
 
-      s_app.stroke(0xff808080);
-      s_app.fill(180, 120, 120);
+      stroke(0xff808080);
+      fill(180, 120, 120);
 
       Box bounds = level.getBounds();
 
-      s_app.beginShape();
-      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Max.Y + 1000);
-      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Max.Y + 1000);
-      s_app.vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
-      s_app.vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
+      beginShape();
+      vertex((float)bounds.Max.X + 1000, (float)bounds.Max.Y + 1000);
+      vertex((float)bounds.Min.X - 1000, (float)bounds.Max.Y + 1000);
+      vertex((float)bounds.Min.X - 1000, (float)bounds.Min.Y - 1000);
+      vertex((float)bounds.Max.X + 1000, (float)bounds.Min.Y - 1000);
 
       level.getWallLoops().forEach(this::drawWallLoop);
-      s_app.endShape(CLOSE);
+      endShape(CLOSE);
 
-      s_app.stroke(0xfff0f0f0);
+      stroke(0xfff0f0f0);
       strokeWidth(2, true);
 
       for(Wall w : level.getVisibleWalls(visibility_pos))
@@ -361,20 +405,20 @@ public class Main extends processing.core.PApplet implements IDraw
 //         line(w.midPoint(), w.midPoint().plus(w.Normal.multiply(10)));
       }
 
-      for(IDrawable id : level.getDrawables())
+      for(IDrawable id : level.getObjects())
       {
-         id.draw(this);
+         id.draw2D(this);
       }
    }
 
    void drawWallLoop(WallLoop wl)
    {
-      s_app.beginContour();
+      beginContour();
       for(Wall w : wl)
       {
-         s_app.vertex((float)w.Start.X, (float)w.Start.Y);
+         vertex((float)w.Start.X, (float)w.Start.Y);
       }
-      s_app.endContour();
+      endContour();
    }
 
    void drawLoopPoints(ArrayList<XY> pnts)
@@ -390,33 +434,69 @@ public class Main extends processing.core.PApplet implements IDraw
    }
 
    @Override
+   public void translate(XY offset)
+   {
+      translate((float)offset.X, (float)offset.Y);
+   }
+
+   @Override
+   public void translate(XYZ offset)
+   {
+      translate((float)offset.X, (float)offset.Y, (float)offset.Z);
+   }
+
+   @Override
+   public void rotateX(double ori)
+   {
+      rotateX((float)ori);
+   }
+
+   @Override
+   public void rotateY(double ori)
+   {
+      rotateY((float)ori);
+   }
+
+   @Override
+   public void rotateZ(double ori)
+   {
+      rotateZ((float)ori);
+   }
+
+   @Override
+   public void pushTransform()
+   {
+      pushMatrix();
+   }
+
+   @Override
+   public void popTransform()
+   {
+      popMatrix();
+   }
+
+   @Override
    public void line(XY from, XY to)
    {
-      s_app.line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
+      line((float)from.X, (float)from.Y, (float)to.X, (float)to.Y);
    }
 
    @Override
    public void text(String text, XY pos)
    {
-      s_app.text(text, (float)pos.X, (float)pos.Y);
-   }
-
-   @Override
-   public void stroke(int red, int green, int blue)
-   {
-      s_app.stroke(red, green, blue);
-   }
-
-   @Override
-   public void fill(int red, int green, int blue)
-   {
-      s_app.fill(red, green, blue);
+      text(text, (float)pos.X, (float)pos.Y);
    }
 
    @Override
    public void circle(XY pos, double rad)
    {
-      s_app.ellipse((float)pos.X, (float)pos.Y, (float)rad, (float)rad);
+      ellipse((float)pos.X, (float)pos.Y, (float)rad, (float)rad);
+   }
+
+   @Override
+   public void fill(int red, int green, int blue)
+   {
+      super.fill(red, green, blue);
    }
 
    @Override
@@ -425,24 +505,76 @@ public class Main extends processing.core.PApplet implements IDraw
       return m_scale;
    }
 
+   @Override
+   public void beginTriangles()
+   {
+      beginShape(TRIANGLES);
+   }
+
+   @Override
+   public void triangle(XYZ p1, XYZ p2, XYZ p3, XYZ n1, XYZ n2, XYZ n3)
+   {
+      normal(n1);
+      vertex(p1);
+      normal(n2);
+      vertex(p2);
+      normal(n3);
+      vertex(p3);
+   }
+
+   @Override
+   public void endTriangles()
+   {
+      endShape();
+   }
+
+   @Override
+   public void pointLight(int r, int g, int b, XYZ pos)
+   {
+      pointLight(r, g, b, (float)pos.X, (float)pos.Y, (float)pos.Z);
+   }
+
+   private void normal(XYZ n)
+   {
+      assert n.isUnit();
+      normal((float)n.X, (float)n.Y, (float)n.Z);
+   }
+
+   public void vertex(XYZ v)
+   {
+      vertex((float)v.X, (float)v.Y, (float)v.Z);
+   }
+
+   @Override
+   public void perspective(double angleOfView, double aspectRatio, double nearDistance, double farDistance)
+   {
+      perspective((float)angleOfView, (float)aspectRatio, (float)nearDistance, (float)farDistance);
+   }
+
    void scaleTo(Box b)
    {
-      double shorter_display = Math.min(s_app.width, s_app.height);
+      double shorter_display = Math.min(width, height);
 
       double larger_box = Math.max(b.DX(), b.DY());
 
       larger_box *= 1.1;
 
-      s_app.translate(s_app.width / 2, s_app.height / 2);
+      translate(width / 2, height / 2);
 
-      s_app.scale((float)(shorter_display / larger_box));
+      scale((float)(shorter_display / larger_box));
 
-      s_app.translate((float)-b.Min.X,(float)-b.Min.Y);
+      translate((float)-b.Min.X,(float)-b.Min.Y);
    }
 
-   void clear(@SuppressWarnings("SameParameterValue") int c)
+   public void clear(@SuppressWarnings("SameParameterValue") int c)
    {
-      s_app.background(c);
+      background(c);
+   }
+
+   @Override
+   public void stroke(int red, int green, int blue)
+   {
+      super.stroke(red, green, blue);
    }
 
    @Override
@@ -451,10 +583,8 @@ public class Main extends processing.core.PApplet implements IDraw
       if (scaling)
          d /= m_scale;
 
-      s_app.strokeWeight((float)d);
+      strokeWeight((float)d);
    }
-
-   private static PApplet s_app;
 
    // UI data
    private boolean m_auto_scale = true;
@@ -465,11 +595,14 @@ public class Main extends processing.core.PApplet implements IDraw
    private double m_off_y = 0.0;
    private double m_scale = 1.0;
 
+   private boolean m_map = false;
+
    private LevelGeneratorConfiguration m_config;
    private LevelGenerator m_generator;
    private Level m_level;
 
    boolean m_playing = false;
+   boolean m_complete = false;
 
    private Player m_player;
 
@@ -483,4 +616,6 @@ public class Main extends processing.core.PApplet implements IDraw
    private final static int RIGHT_KEY = 1;
    private final static int FORWARDS_KEY = 2;
    private final static int BACKWARDS_KEY = 3;
+
+   private final IoCContainer m_ioc_container;
 }

@@ -2,13 +2,10 @@ package engine;
 
 public class EdgeAdjusterStepper implements IStepper
 {
-   public interface IChildFactory
+   public EdgeAdjusterStepper(IoCContainer m_ioc_container, Graph graph, DirectedEdge edge,
+         LevelGeneratorConfiguration c)
    {
-      IStepper MakeChild(Graph g, LevelGeneratorConfiguration c);
-   }
-
-   public EdgeAdjusterStepper(Graph graph, DirectedEdge edge, LevelGeneratorConfiguration c)
-   {
+      this.m_ioc_container = m_ioc_container;
       m_graph = graph;
       m_edge = edge;
       m_config = c;
@@ -22,7 +19,7 @@ public class EdgeAdjusterStepper implements IStepper
          case StepIn:
             SplitEdge();
 
-            IStepper child = m_child_factory.MakeChild(m_graph, m_config);
+            IStepper child = m_ioc_container.RelaxerFactory.makeRelaxer(m_ioc_container, m_graph, m_config);
 
             return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                   child, "Relaxing split edge.");
@@ -45,7 +42,7 @@ public class EdgeAdjusterStepper implements IStepper
    {
       INode c = m_graph.addNode("c", "", "EdgeExtend",
             m_edge.HalfWidth * 2,
-            n -> new CircularGeomLayout(n.getPos(), n.getRad() / 2));
+            m_geom_maker);
 
       XY mid = m_edge.Start.getPos().plus(m_edge.End.getPos()).divide(2);
 
@@ -61,15 +58,22 @@ public class EdgeAdjusterStepper implements IStepper
       de2.SetColour(m_edge.GetColour());
    }
 
-   public static void SetChildFactory(IChildFactory factory)
+   public void setGeomMaker(GeomLayout.IGeomLayoutCreateFromNode maker)
    {
-      m_child_factory = factory;
+      m_geom_maker = maker;
+   }
+
+   public GeomLayout.IGeomLayoutCreateFromNode getGeomMaker()
+   {
+      return m_geom_maker;
    }
 
    private final Graph m_graph;
    private final DirectedEdge m_edge;
    private final LevelGeneratorConfiguration m_config;
 
+   private GeomLayout.IGeomLayoutCreateFromNode m_geom_maker
+         = n -> new CircularGeomLayout(n.getPos(), n.getRad() / 2);
 
-   private static IChildFactory m_child_factory;
+   private final IoCContainer m_ioc_container;
 }

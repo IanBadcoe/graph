@@ -2,14 +2,11 @@ package engine;
 
 public class ExpandToSizeStepper implements IStepper
 {
-   public interface IChildFactory
-   {
-      IStepper MakeChild(Graph g, TemplateStore ts, LevelGeneratorConfiguration c);
-   }
 
-   public ExpandToSizeStepper(Graph graph, int required_size, TemplateStore templates,
+   public ExpandToSizeStepper(IoCContainer m_ioc_container, Graph graph, int required_size, TemplateStore templates,
          LevelGeneratorConfiguration c)
    {
+      this.m_ioc_container = m_ioc_container;
       m_graph = graph;
       m_orig_size = m_graph == null ? 0 : m_graph.numNodes();
       m_required_size = required_size;
@@ -30,7 +27,8 @@ public class ExpandToSizeStepper implements IStepper
                      null, "Target size reached");
             }
 
-            IStepper child = m_child_factory.MakeChild(m_graph, m_templates, m_config);
+            IStepper child = m_ioc_container.AllNodesExpanderFactory.makeAllNodesExpander(
+                  m_ioc_container, m_graph, m_templates, m_config);
 
             return new StepperController.StatusReportInner(StepperController.Status.StepIn,
                   child, "More expansion required.");
@@ -49,16 +47,11 @@ public class ExpandToSizeStepper implements IStepper
       throw new UnsupportedOperationException();
    }
 
-   public static void SetChildFactory(IChildFactory factory)
-   {
-      m_child_factory = factory;
-   }
-
    private final Graph m_graph;
    private final int m_required_size;
    private final TemplateStore m_templates;
    private final LevelGeneratorConfiguration m_config;
    private final int m_orig_size;
 
-   private static IChildFactory m_child_factory;
+   private final IoCContainer m_ioc_container;
 }
