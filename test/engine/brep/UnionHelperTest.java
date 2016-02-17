@@ -1,5 +1,6 @@
-package engine;
+package engine.brep;
 
+import engine.*;
 import org.junit.Test;
 
 import java.util.HashSet;

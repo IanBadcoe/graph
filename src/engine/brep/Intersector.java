@@ -1,4 +1,6 @@
-package engine;
+package engine.brep;
+
+import engine.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -118,8 +120,8 @@ class Intersector
             splitCurvesAtIntersections(alc1, alc2, tol);
 
             // has a side effect of checking that the loops are still loops
-//            new engine.Loop(alc1);
-//            new engine.Loop(alc2);
+//            new engine.brep.Loop(alc1);
+//            new engine.brep.Loop(alc2);
          }
       }
 
@@ -453,7 +455,7 @@ class Intersector
       return true;
    }
 
-   // returns a set of <engine.Curve, int> pairs sorted by distance down the line
+   // returns a set of <engine.brep.Curve, int> pairs sorted by distance down the line
    // at which the intersection occurs
    //
    // the curve is the curve intersecting and the integer is the
@@ -472,7 +474,7 @@ class Intersector
       for (Curve c : all_curves)
       {
          ArrayList<OrderedPair<Double, Double>> intersections =
-               Util.curveCurveIntersect(lc, c);
+               BRepUtil.curveCurveIntersect(lc, c);
 
          if (intersections == null)
             continue;
@@ -574,7 +576,7 @@ class Intersector
             {
                any_splits = false;
 
-               ArrayList<OrderedPair<Double, Double>> ret = Util.curveCurveIntersect(c1, c2);
+               ArrayList<OrderedPair<Double, Double>> ret = BRepUtil.curveCurveIntersect(c1, c2);
 
                if (ret == null)
                   break;

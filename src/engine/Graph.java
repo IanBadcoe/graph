@@ -10,8 +10,8 @@ public class Graph
       return addNode(name, codes, template, rad, CircularGeomLayout::createFromNode);
    }
 
-   INode addNode(String name, String codes, String template, double rad,
-                 GeomLayout.IGeomLayoutCreateFromNode geomCreator)
+   public INode addNode(String name, String codes, String template, double rad,
+                        GeomLayout.IGeomLayoutCreateFromNode geomCreator)
    {
       Node n = new Node(name, codes, template, geomCreator, rad);
 
@@ -62,9 +62,9 @@ public class Graph
             GeomLayout::makeDefaultCorridor);
    }
 
-   DirectedEdge connect(INode from, INode to,
-         double min_length, double max_length, double half_width,
-         GeomLayout.IGeomLayoutCreateFromDirectedEdge layoutCreator)
+   public DirectedEdge connect(INode from, INode to,
+                               double min_length, double max_length, double half_width,
+                               GeomLayout.IGeomLayoutCreateFromDirectedEdge layoutCreator)
    {
       if (from == to
             || !contains(from)
@@ -135,7 +135,7 @@ public class Graph
       return m_edges.size();
    }
 
-   ArrayList<DirectedEdge> allGraphEdges()
+   public ArrayList<DirectedEdge> allGraphEdges()
    {
       return new ArrayList<>(m_edges);
    }

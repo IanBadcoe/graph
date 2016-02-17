@@ -1,4 +1,6 @@
-package engine;
+package engine.brep;
+
+import engine.*;
 
 import java.util.*;
 
@@ -60,7 +62,7 @@ public class UnionHelper
       return true;
    }
 
-   void generateGeometry(Graph graph)
+   public void generateGeometry(Graph graph)
    {
       for (INode n : graph.allGraphNodes())
       {

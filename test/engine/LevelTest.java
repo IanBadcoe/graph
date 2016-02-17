@@ -1,5 +1,9 @@
 package engine;
 
+import engine.brep.CircleCurve;
+import engine.brep.Loop;
+import engine.brep.LoopSet;
+import engine.brep.UnionHelper;
 import org.junit.Test;
 
 import java.util.Random;

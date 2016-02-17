@@ -1,5 +1,9 @@
-package engine;
+package engine.brep;
 
+import engine.Box;
+import engine.OrderedPair;
+import engine.Util;
+import engine.XY;
 import org.junit.Test;
 
 import java.util.*;
@@ -954,22 +958,22 @@ public class IntersectorTest
 //   @Test
 //   public void testPrecisionProblem()
 //   {
-//      engine.Curve circle = new engine.CircleCurve(new engine.XY(340.5690029832473, -103.41524432252388), 10.0,
-//            0.0, Math.PI * 2, engine.CircleCurve.RotationDirection.Forwards);
+//      engine.brep.Curve circle = new engine.brep.CircleCurve(new engine.XY(340.5690029832473, -103.41524432252388), 10.0,
+//            0.0, Math.PI * 2, engine.brep.CircleCurve.RotationDirection.Forwards);
 //
-//      ArrayList<engine.Curve> alc1 = new ArrayList<>();
+//      ArrayList<engine.brep.Curve> alc1 = new ArrayList<>();
 //      alc1.add(circle);
 //
-//      engine.Curve l1 = new engine.LineCurve(new engine.XY(345.5653898846735, -112.07758337910997),
+//      engine.brep.Curve l1 = new engine.brep.LineCurve(new engine.XY(345.5653898846735, -112.07758337910997),
 //            new engine.XY(-0.8662339056586087, -0.49963869014261947),
 //            0.0, 122.2096167831618);
-//      engine.Curve l2 = new engine.LineCurve(new engine.XY(239.70327622955338, -173.13823623148042),
+//      engine.brep.Curve l2 = new engine.brep.LineCurve(new engine.XY(239.70327622955338, -173.13823623148042),
 //            new engine.XY(-0.49963869014261947, 0.8662339056586087),
 //            0.0, 20.0);
-//      engine.Curve l3 = new engine.LineCurve(new engine.XY(229.71050242670097, -155.81355811830824),
+//      engine.brep.Curve l3 = new engine.brep.LineCurve(new engine.XY(229.71050242670097, -155.81355811830824),
 //            new engine.XY(0.8662339056586087, 0.49963869014261947),
 //            0.0, 122.2096167831618);
-//      engine.Curve l4 = new engine.LineCurve(new engine.XY(335.5726160818211, -94.75290526593778),
+//      engine.brep.Curve l4 = new engine.brep.LineCurve(new engine.XY(335.5726160818211, -94.75290526593778),
 //            new engine.XY(0.49963869014261947, -0.8662339056586087),
 //            0, 20);
 //
@@ -979,7 +983,7 @@ public class IntersectorTest
 //      alc2.add(l3);
 //      alc2.add(l4);
 //
-//      engine.Intersector.splitCurvesAtIntersections(alc1, alc2, 1e-6);
+//      engine.brep.Intersector.splitCurvesAtIntersections(alc1, alc2, 1e-6);
 //   }
 
    private final Intersector m_intersector = new Intersector();

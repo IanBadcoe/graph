@@ -1,5 +1,10 @@
 package engine;
 
+import engine.brep.Curve;
+import engine.brep.LineCurve;
+import engine.brep.Loop;
+import engine.brep.LoopSet;
+
 import java.util.ArrayList;
 
 @SuppressWarnings("WeakerAccess")

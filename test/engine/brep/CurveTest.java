@@ -1,5 +1,7 @@
-package engine;
+package engine.brep;
 
+import engine.Box;
+import engine.XY;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

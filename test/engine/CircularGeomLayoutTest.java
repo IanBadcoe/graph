@@ -1,5 +1,7 @@
 package engine;
 
+import engine.brep.CircleCurve;
+import engine.brep.Loop;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

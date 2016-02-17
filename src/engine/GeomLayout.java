@@ -1,5 +1,8 @@
 package engine;
 
+import engine.brep.Loop;
+import engine.brep.LoopSet;
+
 abstract public class GeomLayout
 {
    public interface IGeomLayoutCreateFromNode

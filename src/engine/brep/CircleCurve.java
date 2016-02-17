@@ -1,9 +1,13 @@
-package engine;
+package engine.brep;
+
+import engine.Box;
+import engine.Util;
+import engine.XY;
 
 @SuppressWarnings("WeakerAccess")
-class CircleCurve extends Curve
+public class CircleCurve extends Curve
 {
-   enum RotationDirection
+   public enum RotationDirection
    {
       Forwards,
       Reverse
@@ -13,19 +17,19 @@ class CircleCurve extends Curve
    final public double Radius;
    final public RotationDirection Rotation;
 
-   CircleCurve(XY position, double radius)
+   public CircleCurve(XY position, double radius)
    {
       this(position, radius, 0, Math.PI * 2);
    }
 
-   CircleCurve(XY position, double radius,
-               double start_angle, double end_angle)
+   public CircleCurve(XY position, double radius,
+                      double start_angle, double end_angle)
    {
       this(position, radius, start_angle, end_angle, RotationDirection.Forwards);
    }
 
-   CircleCurve(XY position, double radius,
-               RotationDirection rotation)
+   public CircleCurve(XY position, double radius,
+                      RotationDirection rotation)
    {
       this (position, radius, 0, Math.PI * 2, rotation);
    }
@@ -41,9 +45,9 @@ class CircleCurve extends Curve
       return end_angle;
    }
 
-   CircleCurve(XY position, double radius,
-         double start_angle, double end_angle,
-         RotationDirection rotation)
+   public CircleCurve(XY position, double radius,
+                      double start_angle, double end_angle,
+                      RotationDirection rotation)
    {
       super(Util.fixupAngle(start_angle), fixEndAngle(start_angle, end_angle));
 
@@ -215,7 +219,7 @@ class CircleCurve extends Curve
       return p < EndParam + tol;
    }
 
-   boolean isCyclic()
+   public boolean isCyclic()
    {
       return Util.clockAwareAngleCompare(StartParam, EndParam, 1e-12);
    }

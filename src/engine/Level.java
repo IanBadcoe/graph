@@ -1,15 +1,14 @@
 package engine;
 
+import engine.brep.BRepUtil;
 import engine.modelling.Movable;
-import engine.modelling.Static;
 import engine.modelling.WorldObject;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Level implements ICollidable
 {
-   Level(double cell_size, double wall_facet_length, Box bounds, XY start_pos)
+   public Level(double cell_size, double wall_facet_length, Box bounds, XY start_pos)
    {
       m_cell_size = cell_size;
       m_cell_radius = Math.sqrt(cell_size * cell_size) / 2;
@@ -184,7 +183,7 @@ public class Level implements ICollidable
          if (direction != null && !wallNormalCheck(wall, direction))
             continue;
 
-         OrderedPair<Double, Double> ret = Util.circleLineIntersect(where, m.getRadius(),
+         OrderedPair<Double, Double> ret = BRepUtil.circleLineIntersect(where, m.getRadius(),
                wall.Start, wall.End);
 
          if (ret != null)

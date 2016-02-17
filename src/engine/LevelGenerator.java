@@ -1,5 +1,7 @@
 package engine;
 
+import engine.brep.UnionHelper;
+
 import java.util.*;
 
 public class LevelGenerator

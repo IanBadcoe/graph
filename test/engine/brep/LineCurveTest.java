@@ -1,5 +1,7 @@
-package engine;
+package engine.brep;
 
+import engine.Box;
+import engine.XY;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -217,7 +219,9 @@ public class LineCurveTest
       LineCurve lc4 = new LineCurve(new XY(), new XY(1, 0), 6);
       LineCurve lc5 = new LineCurve(new XY(), new XY(1, 0), 1, 5);
 
+      //noinspection EqualsWithItself
       assertTrue(lc.equals(lc));
+      //noinspection EqualsBetweenInconvertibleTypes
       assertFalse(lc.equals(1));
 
       assertTrue(lc.equals(lcb));

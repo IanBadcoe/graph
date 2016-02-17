@@ -6,7 +6,7 @@
         <option name="ENABLED" value="true" />
       </pattern>
       <pattern>
-        <option name="PATTERN" value="engine.*" />
+        <option name="PATTERN" value="engine.brep.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

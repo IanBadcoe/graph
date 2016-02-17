@@ -1,4 +1,8 @@
-package engine;
+package engine.brep;
+
+import engine.Box;
+import engine.OrderedPair;
+import engine.XY;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,12 +11,12 @@ import java.util.List;
 public class Loop
 {
    // only used in unit-tests atm
-   Loop()
+   public Loop()
    {
       m_param_range = 0;
    }
 
-   Loop(Curve c)
+   public Loop(Curve c)
    {
       m_curves.add(c);
 

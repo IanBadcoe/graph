@@ -1,5 +1,9 @@
 package engine;
 
+import engine.brep.CircleCurve;
+import engine.brep.Loop;
+import engine.brep.LoopSet;
+
 @SuppressWarnings("WeakerAccess")
 public class CircularGeomLayout extends GeomLayout
 {

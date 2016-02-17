@@ -1,11 +1,15 @@
-package engine;
+package engine.brep;
+
+import engine.Box;
+import engine.XY;
 
 public abstract class Curve
 {
    public final double StartParam;
    public final double EndParam;
 
-   Curve(double start_param, double end_param)
+   @SuppressWarnings("WeakerAccess")
+   protected Curve(double start_param, double end_param)
    {
       StartParam = start_param;
       EndParam = end_param;

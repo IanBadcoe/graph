@@ -1,4 +1,7 @@
-package engine;
+package engine.brep;
+
+import engine.Box;
+import engine.XY;
 
 public class LineCurve extends Curve
 {
@@ -19,7 +22,7 @@ public class LineCurve extends Curve
          throw new IllegalArgumentException();
    }
 
-   LineCurve(XY position, XY directionCosines, double start, double end)
+   public LineCurve(XY position, XY directionCosines, double start, double end)
    {
       super(start, end);
 
