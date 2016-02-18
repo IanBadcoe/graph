@@ -1,11 +1,13 @@
-package engine;
+package engine.graph;
+
+import engine.XY;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-class Node implements INode
+public class Node implements INode
 {
-   Node(String name, String codes, String template, double rad)
+   public Node(String name, String codes, String template, double rad)
    {
       this(name, codes, template, DefaultLayourGreator, rad);
    }

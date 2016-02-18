@@ -1,10 +1,13 @@
 package engine;
 
-public class ExpandToSizeStepper implements IStepper
+import engine.graph.Graph;
+import engine.graph.TemplateStore;
+
+class ExpandToSizeStepper implements IStepper
 {
 
    public ExpandToSizeStepper(IoCContainer m_ioc_container, Graph graph, int required_size, TemplateStore templates,
-         LevelGeneratorConfiguration c)
+                              LevelGeneratorConfiguration c)
    {
       this.m_ioc_container = m_ioc_container;
       m_graph = graph;

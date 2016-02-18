@@ -1,8 +1,21 @@
 package engine.brep;
 
-import engine.*;
+import engine.Box;
+import engine.graph.GeomLayout;
+import engine.Level;
+import engine.OrderedPair;
+import engine.Wall;
+import engine.WallLoop;
+import engine.XY;
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Random;
 
 @SuppressWarnings("WeakerAccess")
 public class UnionHelper

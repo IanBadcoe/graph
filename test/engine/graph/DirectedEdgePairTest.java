@@ -1,8 +1,5 @@
-package engine;
+package engine.graph;
 
-import engine.DirectedEdge;
-import engine.DirectedEdgePair;
-import engine.Node;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

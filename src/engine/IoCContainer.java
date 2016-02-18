@@ -1,5 +1,11 @@
 package engine;
 
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.Template;
+import engine.graph.TemplateStore;
+
 import java.util.Collection;
 
 public class IoCContainer
@@ -33,14 +39,14 @@ public class IoCContainer
    public interface IAllNodesExpanderFactory
    {
       IStepper makeAllNodesExpander(IoCContainer ioc_container,
-            Graph g, TemplateStore ts, LevelGeneratorConfiguration c);
+                                    Graph g, TemplateStore ts, LevelGeneratorConfiguration c);
    }
 
    public interface INodeExpanderFactory
    {
       IStepper makeNodeExpander(IoCContainer ioc_container,
-            Graph g, INode n, Collection<Template> templates,
-            LevelGeneratorConfiguration c);
+                                Graph g, INode n, Collection<Template> templates,
+                                LevelGeneratorConfiguration c);
    }
 
    public interface INodeTemplateExpanderFactory
@@ -52,6 +58,6 @@ public class IoCContainer
    public interface IAdjusterFactory
    {
       IStepper MakeAdjuster(IoCContainer ioc_container,
-            Graph graph, DirectedEdge edge, LevelGeneratorConfiguration c);
+                            Graph graph, DirectedEdge edge, LevelGeneratorConfiguration c);
    }
 }

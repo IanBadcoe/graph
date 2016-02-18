@@ -1,6 +1,6 @@
-package engine;
+package engine.graph;
 
-interface IGraphRestore
+public interface IGraphRestore
 {
    boolean Restore();
    boolean CanBeRestored();

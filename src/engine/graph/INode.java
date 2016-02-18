@@ -1,6 +1,7 @@
-package engine;
+package engine.graph;
 
 import com.sun.istack.internal.NotNull;
+import engine.XY;
 
 import java.util.Collection;
 

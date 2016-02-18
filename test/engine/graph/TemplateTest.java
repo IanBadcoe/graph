@@ -1,6 +1,6 @@
-package engine;
+package engine.graph;
 
-import engine.*;
+import engine.XY;
 import org.junit.Test;
 
 import java.util.Random;

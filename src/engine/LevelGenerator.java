@@ -1,8 +1,11 @@
 package engine;
 
 import engine.brep.UnionHelper;
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.TemplateStore;
 
-import java.util.*;
+import java.util.Random;
 
 public class LevelGenerator
 {

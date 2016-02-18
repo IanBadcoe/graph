@@ -1,6 +1,26 @@
 package game;
 
-import engine.*;
+import engine.Box;
+import engine.EdgeAdjusterStepper;
+import engine.IDraw;
+import engine.IDrawable;
+import engine.IoCContainer;
+import engine.KeyTracker;
+import engine.Level;
+import engine.LevelGenerator;
+import engine.LevelGeneratorConfiguration;
+import engine.RelaxerStepper;
+import engine.StepperController;
+import engine.TryAllNodesExpandStepper;
+import engine.TryAllTemplatesOnOneNodeStepper;
+import engine.TryTemplateExpandStepper;
+import engine.Wall;
+import engine.WallLoop;
+import engine.XY;
+import engine.XYZ;
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
 import engine.modelling.Static;
 import engine.objects.TurretFactory;
 
@@ -19,14 +39,14 @@ public class Main extends processing.core.PApplet implements IDraw
       m_config = new LevelGeneratorConfiguration(85);
 
       // configure our crude IoC system
-      m_ioc_container = new IoCContainer(
+      IoCContainer ioc_container = new IoCContainer(
             RelaxerStepper::new,
             TryAllNodesExpandStepper::new,
             TryAllTemplatesOnOneNodeStepper::new,
             TryTemplateExpandStepper::new,
             EdgeAdjusterStepper::new);
 
-      m_generator = new LevelGenerator(m_ioc_container, 10, m_config, new TemplateStore1());
+      m_generator = new LevelGenerator(ioc_container, 10, m_config, new TemplateStore1());
    }
 
    @Override
@@ -616,6 +636,4 @@ public class Main extends processing.core.PApplet implements IDraw
    private final static int RIGHT_KEY = 1;
    private final static int FORWARDS_KEY = 2;
    private final static int BACKWARDS_KEY = 3;
-
-   private final IoCContainer m_ioc_container;
 }

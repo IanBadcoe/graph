@@ -1,5 +1,6 @@
-package engine;
+package engine.graph;
 
+import engine.XY;
 import engine.brep.CircleCurve;
 import engine.brep.Loop;
 import engine.brep.LoopSet;
@@ -13,7 +14,7 @@ public class CircularGeomLayout extends GeomLayout
       Radius = radius;
    }
 
-   static CircularGeomLayout createFromNode(INode n)
+   public static CircularGeomLayout createFromNode(INode n)
    {
       return new CircularGeomLayout(n.getPos(), n.getRad());
    }

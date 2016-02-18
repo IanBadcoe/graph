@@ -1,8 +1,6 @@
 package engine;
 
-import engine.Graph;
-import engine.IStepper;
-import engine.StepperController;
+import engine.graph.Graph;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -1,4 +1,4 @@
-package engine;
+package engine.graph;
 
 public class DirectedEdge {
    public final INode Start;
@@ -66,12 +66,12 @@ public class DirectedEdge {
       return null;
    }
 
-   double Length()
+   public double Length()
    {
       return End.getPos().minus(Start.getPos()).length();
    }
 
-   boolean Connects(INode n)
+   public boolean Connects(INode n)
    {
       return n == Start || n == End;
    }
@@ -81,7 +81,7 @@ public class DirectedEdge {
       return m_colour;
    }
 
-   void SetColour(int c)
+   public void SetColour(int c)
    {
       m_colour = c;
    }

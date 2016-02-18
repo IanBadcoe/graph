@@ -1,9 +1,15 @@
 package engine;
 
+import engine.graph.CircularGeomLayout;
+import engine.graph.DirectedEdge;
+import engine.graph.GeomLayout;
+import engine.graph.Graph;
+import engine.graph.INode;
+
 public class EdgeAdjusterStepper implements IStepper
 {
    public EdgeAdjusterStepper(IoCContainer m_ioc_container, Graph graph, DirectedEdge edge,
-         LevelGeneratorConfiguration c)
+                              LevelGeneratorConfiguration c)
    {
       this.m_ioc_container = m_ioc_container;
       m_graph = graph;

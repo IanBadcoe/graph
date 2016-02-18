@@ -1,6 +1,10 @@
 package engine.brep;
 
 import engine.*;
+import engine.graph.DirectedEdge;
+import engine.graph.GeomLayout;
+import engine.graph.Graph;
+import engine.graph.INode;
 import org.junit.Test;
 
 import java.util.HashSet;

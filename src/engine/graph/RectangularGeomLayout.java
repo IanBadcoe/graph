@@ -1,5 +1,6 @@
-package engine;
+package engine.graph;
 
+import engine.XY;
 import engine.brep.Curve;
 import engine.brep.LineCurve;
 import engine.brep.Loop;

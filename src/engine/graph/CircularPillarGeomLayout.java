@@ -1,5 +1,6 @@
-package engine;
+package engine.graph;
 
+import engine.XY;
 import engine.brep.CircleCurve;
 import engine.brep.Loop;
 import engine.brep.LoopSet;

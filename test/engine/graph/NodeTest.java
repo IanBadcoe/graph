@@ -1,4 +1,4 @@
-package engine;
+package engine.graph;
 
 import org.junit.Test;
 

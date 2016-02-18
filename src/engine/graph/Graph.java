@@ -1,11 +1,14 @@
-package engine;
+package engine.graph;
+
+import engine.Box;
+import engine.XY;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Graph
 {
-   INode addNode(String name, String codes, String template, double rad)
+   public INode addNode(String name, String codes, String template, double rad)
    {
       return addNode(name, codes, template, rad, CircularGeomLayout::createFromNode);
    }
@@ -55,8 +58,8 @@ public class Graph
       m_nodes.remove(node);
    }
 
-   DirectedEdge connect(INode from, INode to,
-         double min_length, double max_length, double half_width)
+   public DirectedEdge connect(INode from, INode to,
+                               double min_length, double max_length, double half_width)
    {
       return connect(from, to, min_length, max_length, half_width,
             GeomLayout::makeDefaultCorridor);
@@ -94,7 +97,7 @@ public class Graph
       return real_edge;
    }
 
-   boolean disconnect(INode from, INode to)
+   public boolean disconnect(INode from, INode to)
    {
       if (!contains(from) || !contains(to))
          return false;
@@ -125,12 +128,12 @@ public class Graph
       m_edges.remove(e);
    }
 
-   int numNodes()
+   public int numNodes()
    {
       return m_nodes.size();
    }
 
-   int numEdges()
+   public int numEdges()
    {
       return m_edges.size();
    }
@@ -145,7 +148,7 @@ public class Graph
       return new ArrayList<>(m_nodes);
    }
 
-   IGraphRestore createRestorePoint()
+   public IGraphRestore createRestorePoint()
    {
       GraphRestore gr = new GraphRestore(m_restore);
 

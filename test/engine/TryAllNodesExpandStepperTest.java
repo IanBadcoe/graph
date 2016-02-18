@@ -1,5 +1,8 @@
 package engine;
 
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.TemplateStore;
 import org.junit.Test;
 
 import java.util.ArrayList;

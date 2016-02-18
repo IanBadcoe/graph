@@ -1,5 +1,8 @@
 package engine;
 
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,5 +1,10 @@
 package engine;
 
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.Template;
+
 import java.util.ArrayList;
 
 public class TryTemplateExpandStepper implements IStepper
@@ -10,7 +15,7 @@ public class TryTemplateExpandStepper implements IStepper
    }
 
    public TryTemplateExpandStepper(IoCContainer m_ioc_container, Graph graph, INode node, Template template,
-         LevelGeneratorConfiguration c)
+                                   LevelGeneratorConfiguration c)
    {
       this.m_ioc_container = m_ioc_container;
       m_graph = graph;

@@ -1,5 +1,10 @@
 package engine;
 
+import engine.graph.DirectedEdge;
+import engine.graph.GeomLayout;
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.Node;
 import org.junit.Before;
 import org.junit.Test;
 

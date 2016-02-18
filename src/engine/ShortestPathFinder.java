@@ -1,5 +1,9 @@
 package engine;
 
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
+
 import java.util.Arrays;
 import java.util.function.Function;
 

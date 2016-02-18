@@ -1,7 +1,5 @@
-package engine;
+package engine.graph;
 
-import engine.Template;
-import engine.TemplateBuilder;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -1,4 +1,7 @@
-package engine;
+package game;
+
+import engine.graph.INode;
+import engine.graph.Template;
 
 // a very simple approach to doors, just renaming door/key pairs to match one-another
 public class DoorPostExpand implements Template.IPostExpand

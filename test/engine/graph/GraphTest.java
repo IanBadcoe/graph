@@ -1,6 +1,7 @@
-package engine;
+package engine.graph;
 
-import engine.*;
+import engine.Box;
+import engine.XY;
 import org.junit.Test;
 
 import java.util.HashMap;

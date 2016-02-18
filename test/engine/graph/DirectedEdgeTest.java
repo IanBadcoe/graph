@@ -1,7 +1,5 @@
-package engine;
+package engine.graph;
 
-import engine.DirectedEdge;
-import engine.Node;
 import engine.XY;
 import org.junit.Test;
 

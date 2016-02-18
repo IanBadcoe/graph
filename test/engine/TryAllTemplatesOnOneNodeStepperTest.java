@@ -1,5 +1,9 @@
 package engine;
 
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.Template;
+import engine.graph.TemplateStore;
 import game.TemplateStore1;
 import org.junit.Test;
 

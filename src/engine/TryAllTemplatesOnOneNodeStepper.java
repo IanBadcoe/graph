@@ -1,13 +1,17 @@
 package engine;
 
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.Template;
+
 import java.util.Collection;
 
 public class TryAllTemplatesOnOneNodeStepper implements IStepper
 {
 
    public TryAllTemplatesOnOneNodeStepper(IoCContainer m_ioc_container,
-         Graph graph, INode node, Collection<Template> templates,
-         LevelGeneratorConfiguration c)
+                                          Graph graph, INode node, Collection<Template> templates,
+                                          LevelGeneratorConfiguration c)
    {
       m_graph = graph;
       m_node = node;

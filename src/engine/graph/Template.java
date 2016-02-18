@@ -1,6 +1,12 @@
-package engine;
+package engine.graph;
 
-import java.util.*;
+import engine.XY;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 
 public class Template
 {
@@ -12,7 +18,7 @@ public class Template
       Target
    }
 
-   interface IPostExpand
+   public interface IPostExpand
    {
       void AfterExpand(INode n);
       void Done();
@@ -53,7 +59,7 @@ public class Template
       return m_num_internal_nodes - 1;
    }
 
-   boolean Expand(Graph graph, INode target, Random random)
+   public boolean Expand(Graph graph, INode target, Random random)
    {
       Collection<DirectedEdge> target_in_connections = target.getInConnections();
       Collection<DirectedEdge> target_out_connections = target.getOutConnections();
@@ -193,7 +199,7 @@ public class Template
          }
       }
 
-      return Util.findCrossingEdges(graph.allGraphEdges()).size() == 0;
+      return GraphUtil.findCrossingEdges(graph.allGraphEdges()).size() == 0;
    }
 
    private void ApplyConnections(INode node_replacing, HashMap<NodeRecord, INode> template_to_graph,
@@ -287,12 +293,12 @@ public class Template
       }
    }
 
-   String GetCodes()
+   public String GetCodes()
    {
       return m_codes;
    }
 
-   String GetName()
+   public String GetName()
    {
       return m_name;
    }

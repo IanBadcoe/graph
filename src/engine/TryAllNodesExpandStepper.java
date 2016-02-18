@@ -1,5 +1,10 @@
 package engine;
 
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.Template;
+import engine.graph.TemplateStore;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -8,7 +13,7 @@ public class TryAllNodesExpandStepper implements IStepper
 {
 
    public TryAllNodesExpandStepper(IoCContainer m_ioc_container, Graph graph, TemplateStore templates,
-         LevelGeneratorConfiguration c)
+                                   LevelGeneratorConfiguration c)
    {
       this.m_ioc_container = m_ioc_container;
       m_graph = graph;

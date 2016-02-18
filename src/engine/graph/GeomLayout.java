@@ -1,4 +1,4 @@
-package engine;
+package engine.graph;
 
 import engine.brep.Loop;
 import engine.brep.LoopSet;
@@ -18,7 +18,7 @@ abstract public class GeomLayout
    // one +ve loop that cuts the outer envelope of the space the node will occupy
    public abstract Loop makeBaseGeometry();
 
-   // one of more -ve loops that put things like pillar back inside
+   // one or more -ve loops that put things like pillars back inside
    // the base geometry
    public abstract LoopSet makeDetailGeometry();
 

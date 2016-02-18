@@ -1,8 +1,7 @@
 package engine;
 
-import engine.Graph;
-import engine.INode;
-import engine.ShortestPathFinder;
+import engine.graph.Graph;
+import engine.graph.INode;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

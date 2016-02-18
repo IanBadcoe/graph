@@ -1,5 +1,10 @@
 package engine;
 
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.graph.Template;
+import engine.graph.TemplateBuilder;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

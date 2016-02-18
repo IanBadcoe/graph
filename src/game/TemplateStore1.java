@@ -1,6 +1,10 @@
 package game;
 
-import engine.*;
+import engine.graph.CircularGeomLayout;
+import engine.graph.CircularPillarGeomLayout;
+import engine.graph.Template;
+import engine.graph.TemplateBuilder;
+import engine.graph.TemplateStore;
 
 public class TemplateStore1 extends TemplateStore
 {

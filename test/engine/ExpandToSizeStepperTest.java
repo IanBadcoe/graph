@@ -1,5 +1,7 @@
 package engine;
 
+import engine.graph.Graph;
+import engine.graph.TemplateStore;
 import game.TemplateStore1;
 import org.junit.Test;
 

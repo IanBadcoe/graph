@@ -1,5 +1,10 @@
 package engine;
 
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.GraphUtil;
+import engine.graph.INode;
+
 import java.util.ArrayList;
 
 public class RelaxerStepper implements IStepper
@@ -114,7 +119,7 @@ public class RelaxerStepper implements IStepper
          ended = maxd < m_config.RelaxationMoveTarget && maxf < m_config.RelaxationForceTarget;
       }
 
-      int crossings = Util.findCrossingEdges(m_edges).size();
+      int crossings = GraphUtil.findCrossingEdges(m_edges).size();
 
       if (crossings > 0)
       {
@@ -258,5 +263,6 @@ public class RelaxerStepper implements IStepper
 
    private boolean m_setup_done = false;
 
+   @SuppressWarnings("FieldCanBeLocal")
    final private IoCContainer m_ioc_container;
 }
