@@ -1,7 +1,11 @@
 package engine.modelling;
 
-import engine.*;
+import engine.ICollidable;
+import engine.IDrawable;
+import engine.XY;
+import engine.XYZ;
 import engine.controllers.IController;
+import engine.level.Level;
 
 // base class for "real" things that can be inserted into levels
 // e.g. they are drawable and collidable, this is going to mean:

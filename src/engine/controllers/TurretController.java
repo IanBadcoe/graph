@@ -1,6 +1,6 @@
 package engine.controllers;
 
-import engine.Level;
+import engine.level.Level;
 import engine.modelling.WorldObject;
 
 public class TurretController implements IController

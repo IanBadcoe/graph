@@ -1,6 +1,10 @@
 package engine.modelling;
 
-import engine.*;
+import engine.ICollidable;
+import engine.Util;
+import engine.XY;
+import engine.XYZ;
+import engine.level.Level;
 
 import java.util.ArrayList;
 import java.util.Collection;
