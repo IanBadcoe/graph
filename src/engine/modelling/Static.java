@@ -28,4 +28,11 @@ public class Static extends WorldObject
    {
       return null;
    }
+
+   @Override
+   public void setOrientation(double v)
+   {
+      // statics do not re-orient, as far as we thus far know
+      throw new UnsupportedOperationException();
+   }
 }

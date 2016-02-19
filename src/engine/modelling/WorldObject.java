@@ -88,9 +88,36 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
       return m_elevation;
    }
 
+   @Override
+   public void setElevation(double v)
+   {
+      m_elevation = v;
+   }
+
+   @Override
+   public double getRotation()
+   {
+      return m_rotation;
+   }
+
+   @Override
+   public void setRotation(double v)
+   {
+      m_rotation = v;
+   }
+
    private XYZ m_position;
+
+   // orientation is the facing one the whole object in the world
+   // rotation and elevation are the tracking of some "turret-like" subcomponent within the
+   // object
+   //
+   // if we get objects that want more internal posing than that,
+   // could at some point generalise this to an array of doubles
+   // whose length would have to match the expectations of the controller and the LoDModel
    private double m_orientation;
    private double m_elevation;
+   private double m_rotation;
 
    private IController m_controller;
 }

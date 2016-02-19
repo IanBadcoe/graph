@@ -10,11 +10,11 @@ public class LoD
       Meshes = meshes;
    }
 
-   void draw(IDraw draw)
+   void draw(IDraw draw, double rotation, double elevation)
    {
       for(MeshInstance mi : Meshes)
       {
-         mi.draw(draw);
+         mi.draw(draw, rotation, elevation);
       }
    }
 

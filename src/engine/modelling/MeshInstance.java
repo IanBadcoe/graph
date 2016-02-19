@@ -20,7 +20,8 @@ import java.util.ArrayList;
 @SuppressWarnings("WeakerAccess")
 public class MeshInstance
 {
-   public MeshInstance(Mesh mesh, MeshInstance parent, int colour, XYZ position, XYZ offset, double orientation, double elevation)
+   public MeshInstance(Mesh mesh, MeshInstance parent, int colour, XYZ position, XYZ offset, double orientation,
+                       double elevation, MeshInstance.TrackMode tracking)
    {
       Mesh = mesh;
       Colour = colour;
@@ -29,12 +30,13 @@ public class MeshInstance
       Orientation = orientation;
       Elevation = elevation;
       Parent = parent;
+      Tracking = tracking;
 
       if (Parent != null)
          Parent.addChild(this);
    }
 
-   void draw(IDraw draw)
+   void draw(IDraw draw, double rotation, double elevation)
    {
       draw.pushTransform();
 
@@ -44,8 +46,14 @@ public class MeshInstance
       draw.rotateY(Elevation);
       draw.rotateZ(Orientation);
 
+      if (Tracking == Tracking.Both || Tracking == Tracking.Elevation)
+         draw.rotateY(elevation);
+
+      if (Tracking == Tracking.Both || Tracking == Tracking.Rotation)
+         draw.rotateZ(rotation);
+
       if (m_children != null)
-         m_children.forEach(x -> x.draw(draw));
+         m_children.forEach(x -> x.draw(draw, rotation, elevation));
 
       if (Offset != null)
          draw.translate(Offset);
@@ -69,12 +77,22 @@ public class MeshInstance
       m_children.add(child);
    }
 
+   public enum TrackMode
+   {
+      None,
+      Rotation,
+      Elevation,
+      Both
+   }
+
    final Mesh Mesh;
    final int Colour;
    final XYZ Position;
    final XYZ Offset;
    final double Orientation;
    final double Elevation;
+
+   final TrackMode Tracking;
 
    final MeshInstance Parent;
 

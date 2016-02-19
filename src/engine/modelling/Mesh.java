@@ -6,6 +6,7 @@ import engine.XYZ;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Mesh
 {
@@ -385,14 +386,14 @@ public class Mesh
       XYZ[] points_out = point_map.entrySet()
             .stream()
             .sorted((x, y) -> x.getValue() - y.getValue())
-            .map(x -> x.getKey()).toArray(size -> new XYZ[size]);
+            .map(Map.Entry::getKey).toArray(XYZ[]::new);
 
       XYZ[] normals_out = normal_map.entrySet()
             .stream()
             .sorted((x, y) -> x.getValue() - y.getValue())
-            .map(x -> x.getKey()).toArray(size -> new XYZ[size]);
+            .map(Map.Entry::getKey).toArray(XYZ[]::new);
 
-      Triangle[] triangles_out = triangles.stream().toArray(size -> new Triangle[size]);
+      Triangle[] triangles_out = triangles.stream().toArray(Triangle[]::new);
 
       return new Mesh(points_out, normals_out, triangles_out);
    }
@@ -445,9 +446,9 @@ public class Mesh
       XYZ[] normals_out = normal_map.entrySet()
             .stream()
             .sorted((x, y) -> x.getValue() - y.getValue())
-            .map(x -> x.getKey()).toArray(size -> new XYZ[size]);
+            .map(Map.Entry::getKey).toArray(XYZ[]::new);
 
-      Triangle[] triangles_out = triangles.stream().toArray(size -> new Triangle[size]);
+      Triangle[] triangles_out = triangles.stream().toArray(Triangle[]::new);
 
       return new Mesh(Points, normals_out, triangles_out);
    }
