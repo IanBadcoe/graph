@@ -32,7 +32,9 @@ public class LoDModelBuilder
       for(int i = 0; i < NumLoDs; i++)
       {
          LoDBuilder lb = LoDBuilders[i];
-         MeshInstance[] mis = lb.Meshes.stream().toArray(MeshInstance[]::new);
+         // take only the top-level mesh-instances as others get drawn recursively
+         // if we need to keep the flat list beyond this point, could do this differently
+         MeshInstance[] mis = lb.MeshesInstances.stream().filter(x -> x.Parent == null).toArray(MeshInstance[]::new);
          lods[i] = new LoD(mis);
       }
 
@@ -41,11 +43,16 @@ public class LoDModelBuilder
 
    static class LoDBuilder
    {
-      public final ArrayList<MeshInstance> Meshes = new ArrayList<>();
+      public final ArrayList<MeshInstance> MeshesInstances = new ArrayList<>();
+
+      public MeshInstance findInstanceFor(Mesh mesh)
+      {
+         return MeshesInstances.stream().filter(x -> x.Mesh == mesh).findFirst().get();
+      }
    }
 
    // collects a set of meshes representing the same mesh from different LoDs
-   // allows us to insert the same Meshes in (all the LoDs in) different models
+   // allows us to insert the same MeshesInstances in (all the LoDs in) different models
    // or at different locations in the same Model
    //
    // e.g
@@ -68,29 +75,37 @@ public class LoDModelBuilder
       public final Mesh[] Meshes;
    }
 
-   public void insertMeshSet(MeshSet ms, int colour, XYZ offset, double orientation, double elevation)
+   public void insertMeshSet(MeshSet ms, MeshSet parent, int colour, XYZ position, XYZ offset, double orientation, double elevation)
    {
       // could allow number of supplied meshes to exceed NumLoDs, as long as we knew which ones to take...
       assert ms.Meshes.length == NumLoDs;
 
       for(int i = 0; i < NumLoDs; i++)
       {
-         LoDBuilders[i].Meshes.add(new MeshInstance(
+         MeshInstance parent_mi = null;
+
+         if (parent != null)
+            parent_mi = LoDBuilders[i].findInstanceFor(parent.Meshes[i]);
+
+         LoDBuilders[i].MeshesInstances.add(new MeshInstance(
                ms.Meshes[i],
+               parent_mi,
                colour,
-               offset, orientation, elevation));
+               position, offset, orientation, elevation));
       }
    }
 
    public MeshSet createCylinder(double radius, double length,
-                                 boolean capBase, boolean capTop)
+                                 boolean capBase, boolean capTop,
+                                 boolean smooth)
    {
-      return createCylinder(radius, length, capBase, capTop, -1, -1);
+      return createCylinder(radius, length, capBase, capTop, -1, -1, smooth);
    }
 
    public MeshSet createCylinder(double radius, double length,
                                  boolean capBase, boolean capTop,
-                                 int maxSlicesRound, int maxSlicesUp)
+                                 int maxSlicesRound, int maxSlicesUp,
+                                 boolean smooth)
    {
       Mesh[] meshes = new Mesh[NumLoDs];
 
@@ -98,21 +113,24 @@ public class LoDModelBuilder
       {
          meshes[i] = Mesh.createCylinder(radius, length, LoDFacetFactors[i],
                capBase, capTop,
-               maxSlicesRound, maxSlicesUp);
+               maxSlicesRound, maxSlicesUp,
+               smooth);
       }
 
       return new MeshSet(meshes);
    }
 
    public MeshSet createCone(double baseRadius, double topRadius, double length,
-                             boolean capBase, boolean capTop)
+                             boolean capBase, boolean capTop,
+                             boolean smooth)
    {
-      return createCone(baseRadius, topRadius, length, capBase, capTop, -1, -1);
+      return createCone(baseRadius, topRadius, length, capBase, capTop, -1, -1, smooth);
    }
 
    public MeshSet createCone(double baseRadius, double topRadius, double length,
                              boolean capBase, boolean capTop,
-                             int maxSlicesRound, int maxSlicesUp)
+                             int maxSlicesRound, int maxSlicesUp,
+                             boolean smooth)
    {
       Mesh[] meshes = new Mesh[NumLoDs];
 
@@ -120,22 +138,25 @@ public class LoDModelBuilder
       {
          meshes[i] = Mesh.createCone(baseRadius, topRadius, length, LoDFacetFactors[i],
                capBase, capTop,
-               maxSlicesRound, maxSlicesUp);
+               maxSlicesRound, maxSlicesUp,
+               smooth);
       }
 
       return new MeshSet(meshes);
    }
 
    public MeshSet createSphere(double radius, double baseHeight, double topHeight,
-                               boolean capBase, boolean capTop)
+                               boolean capBase, boolean capTop,
+                               boolean smooth)
    {
-      return createSphere(radius, baseHeight, topHeight, capBase, capTop, -1, -1);
+      return createSphere(radius, baseHeight, topHeight, capBase, capTop, -1, -1, smooth);
    }
 
    @SuppressWarnings("WeakerAccess")
    public MeshSet createSphere(double radius, double baseHeight, double topHeight,
                                boolean capBase, boolean capTop,
-                               int maxSlicesRound, int maxSlicesUp)
+                               int maxSlicesRound, int maxSlicesUp,
+                               boolean smooth)
    {
       Mesh[] meshes = new Mesh[NumLoDs];
 
@@ -143,7 +164,8 @@ public class LoDModelBuilder
       {
          meshes[i] = Mesh.createSphere(radius, baseHeight, topHeight, LoDFacetFactors[i],
                capBase, capTop,
-               maxSlicesRound, maxSlicesUp);
+               maxSlicesRound, maxSlicesUp,
+               smooth);
       }
 
       return new MeshSet(meshes);

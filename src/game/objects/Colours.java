@@ -1,4 +1,4 @@
-package engine.objects;
+package game.objects;
 
 class Colours
 {

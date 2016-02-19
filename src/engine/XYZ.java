@@ -123,4 +123,11 @@ public class XYZ
    {
       return start.plus(end.minus(start).multiply(fraction));
    }
+
+   public XYZ cross(XYZ other)
+   {
+      return new XYZ(Y * other.Z - other.Y * Z,
+            Z * other.X - other.Z * X,
+            X * other.Y - other.X * Y);
+   }
 }

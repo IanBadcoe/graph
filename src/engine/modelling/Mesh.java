@@ -4,6 +4,9 @@ import engine.IDraw;
 import engine.OrderedPair;
 import engine.XYZ;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Mesh
 {
    // offset exact meaning depends on shape created, but is for example base of cylinder, centre of sphere
@@ -59,28 +62,17 @@ public class Mesh
 
    // base of cylinder is at (0, 0, 0) facing up X
    static public Mesh createCylinder(double radius, double length, double facetingFactor,
-                                     boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp)
+                                     boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp,
+                                     boolean smooth)
    {
       return createCone(radius, radius, length, facetingFactor,
-            capBase, capTop, maxSlicesRound, maxSlicesUp);
-   }
-
-   static public Mesh createCylinder(double radius, double length, double facetingFactor,
-                                     boolean capBase, boolean capTop)
-   {
-      return createCone(radius, radius, length, facetingFactor,
-            capBase, capTop);
-   }
-
-   @SuppressWarnings("WeakerAccess")
-   public static Mesh createCone(double baseRadius, double topRadius, double length, double facetingFactor,
-                                 boolean capBase, boolean capTop)
-   {
-      return createCone(baseRadius, topRadius, length, facetingFactor, capBase, capTop, -1, -1);
+            capBase, capTop, maxSlicesRound, maxSlicesUp,
+            smooth);
    }
 
    public static Mesh createCone(double baseRadius, double topRadius, double length, double facetingFactor,
-                                 boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp)
+                                 boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp,
+                                 boolean smooth)
    {
       double max_rad = Math.max(baseRadius, topRadius);
 
@@ -211,18 +203,17 @@ public class Mesh
          }
       }
 
-      return new Mesh(points, normals, triangles);
+      Mesh ret = new Mesh(points, normals, triangles);
+
+      if (!smooth)
+         ret = ret.facetted();
+
+      return ret.optimised();
    }
 
    public static Mesh createSphere(double radius, double baseHeight, double topHeight, double facetingFactor,
-                                   boolean capBase, boolean capTop)
-   {
-      return createSphere(radius, baseHeight, topHeight, facetingFactor,
-            capBase, capTop, -1, -1);
-   }
-
-   public static Mesh createSphere(double radius, double baseHeight, double topHeight, double facetingFactor,
-                                   boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp)
+                                   boolean capBase, boolean capTop, int maxSlicesRound, int maxSlicesUp,
+                                   boolean smooth)
    {
       assert topHeight >= -radius && topHeight <= radius;
       assert baseHeight >= -radius && baseHeight <= radius;
@@ -356,7 +347,109 @@ public class Mesh
          }
       }
 
-      return new Mesh(points, normals, triangles);
+      Mesh ret = new Mesh(points, normals, triangles);
+
+      if (!smooth)
+         ret = ret.facetted();
+
+      return ret.optimised();
+   }
+
+   private Mesh optimised()
+   {
+      // we assume only normals and points need optimising
+      // triangles should already be unique
+
+      ArrayList<Triangle> triangles = new ArrayList<>();
+
+      HashMap<XYZ, Integer> point_map = new HashMap<>();
+      HashMap<XYZ, Integer> normal_map = new HashMap<>();
+
+      for(Triangle t : Triangles)
+      {
+         int pi1 = storePoint(Points[t.PointIndex1], point_map);
+         int pi2 = storePoint(Points[t.PointIndex2], point_map);
+         int pi3 = storePoint(Points[t.PointIndex3], point_map);
+
+         int ni1 = storePoint(Normals[t.NormalIndex1], normal_map);
+         int ni2 = storePoint(Normals[t.NormalIndex2], normal_map);
+         int ni3 = storePoint(Normals[t.NormalIndex3], normal_map);
+
+         triangles.add(new Triangle(pi1, pi2, pi3, ni1, ni2, ni3));
+      }
+
+      assert triangles.size() == Triangles.length;
+      assert point_map.size() <= Points.length;
+      assert normal_map.size() <= Normals.length;
+
+      XYZ[] points_out = point_map.entrySet()
+            .stream()
+            .sorted((x, y) -> x.getValue() - y.getValue())
+            .map(x -> x.getKey()).toArray(size -> new XYZ[size]);
+
+      XYZ[] normals_out = normal_map.entrySet()
+            .stream()
+            .sorted((x, y) -> x.getValue() - y.getValue())
+            .map(x -> x.getKey()).toArray(size -> new XYZ[size]);
+
+      Triangle[] triangles_out = triangles.stream().toArray(size -> new Triangle[size]);
+
+      return new Mesh(points_out, normals_out, triangles_out);
+   }
+
+   private int storePoint(XYZ point, HashMap<XYZ, Integer> point_map)
+   {
+      Integer i = point_map.get(point);
+
+      if (i != null)
+         return i;
+
+      int next = point_map.size();
+
+      point_map.put(point, next);
+
+      return next;
+   }
+
+   private Mesh facetted()
+   {
+      // we assume only normals and points need optimising
+      // triangles should already be unique
+
+      ArrayList<Triangle> triangles = new ArrayList<>();
+
+      HashMap<XYZ, Integer> normal_map = new HashMap<>();
+
+      for(Triangle t : Triangles)
+      {
+         XYZ face_normal =
+               Points[t.PointIndex3].minus(Points[t.PointIndex2])
+                     .cross(Points[t.PointIndex1].minus(Points[t.PointIndex2]));
+
+         if (!face_normal.isZero())
+         {
+            face_normal = face_normal.asUnit();
+         }
+         else
+         {
+            face_normal = Normals[t.NormalIndex1];
+         }
+
+         int ni = storePoint(face_normal, normal_map);
+
+         triangles.add(new Triangle(t.PointIndex1, t.PointIndex2, t.PointIndex3, ni, ni, ni));
+      }
+
+      assert triangles.size() == Triangles.length;
+
+      XYZ[] normals_out = normal_map.entrySet()
+            .stream()
+            .sorted((x, y) -> x.getValue() - y.getValue())
+            .map(x -> x.getKey()).toArray(size -> new XYZ[size]);
+
+      Triangle[] triangles_out = triangles.stream().toArray(size -> new Triangle[size]);
+
+      return new Mesh(Points, normals_out, triangles_out);
    }
 
    enum Axes
