@@ -206,5 +206,6 @@ public abstract class Movable extends WorldObject
 
    private final double m_radius;
 
+   @SuppressWarnings("FieldCanBeLocal")
    private final double DampingFactor = 0.9;
 }

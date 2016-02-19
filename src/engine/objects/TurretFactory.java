@@ -57,7 +57,7 @@ public class TurretFactory
       return builder.makeModel();
    }
 
-   private static TurretController m_controller = new TurretController();
+   private static final TurretController m_controller = new TurretController();
 
-   private static LoDModel m_twin_gun = makeTwinGun();
+   private static final LoDModel m_twin_gun = makeTwinGun();
 }

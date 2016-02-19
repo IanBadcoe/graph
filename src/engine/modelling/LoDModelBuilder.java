@@ -132,6 +132,7 @@ public class LoDModelBuilder
       return createSphere(radius, baseHeight, topHeight, capBase, capTop, -1, -1);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public MeshSet createSphere(double radius, double baseHeight, double topHeight,
                                boolean capBase, boolean capTop,
                                int maxSlicesRound, int maxSlicesUp)

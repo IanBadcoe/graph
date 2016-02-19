@@ -16,6 +16,7 @@ import engine.level.Level;
 // triggers - might be collidable but not drawable (if that kind of collision proves similar enough
 public abstract class WorldObject extends LoDDrawable implements ICollidable, IDrawable
 {
+   @SuppressWarnings("WeakerAccess")
    public WorldObject(LoDModel loDModel, XYZ pos)
    {
       super(loDModel);
@@ -23,6 +24,7 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
       m_position = pos;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public WorldObject(LoDModel loDModel, XYZ pos, IController controller)
    {
       this(loDModel, pos);
@@ -67,6 +69,7 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
       m_position = pos;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public void setPos2D(XY pos)
    {
       // change XY, leave Z unchanged

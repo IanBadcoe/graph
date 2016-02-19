@@ -72,6 +72,7 @@ public class Mesh
             capBase, capTop);
    }
 
+   @SuppressWarnings("WeakerAccess")
    public static Mesh createCone(double baseRadius, double topRadius, double length, double facetingFactor,
                                  boolean capBase, boolean capTop)
    {

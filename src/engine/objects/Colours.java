@@ -1,6 +1,6 @@
 package engine.objects;
 
-public class Colours
+class Colours
 {
    public final static int MidGrey = 0xff808080;
    public final static int DarkGrey = 0xff404040;

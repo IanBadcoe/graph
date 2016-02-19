@@ -1,7 +1,6 @@
 package engine.level;
 
 import engine.OrderedPair;
-import engine.Util;
 import engine.XY;
 import engine.graph.DirectedEdge;
 import engine.graph.Graph;

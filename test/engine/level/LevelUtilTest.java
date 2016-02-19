@@ -119,6 +119,7 @@ public class LevelUtilTest
       XY h_exp_dir = mat.multiply(exp_dir);
       LevelUtil.NEDRet vals = LevelUtil.nodeEdgeDistDetailed(h_n, h_es, h_ee);
 
+      //noinspection ConstantConditions,ConstantConditions
       assertEquals(exp_dist, vals.Dist, 1e-5);
       assertEquals(h_exp_targ.X, vals.Target.X, 1e-6);
       assertEquals(h_exp_targ.Y, vals.Target.Y, 1e-6);
@@ -211,34 +212,38 @@ public class LevelUtilTest
          Random r1 = new Random(1);
          Random r2 = new Random(1);
 
-         int i = LevelUtil.removeRandom(r1, c);
+         @SuppressWarnings("ConstantConditions") int i = LevelUtil.removeRandom(r1, c);
 
          assertTrue(i < 4 && i > 0);
          assertEquals(2, c.size());
          assertFalse(c.contains(i));
 
-         int j = LevelUtil.removeRandom(r2, d);
+         @SuppressWarnings("ConstantConditions") int j = LevelUtil.removeRandom(r2, d);
 
          assertTrue(i == j);
 
 
+         //noinspection ConstantConditions
          i = LevelUtil.removeRandom(r1, c);
 
          assertTrue(i < 4 && i > 0);
          assertEquals(1, c.size());
          assertFalse(c.contains(i));
 
+         //noinspection ConstantConditions
          j = LevelUtil.removeRandom(r2, d);
 
          assertTrue(i == j);
 
 
+         //noinspection ConstantConditions
          i = LevelUtil.removeRandom(r1, c);
 
          assertTrue(i < 4 && i > 0);
          assertEquals(0, c.size());
          assertFalse(c.contains(i));
 
+         //noinspection ConstantConditions
          j = LevelUtil.removeRandom(r2, d);
 
          assertTrue(i == j);
