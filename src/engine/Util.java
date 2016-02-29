@@ -95,6 +95,70 @@ public class Util
       return new OrderedPair<>(p1, p2);
    }
 
+   public static OrderedPair<Double, Double> circleLineIntersect(XY circlePos, double circleRadius,
+                                                                 XY lineStart, XY lineEnd)
+   {
+      XY d = lineEnd.minus(lineStart);
+      XY f = lineStart.minus(circlePos);
+
+      double a = d.length2();
+      double b = 2 * f.dot(d);
+      double c = f.length2() - circleRadius * circleRadius;
+
+      double discriminant_2 = b * b - 4 * a * c;
+
+      if( discriminant_2 < 0 )
+      {
+         return null;
+      }
+
+      // ray didn't totally miss sphere,
+      // so there is a solution to
+      // the equation.
+
+      double discriminant = Math.sqrt(discriminant_2);
+
+      // either solution may be on or off the ray so need to test both
+      // t1 is always the smaller value, because BOTH discriminant and
+      // a are nonnegative.
+      double t1 = (-b - discriminant) / (2 * a);
+      double t2 = (-b + discriminant) / (2 * a);
+
+      // 3x HIT cases:
+      //          -o->             --|-->  |            |  --|->
+      // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
+
+      // 3x MISS cases:
+      //       ->  o                     o ->              | -> |
+      // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
+
+      double tol = 1e-12;
+
+      Double hit1 = null;
+      Double hit2 = null;
+
+      if( t1 >= -tol && t1 <= 1 + tol )
+      {
+         hit1 = t1;
+      }
+
+      if( t2 >= -tol && t2 <= 1 + tol )
+      {
+         hit2 = t2;
+      }
+
+      if (hit1 == null)
+      {
+         hit1 = hit2;
+         hit2 = null;
+      }
+
+      if (hit1 == null)
+         return null;
+
+      return new OrderedPair<>(hit1, hit2);
+   }
+
    public static double atan2(XY vec)
    {
       //noinspection SuspiciousNameCombination

@@ -7,7 +7,6 @@ import engine.OrderedPair;
 import engine.Util;
 import engine.XY;
 import engine.XYZ;
-import engine.brep.BRepUtil;
 import engine.modelling.Movable;
 import engine.modelling.WorldObject;
 
@@ -195,7 +194,7 @@ public class Level implements ICollidable
          if (direction != null && !wallNormalCheck(wall, direction))
             continue;
 
-         OrderedPair<Double, Double> ret = BRepUtil.circleLineIntersect(where, m.getRadius(),
+         OrderedPair<Double, Double> ret = Util.circleLineIntersect(where, m.getRadius(),
                wall.Start, wall.End);
 
          if (ret != null)
