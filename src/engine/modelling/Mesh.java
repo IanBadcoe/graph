@@ -77,16 +77,24 @@ public class Mesh
    {
       double max_rad = Math.max(baseRadius, topRadius);
 
-      // must at least be a triangular prism
-      int radius_steps = (int)Math.max(Math.PI * 2 * max_rad / facetingFactor, 3);
-      //with at least two rings of points
-      int length_steps = (int)Math.max(length / facetingFactor, 2);
+      // we need enough steps to represent curveature
+      // do this before applying maxima, as maxima can deliberately make us a triangle etc
+      while (facetingFactor > baseRadius / 2 || facetingFactor > topRadius / 2)
+         facetingFactor /= 2;
+
+      int radius_steps = (int)(Math.PI * 2 * max_rad / facetingFactor);
+      int length_steps = (int)(length / facetingFactor);
 
       if (maxSlicesRound != -1)
          radius_steps = Math.min(radius_steps, maxSlicesRound);
 
       if (maxSlicesUp != -1)
          length_steps = Math.min(length_steps, maxSlicesUp);
+
+      // must at least be a triangular prism
+      radius_steps = Math.max(radius_steps, 3);
+      //with at least two rings of points
+      length_steps = Math.max(length_steps, 2);
 
       int points_size = radius_steps * length_steps;
       int normals_size = points_size;
@@ -222,16 +230,25 @@ public class Mesh
 
       double length = topHeight - baseHeight;
 
-      // must at least be a triangular prism
-      int radius_steps = (int)Math.max(Math.PI * 2 * radius / facetingFactor, 3);
-      //with at least two rings of points
-      int length_steps = (int)Math.max(length / facetingFactor, 2);
+      // we need enough steps to represent curveature
+      // do this before applying maxima, as maxima can deliberately make us a triangle etc
+      while (facetingFactor > radius / 2 || facetingFactor > length / 2)
+         facetingFactor /= 2;
+
+      int radius_steps = (int)(Math.PI * 2 * radius / facetingFactor);
+      int length_steps = (int)(length / facetingFactor);
 
       if (maxSlicesRound != -1)
          radius_steps = Math.min(radius_steps, maxSlicesRound);
 
       if (maxSlicesUp != -1)
          length_steps = Math.min(length_steps, maxSlicesUp);
+
+      // must at least be a triangular prism
+      radius_steps = Math.max(radius_steps, 3);
+      //with at least two rings of points
+      length_steps = Math.max(length_steps, 2);
+
 
       int points_size = radius_steps * length_steps;
       int normals_size = points_size;

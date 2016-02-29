@@ -96,9 +96,18 @@ public class TurretFactory
 
       LoDModelBuilder.MeshSet camera = builder.createCuboid(0.2, 0.09, 0.15);
       builder.insertMeshSet(camera, body, Colours.LightGrey,
-            null, new Positioner(new XYZ(0, -.095, 0), 0, 0),
+            new Positioner(new XYZ(0, -.095, 0)), null,
             MeshInstance.TrackMode.Elevation);
 
+      LoDModelBuilder.MeshSet lens1 = builder.createCylinder(0.04, 0.11, true, false, true);
+      builder.insertMeshSet(lens1, camera, Colours.DarkGrey,
+            new Positioner(new XYZ(-0.21, 0, 0)), null,
+            MeshInstance.TrackMode.None);
+
+      LoDModelBuilder.MeshSet lens2 = builder.createCylinder(0.06, 0.02, true, true, 6, 1, true);
+      builder.insertMeshSet(lens2, lens1, Colours.LightGrey,
+            null, new Positioner(new XYZ(0.01, 0, 0)),
+            MeshInstance.TrackMode.None);
       /*
       LoDModelBuilder.MeshSet left_mount = builder.createCylinder(0.5, 0.2, false, true, 6, -1, false);
       builder.insertMeshSet(left_mount, body, Colours.LightGrey,
