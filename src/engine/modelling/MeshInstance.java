@@ -1,7 +1,6 @@
 package engine.modelling;
 
 import engine.IDraw;
-import engine.XYZ;
 
 import java.util.ArrayList;
 
@@ -20,16 +19,18 @@ import java.util.ArrayList;
 @SuppressWarnings("WeakerAccess")
 public class MeshInstance
 {
-   public MeshInstance(Mesh mesh, MeshInstance parent, int colour, XYZ position, XYZ offset, double orientation,
-                       double elevation, MeshInstance.TrackMode tracking)
+   public MeshInstance(Mesh mesh, MeshInstance parent, int colour,
+                       Positioner position,
+                       Positioner meshOffset,
+                       MeshInstance.TrackMode tracking)
    {
       Mesh = mesh;
-      Colour = colour;
-      Position = position;
-      Offset = offset;
-      Orientation = orientation;
-      Elevation = elevation;
       Parent = parent;
+      Colour = colour;
+
+      Position = position;
+      MeshOffset = meshOffset;
+
       Tracking = tracking;
 
       if (Parent != null)
@@ -41,10 +42,7 @@ public class MeshInstance
       draw.pushTransform();
 
       if (Position != null)
-         draw.translate(Position);
-
-      draw.rotateY(Elevation);
-      draw.rotateZ(Orientation);
+         draw.position(Position);
 
       if (Tracking == Tracking.Both || Tracking == Tracking.Elevation)
          draw.rotateY(elevation);
@@ -55,8 +53,8 @@ public class MeshInstance
       if (m_children != null)
          m_children.forEach(x -> x.draw(draw, rotation, elevation));
 
-      if (Offset != null)
-         draw.translate(Offset);
+      if (MeshOffset != null)
+         draw.position(MeshOffset);
 
       draw.fill(Colour);
       draw.noStroke();
@@ -87,10 +85,14 @@ public class MeshInstance
 
    final Mesh Mesh;
    final int Colour;
-   final XYZ Position;
-   final XYZ Offset;
-   final double Orientation;
-   final double Elevation;
+
+   // position this mesh and all its children in its parent coordinate system
+   Positioner Position;
+   // further position the mesh within the mesh-instance
+   //
+   // this avoids the need to turn or move the instance (and hence all its children, and any control axes)
+   // just to get the geometry the right way up
+   Positioner MeshOffset;
 
    final TrackMode Tracking;
 

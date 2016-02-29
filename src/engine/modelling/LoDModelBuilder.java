@@ -1,7 +1,5 @@
 package engine.modelling;
 
-import engine.XYZ;
-
 import java.util.ArrayList;
 
 
@@ -123,8 +121,8 @@ public class LoDModelBuilder
       public final Mesh[] Meshes;
    }
 
-   public void insertMeshSet(MeshSet ms, MeshSet parent, int colour, XYZ position, XYZ offset,
-                             double orientation, double elevation,
+   public void insertMeshSet(MeshSet ms, MeshSet parent, int colour,
+                             Positioner position, Positioner meshOffset,
                              MeshInstance.TrackMode tracking)
    {
       // could allow number of supplied meshes to exceed NumLoDs, as long as we knew which ones to take...
@@ -141,7 +139,7 @@ public class LoDModelBuilder
                ms.Meshes[i],
                parent_mi,
                colour,
-               position, offset, orientation, elevation,
+               position, meshOffset,
                tracking));
       }
    }

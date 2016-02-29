@@ -72,7 +72,7 @@ public abstract class LoDDrawable implements IDrawable
 
    private final LoDModel LoDModel;
 
-   public static final double[] LoDDistances = new double[] { 400, 900 };
+   public static final double[] LoDDistances = new double[] { 900, 1600 };
    public static final double[] FacetingFactors = new double[] { 0.1, 0.5, 4 };
 
    static

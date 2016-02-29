@@ -5,6 +5,7 @@ import engine.controllers.TurretController;
 import engine.modelling.LoDModel;
 import engine.modelling.LoDModelBuilder;
 import engine.modelling.MeshInstance;
+import engine.modelling.Positioner;
 import engine.modelling.Static;
 
 public class TurretFactory
@@ -14,7 +15,8 @@ public class TurretFactory
 
    public enum TurretType
    {
-      TwinGun
+      FloorBasedTwinGun,
+      CeilingMountedCamera
    }
 
    public static Static makeTurret(TurretType type, XYZ pos)
@@ -26,8 +28,11 @@ public class TurretFactory
    {
       switch(type)
       {
-         case TwinGun:
+         case FloorBasedTwinGun:
             return m_twin_gun;
+         case CeilingMountedCamera:
+            return m_ceiling_camera;
+
          default:
             assert false;
       }
@@ -41,34 +46,81 @@ public class TurretFactory
 
       LoDModelBuilder.MeshSet pillar = builder.createCone(0.5, 0.25, 1.5, false, false, 6, -1, false);
       builder.insertMeshSet(pillar, null, Colours.MidGreyGreen,
-            null, null, 0, -Math.PI / 2,
+            null, new Positioner(0, -Math.PI / 2),
             MeshInstance.TrackMode.None);
 
       LoDModelBuilder.MeshSet body = builder.createSphere(1, -1, 0.8, false, true, true);
       builder.insertMeshSet(body, pillar, Colours.LightGrey,
-            new XYZ(2, 0, 0), null, 0, Math.PI / 2,
+            new Positioner(new XYZ(0, 0, 2)), null,
             MeshInstance.TrackMode.Rotation);
 
       LoDModelBuilder.MeshSet left_mount = builder.createCylinder(0.5, 0.2, false, true, 6, -1, false);
       builder.insertMeshSet(left_mount, body, Colours.LightGrey,
-            new XYZ(0, 0.85, 0), null, Math.PI / 2, Math.PI / 2,
+            new Positioner(new XYZ(0, 0.85, 0)), new Positioner(Math.PI / 2, Math.PI / 2),
             MeshInstance.TrackMode.Elevation);
 
       LoDModelBuilder.MeshSet right_mount = builder.createCylinder(0.5, 0.2, true, false, 6, -1, false);
       builder.insertMeshSet(right_mount, body, Colours.LightGrey,
-            new XYZ(0, -1.05, 0), null, Math.PI / 2, Math.PI / 2,
+            new Positioner(new XYZ(0, -1.05, 0)), new Positioner(Math.PI / 2, Math.PI / 2),
             MeshInstance.TrackMode.Elevation);
 
       LoDModelBuilder.MeshSet barrel = builder.createCylinder(0.15, 2, true, true, -1, -1, true);
       builder.insertMeshSet(barrel, left_mount, Colours.LightGreyRed,
-            new XYZ(0.2, 0, 0), new XYZ(-0.7, 0, 0), 0, -Math.PI / 2,
+            null, new Positioner(new XYZ(-0.7, 0.2, 0)),
             MeshInstance.TrackMode.None);
       builder.insertMeshSet(barrel, right_mount, Colours.LightGreyRed,
-            new XYZ(0, 0, 0), new XYZ(-0.7, 0, 0), 0, -Math.PI / 2,
+            null, new Positioner(new XYZ(-0.7, 0, 0)),
             MeshInstance.TrackMode.None);
 
       return builder.makeModel();
    }
 
+   private static LoDModel makeCeilingCamera()
+   {
+      LoDModelBuilder builder = new LoDModelBuilder(1);
+
+      LoDModelBuilder.MeshSet mount = builder.createCylinder(0.2, 0.03, true, false, true);
+      builder.insertMeshSet(mount, null, Colours.MidGreyGreen,
+            new Positioner(new XYZ(0, 0, 3.97)), new Positioner(0, -Math.PI / 2),
+            MeshInstance.TrackMode.None);
+
+      LoDModelBuilder.MeshSet hanger = builder.createCylinder(0.05, 0.2, false, false, true);
+      builder.insertMeshSet(hanger, mount, Colours.MidGrey,
+            new Positioner(new XYZ(0, 0, -0.2)), new Positioner(0, -Math.PI / 2),
+            MeshInstance.TrackMode.None);
+
+      LoDModelBuilder.MeshSet body = builder.createCylinder(0.07, 0.1, true, true, true);
+      builder.insertMeshSet(body, hanger, Colours.LightGrey,
+            null, new Positioner(new XYZ(-0.05, 0, 0), Math.PI / 2, 0),
+            MeshInstance.TrackMode.Rotation);
+
+      LoDModelBuilder.MeshSet camera = builder.createCuboid(0.2, 0.09, 0.15);
+      builder.insertMeshSet(camera, body, Colours.LightGrey,
+            null, new Positioner(new XYZ(0, -.095, 0), 0, 0),
+            MeshInstance.TrackMode.Elevation);
+
+      /*
+      LoDModelBuilder.MeshSet left_mount = builder.createCylinder(0.5, 0.2, false, true, 6, -1, false);
+      builder.insertMeshSet(left_mount, body, Colours.LightGrey,
+            new Positioner(new XYZ(0, -.1, 0)), new Positioner(Math.PI / 2, 0),
+            MeshInstance.TrackMode.Elevation);
+
+      LoDModelBuilder.MeshSet right_mount = builder.createCylinder(0.5, 0.2, true, false, 6, -1, false);
+      builder.insertMeshSet(right_mount, body, Colours.LightGrey,
+            new Positioner(new XYZ(0, -1.05, 0)), new Positioner(Math.PI / 2, Math.PI / 2),
+            MeshInstance.TrackMode.Elevation);
+
+      LoDModelBuilder.MeshSet barrel = builder.createCylinder(0.15, 2, true, true, -1, -1, true);
+      builder.insertMeshSet(barrel, left_mount, Colours.LightGreyRed,
+            null, new Positioner(new XYZ(-0.7, 0.2, 0)),
+            MeshInstance.TrackMode.None);
+      builder.insertMeshSet(barrel, right_mount, Colours.LightGreyRed,
+            null, new Positioner(new XYZ(-0.7, 0, 0)),
+            MeshInstance.TrackMode.None); */
+
+      return builder.makeModel();
+   }
+
    private static final LoDModel m_twin_gun = makeTwinGun();
+   private static final LoDModel m_ceiling_camera = makeCeilingCamera();
 }

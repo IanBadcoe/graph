@@ -1,7 +1,6 @@
 package game;
 
 import engine.Box;
-import engine.level.EdgeAdjusterStepper;
 import engine.IDraw;
 import engine.IDrawable;
 import engine.KeyTracker;
@@ -10,6 +9,7 @@ import engine.XYZ;
 import engine.graph.DirectedEdge;
 import engine.graph.Graph;
 import engine.graph.INode;
+import engine.level.EdgeAdjusterStepper;
 import engine.level.IoCContainer;
 import engine.level.Level;
 import engine.level.LevelGenerator;
@@ -21,7 +21,7 @@ import engine.level.TryAllTemplatesOnOneNodeStepper;
 import engine.level.TryTemplateExpandStepper;
 import engine.level.Wall;
 import engine.level.WallLoop;
-import engine.modelling.Static;
+import engine.modelling.Positioner;
 import game.objects.TurretFactory;
 
 import java.awt.event.KeyEvent;
@@ -268,6 +268,16 @@ public class Main extends processing.core.PApplet implements IDraw
             (float)up.X, (float)up.Y, (float)up.Z);
    }
 
+   @Override
+   public void position(Positioner position)
+   {
+      rotateY(position.Elevation);
+      rotateZ(position.Rotation);
+
+      if (position.Position != null)
+         translate(position.Position);
+   }
+
    private void processKeys()
    {
       if (m_keys.isPressed(LEFT_KEY))
@@ -313,12 +323,11 @@ public class Main extends processing.core.PApplet implements IDraw
       m_keys.addKey(FORWARDS_KEY, KeyEvent.VK_UP);
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
 
-      {
-         Static s = TurretFactory.makeTurret(TurretFactory.TurretType.TwinGun,
-               m_player.getPos3D().plus(new XYZ(5, 0, 0)));
+      m_level.addObject(TurretFactory.makeTurret(TurretFactory.TurretType.FloorBasedTwinGun,
+            m_player.getPos3D().plus(new XYZ(5, 0, 0))));
 
-         m_level.addObject(s);
-      }
+      m_level.addObject(TurretFactory.makeTurret(TurretFactory.TurretType.CeilingMountedCamera,
+            m_player.getPos3D().plus(new XYZ(0, 5, 0))));
    }
 
    private void autoScale(Graph g, double low, double high)
