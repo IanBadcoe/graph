@@ -39,5 +39,5 @@ public class TurretController implements IController
 
    private double m_target_elevation;
    private double m_target_rotation;
-   private Random m_random = new Random(1);
+   private final Random m_random = new Random(1);
 }

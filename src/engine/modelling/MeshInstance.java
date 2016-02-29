@@ -44,10 +44,10 @@ public class MeshInstance
       if (Position != null)
          draw.position(Position);
 
-      if (Tracking == Tracking.Both || Tracking == Tracking.Elevation)
+      if (Tracking == TrackMode.Both || Tracking == TrackMode.Elevation)
          draw.rotateY(elevation);
 
-      if (Tracking == Tracking.Both || Tracking == Tracking.Rotation)
+      if (Tracking == TrackMode.Both || Tracking == TrackMode.Rotation)
          draw.rotateZ(rotation);
 
       if (m_children != null)
@@ -87,11 +87,13 @@ public class MeshInstance
    final int Colour;
 
    // position this mesh and all its children in its parent coordinate system
+   @SuppressWarnings("CanBeFinal")
    Positioner Position;
    // further position the mesh within the mesh-instance
    //
    // this avoids the need to turn or move the instance (and hence all its children, and any control axes)
    // just to get the geometry the right way up
+   @SuppressWarnings("CanBeFinal")
    Positioner MeshOffset;
 
    final TrackMode Tracking;
