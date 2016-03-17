@@ -17,17 +17,11 @@ import engine.level.Level;
 public abstract class WorldObject extends LoDDrawable implements ICollidable, IDrawable
 {
    @SuppressWarnings("WeakerAccess")
-   public WorldObject(LoDModel loDModel, XYZ pos)
+   public WorldObject(LoDModel loDModel, XYZ pos, IController controller, double radius)
    {
-      super(loDModel);
+      super(loDModel, radius);
 
       m_position = pos;
-   }
-
-   @SuppressWarnings("WeakerAccess")
-   public WorldObject(LoDModel loDModel, XYZ pos, IController controller)
-   {
-      this(loDModel, pos);
 
       SetController(controller);
    }
@@ -63,6 +57,8 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
    {
       return new XY(m_position);
    }
+
+   public abstract XYZ getEye();
 
    public void setPos3D(XYZ pos)
    {

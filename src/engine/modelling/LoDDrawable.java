@@ -8,18 +8,19 @@ import engine.XYZ;
 @SuppressWarnings("WeakerAccess")
 public abstract class LoDDrawable implements IDrawable
 {
-   public LoDDrawable(LoDModel loDModel)
+   public LoDDrawable(LoDModel loDModel, double m_radius)
    {
       this.LoDModel = loDModel;
+      this.m_radius = m_radius;
    }
 
    public void draw2D(IDraw draw)
    {
-      // cover the case where something could have a model but doesn't in this instance
-      if (LoDModel == null)
-         return;
-
-      draw.circle(getPos2D(), LoDModel.Radius);
+      draw.stroke(200, 200, 200);
+      draw.strokeWidth(1, true);
+      draw.circle(getPos2D(), getRadius());
+      draw.strokeWidth(1, false);
+      draw.line(getPos2D(), getPos2D().plus(XY.makeDirectionVector(getOrientation()).multiply(getRadius() * 1.1)));
    }
 
    public void draw3D(IDraw draw, XYZ eye)
@@ -67,10 +68,13 @@ public abstract class LoDDrawable implements IDrawable
    public abstract double getRotation();
    public abstract void setRotation(double v);
 
-   public abstract XYZ getEye();
-
+   public double getRadius()
+   {
+      return m_radius;
+   }
 
    private final LoDModel LoDModel;
+   private final double m_radius;
 
    public static final double[] LoDDistances = new double[] { 900, 1600 };
    public static final double[] FacetingFactors = new double[] { 0.1, 0.5, 4 };

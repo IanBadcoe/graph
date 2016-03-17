@@ -8,6 +8,8 @@ import engine.modelling.MeshInstance;
 import engine.modelling.Positioner;
 import engine.modelling.Static;
 
+import java.util.HashMap;
+
 public class TurretFactory
 {
    // pure static class
@@ -21,7 +23,8 @@ public class TurretFactory
 
    public static Static makeTurret(TurretType type, XYZ pos)
    {
-      return new Static(makeTurretGeometry(type), pos, new TurretController());
+      return new Static(makeTurretGeometry(type), pos,
+            new TurretController(), m_turret_radii.get(type));
    }
 
    private static LoDModel makeTurretGeometry(TurretType type)
@@ -99,35 +102,25 @@ public class TurretFactory
             new Positioner(new XYZ(0, -.095, 0)), null,
             MeshInstance.TrackMode.Elevation);
 
-      LoDModelBuilder.MeshSet lens1 = builder.createCylinder(0.04, 0.11, true, false, true);
+      LoDModelBuilder.MeshSet lens1 = builder.createCylinder(0.04, 0.11, false, true, true);
       builder.insertMeshSet(lens1, camera, Colours.DarkGrey,
-            new Positioner(new XYZ(-0.21, 0, 0)), null,
+            new Positioner(new XYZ(0.1, 0, 0)), null,
             MeshInstance.TrackMode.None);
 
       LoDModelBuilder.MeshSet lens2 = builder.createCylinder(0.06, 0.02, true, true, 6, 1, true);
       builder.insertMeshSet(lens2, lens1, Colours.LightGrey,
-            null, new Positioner(new XYZ(0.01, 0, 0)),
+            null, new Positioner(new XYZ(0.08, 0, 0)),
             MeshInstance.TrackMode.None);
-      /*
-      LoDModelBuilder.MeshSet left_mount = builder.createCylinder(0.5, 0.2, false, true, 6, -1, false);
-      builder.insertMeshSet(left_mount, body, Colours.LightGrey,
-            new Positioner(new XYZ(0, -.1, 0)), new Positioner(Math.PI / 2, 0),
-            MeshInstance.TrackMode.Elevation);
-
-      LoDModelBuilder.MeshSet right_mount = builder.createCylinder(0.5, 0.2, true, false, 6, -1, false);
-      builder.insertMeshSet(right_mount, body, Colours.LightGrey,
-            new Positioner(new XYZ(0, -1.05, 0)), new Positioner(Math.PI / 2, Math.PI / 2),
-            MeshInstance.TrackMode.Elevation);
-
-      LoDModelBuilder.MeshSet barrel = builder.createCylinder(0.15, 2, true, true, -1, -1, true);
-      builder.insertMeshSet(barrel, left_mount, Colours.LightGreyRed,
-            null, new Positioner(new XYZ(-0.7, 0.2, 0)),
-            MeshInstance.TrackMode.None);
-      builder.insertMeshSet(barrel, right_mount, Colours.LightGreyRed,
-            null, new Positioner(new XYZ(-0.7, 0, 0)),
-            MeshInstance.TrackMode.None); */
 
       return builder.makeModel();
+   }
+
+   private static final HashMap<TurretType, Double> m_turret_radii = new HashMap<>();
+
+   static
+   {
+      m_turret_radii.put(TurretType.FloorBasedTwinGun, 1.0);
+      m_turret_radii.put(TurretType.CeilingMountedCamera, 0.2);
    }
 
    private static final LoDModel m_twin_gun = makeTwinGun();

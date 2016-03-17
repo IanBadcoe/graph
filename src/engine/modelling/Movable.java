@@ -4,18 +4,20 @@ import engine.ICollidable;
 import engine.Util;
 import engine.XY;
 import engine.XYZ;
+import engine.controllers.IController;
 import engine.level.Level;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public abstract class Movable extends WorldObject
+public class Movable extends WorldObject
 {
-   protected Movable(LoDModel loDModel, XYZ pos, double m_radius)
+   public Movable(LoDModel loDModel, XYZ pos, double radius, IController controller, double eye_height)
    {
-      super(loDModel, pos);
-      this.m_radius = m_radius;
+      super(loDModel, pos, controller, radius);
+
+      m_eye_height = eye_height;
    }
 
    @SuppressWarnings("WeakerAccess")
@@ -143,14 +145,15 @@ public abstract class Movable extends WorldObject
       m_orientation = ori;
    }
 
+   @Override
+   public XYZ getEye()
+   {
+      return new XYZ(getPos2D(), m_eye_height);
+   }
+
    public double getOrientation()
    {
       return m_orientation;
-   }
-
-   public double getRadius()
-   {
-      return m_radius;
    }
 
    private ICollidable.ColRet collideWith(Collection<ICollidable> collisionCandidates, XY where, XY direction, XY wherePrevious)
@@ -204,7 +207,9 @@ public abstract class Movable extends WorldObject
 
    private double m_orientation = 0;
 
-   private final double m_radius;
+   // for the moment, the eye is just some distance above our base centre
+   // in time, will probably get a whole camera transform from a tagged MeshInstance
+   private final double m_eye_height;
 
    @SuppressWarnings("FieldCanBeLocal")
    private final double DampingFactor = 0.9;

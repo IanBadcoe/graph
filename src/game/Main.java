@@ -21,6 +21,7 @@ import engine.level.TryAllTemplatesOnOneNodeStepper;
 import engine.level.TryTemplateExpandStepper;
 import engine.level.Wall;
 import engine.level.WallLoop;
+import engine.modelling.Movable;
 import engine.modelling.Positioner;
 import game.objects.TurretFactory;
 
@@ -219,8 +220,6 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private void play()
    {
-      processKeys();
-
       m_level.step(0.1);
 
       if (m_map)
@@ -278,35 +277,15 @@ public class Main extends processing.core.PApplet implements IDraw
          translate(position.Position);
    }
 
-   private void processKeys()
-   {
-      if (m_keys.isPressed(LEFT_KEY))
-      {
-         m_player.turnLeft();
-      }
-
-      if (m_keys.isPressed(RIGHT_KEY))
-      {
-         m_player.turnRight();
-      }
-
-      if (m_keys.isPressed(FORWARDS_KEY))
-      {
-         m_player.accelerate();
-      }
-
-      if (m_keys.isPressed(BACKWARDS_KEY))
-      {
-         m_player.reverse();
-      }
-   }
-
    private void startPlay()
    {
       m_generator = null;
       m_config = null;
 
-      m_player = new Player();
+      m_keys = new KeyTracker();
+
+      m_player = new Movable(null, new XYZ(), 2, new PlayerController(m_keys), 2);
+
       m_player.setPos3D(new XYZ(m_level.startPos(), 0));
       m_player.setOrientation(Math.PI / 4);
 
@@ -315,8 +294,6 @@ public class Main extends processing.core.PApplet implements IDraw
       m_playing = true;
 
       m_scale = 2.0;
-
-      m_keys = new KeyTracker();
 
       m_keys.addKey(LEFT_KEY, KeyEvent.VK_LEFT);
       m_keys.addKey(RIGHT_KEY, KeyEvent.VK_RIGHT);
@@ -633,7 +610,7 @@ public class Main extends processing.core.PApplet implements IDraw
    boolean m_playing = false;
    boolean m_complete = false;
 
-   private Player m_player;
+   private Movable m_player;
 
    private boolean m_rotating = true;
 
@@ -641,8 +618,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private double m_decaying_ori = 0;
 
-   private final static int LEFT_KEY = 0;
-   private final static int RIGHT_KEY = 1;
-   private final static int FORWARDS_KEY = 2;
-   private final static int BACKWARDS_KEY = 3;
+   final static int LEFT_KEY = 0;
+   final static int RIGHT_KEY = 1;
+   final static int FORWARDS_KEY = 2;
+   final static int BACKWARDS_KEY = 3;
 }
