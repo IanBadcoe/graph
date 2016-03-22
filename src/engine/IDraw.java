@@ -1,5 +1,7 @@
 package engine;
 
+import engine.modelling.Positioner;
+
 public interface IDraw
 {
    void translate(XY offset);
@@ -43,4 +45,6 @@ public interface IDraw
    void perspective(double angleOfView, double aspectRatio, double nearDistance, double farDistance);
 
    void camera(XYZ eye, XYZ target, XYZ up);
+
+   void position(Positioner position);
 }

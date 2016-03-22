@@ -1,12 +1,12 @@
 package engine;
 
-class OrderedTriplet<T, U, V>
+public class OrderedTriplet<T, U, V>
 {
-   final T First;
-   final U Second;
-   final V Third;
+   public final T First;
+   public final U Second;
+   public final V Third;
 
-   OrderedTriplet(T first, U second, V third)
+   public OrderedTriplet(T first, U second, V third)
    {
       First = first;
       Second = second;

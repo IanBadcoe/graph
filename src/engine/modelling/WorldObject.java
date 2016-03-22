@@ -1,7 +1,11 @@
 package engine.modelling;
 
-import engine.*;
+import engine.ICollidable;
+import engine.IDrawable;
+import engine.XY;
+import engine.XYZ;
 import engine.controllers.IController;
+import engine.level.Level;
 
 // base class for "real" things that can be inserted into levels
 // e.g. they are drawable and collidable, this is going to mean:
@@ -12,16 +16,12 @@ import engine.controllers.IController;
 // triggers - might be collidable but not drawable (if that kind of collision proves similar enough
 public abstract class WorldObject extends LoDDrawable implements ICollidable, IDrawable
 {
-   public WorldObject(LoDModel loDModel, XYZ pos)
+   @SuppressWarnings("WeakerAccess")
+   public WorldObject(LoDModel loDModel, XYZ pos, IController controller, double radius)
    {
-      super(loDModel);
+      super(loDModel, radius);
 
       m_position = pos;
-   }
-
-   public WorldObject(LoDModel loDModel, XYZ pos, IController controller)
-   {
-      this(loDModel, pos);
 
       SetController(controller);
    }
@@ -58,11 +58,14 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
       return new XY(m_position);
    }
 
+   public abstract XYZ getEye();
+
    public void setPos3D(XYZ pos)
    {
       m_position = pos;
    }
 
+   @SuppressWarnings("WeakerAccess")
    public void setPos2D(XY pos)
    {
       // change XY, leave Z unchanged
@@ -81,9 +84,36 @@ public abstract class WorldObject extends LoDDrawable implements ICollidable, ID
       return m_elevation;
    }
 
+   @Override
+   public void setElevation(double v)
+   {
+      m_elevation = v;
+   }
+
+   @Override
+   public double getRotation()
+   {
+      return m_rotation;
+   }
+
+   @Override
+   public void setRotation(double v)
+   {
+      m_rotation = v;
+   }
+
    private XYZ m_position;
+
+   // orientation is the facing one the whole object in the world
+   // rotation and elevation are the tracking of some "turret-like" subcomponent within the
+   // object
+   //
+   // if we get objects that want more internal posing than that,
+   // could at some point generalise this to an array of doubles
+   // whose length would have to match the expectations of the controller and the LoDModel
    private double m_orientation;
    private double m_elevation;
+   private double m_rotation;
 
    private IController m_controller;
 }

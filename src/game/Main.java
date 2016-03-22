@@ -1,8 +1,29 @@
 package game;
 
-import engine.*;
-import engine.modelling.Static;
-import engine.objects.TurretFactory;
+import engine.Box;
+import engine.IDraw;
+import engine.IDrawable;
+import engine.KeyTracker;
+import engine.XY;
+import engine.XYZ;
+import engine.graph.DirectedEdge;
+import engine.graph.Graph;
+import engine.graph.INode;
+import engine.level.EdgeAdjusterStepper;
+import engine.level.IoCContainer;
+import engine.level.Level;
+import engine.level.LevelGenerator;
+import engine.level.LevelGeneratorConfiguration;
+import engine.level.RelaxerStepper;
+import engine.level.StepperController;
+import engine.level.TryAllNodesExpandStepper;
+import engine.level.TryAllTemplatesOnOneNodeStepper;
+import engine.level.TryTemplateExpandStepper;
+import engine.level.Wall;
+import engine.level.WallLoop;
+import engine.modelling.Movable;
+import engine.modelling.Positioner;
+import game.objects.TurretFactory;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -19,14 +40,14 @@ public class Main extends processing.core.PApplet implements IDraw
       m_config = new LevelGeneratorConfiguration(85);
 
       // configure our crude IoC system
-      m_ioc_container = new IoCContainer(
+      IoCContainer ioc_container = new IoCContainer(
             RelaxerStepper::new,
             TryAllNodesExpandStepper::new,
             TryAllTemplatesOnOneNodeStepper::new,
             TryTemplateExpandStepper::new,
             EdgeAdjusterStepper::new);
 
-      m_generator = new LevelGenerator(m_ioc_container, 10, m_config, new TemplateStore1());
+      m_generator = new LevelGenerator(ioc_container, 10, m_config, new TemplateStore1());
    }
 
    @Override
@@ -199,8 +220,6 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private void play()
    {
-      processKeys();
-
       m_level.step(0.1);
 
       if (m_map)
@@ -248,27 +267,14 @@ public class Main extends processing.core.PApplet implements IDraw
             (float)up.X, (float)up.Y, (float)up.Z);
    }
 
-   private void processKeys()
+   @Override
+   public void position(Positioner position)
    {
-      if (m_keys.isPressed(LEFT_KEY))
-      {
-         m_player.turnLeft();
-      }
+      rotateY(position.Elevation);
+      rotateZ(position.Rotation);
 
-      if (m_keys.isPressed(RIGHT_KEY))
-      {
-         m_player.turnRight();
-      }
-
-      if (m_keys.isPressed(FORWARDS_KEY))
-      {
-         m_player.accelerate();
-      }
-
-      if (m_keys.isPressed(BACKWARDS_KEY))
-      {
-         m_player.reverse();
-      }
+      if (position.Position != null)
+         translate(position.Position);
    }
 
    private void startPlay()
@@ -276,7 +282,10 @@ public class Main extends processing.core.PApplet implements IDraw
       m_generator = null;
       m_config = null;
 
-      m_player = new Player();
+      m_keys = new KeyTracker();
+
+      m_player = new Movable(null, new XYZ(), 2, new PlayerController(m_keys), 2);
+
       m_player.setPos3D(new XYZ(m_level.startPos(), 0));
       m_player.setOrientation(Math.PI / 4);
 
@@ -286,19 +295,16 @@ public class Main extends processing.core.PApplet implements IDraw
 
       m_scale = 2.0;
 
-      m_keys = new KeyTracker();
-
       m_keys.addKey(LEFT_KEY, KeyEvent.VK_LEFT);
       m_keys.addKey(RIGHT_KEY, KeyEvent.VK_RIGHT);
       m_keys.addKey(FORWARDS_KEY, KeyEvent.VK_UP);
       m_keys.addKey(BACKWARDS_KEY, KeyEvent.VK_DOWN);
 
-      {
-         Static s = TurretFactory.makeTurret(TurretFactory.TurretType.TwinGun,
-               m_player.getPos3D().plus(new XYZ(5, 0, 0)));
+      m_level.addObject(TurretFactory.makeTurret(TurretFactory.TurretType.FloorBasedTwinGun,
+            m_player.getPos3D().plus(new XYZ(5, 0, 0))));
 
-         m_level.addObject(s);
-      }
+      m_level.addObject(TurretFactory.makeTurret(TurretFactory.TurretType.CeilingMountedCamera,
+            m_player.getPos3D().plus(new XYZ(0, 5, 0))));
    }
 
    private void autoScale(Graph g, double low, double high)
@@ -604,7 +610,7 @@ public class Main extends processing.core.PApplet implements IDraw
    boolean m_playing = false;
    boolean m_complete = false;
 
-   private Player m_player;
+   private Movable m_player;
 
    private boolean m_rotating = true;
 
@@ -612,10 +618,8 @@ public class Main extends processing.core.PApplet implements IDraw
 
    private double m_decaying_ori = 0;
 
-   private final static int LEFT_KEY = 0;
-   private final static int RIGHT_KEY = 1;
-   private final static int FORWARDS_KEY = 2;
-   private final static int BACKWARDS_KEY = 3;
-
-   private final IoCContainer m_ioc_container;
+   final static int LEFT_KEY = 0;
+   final static int RIGHT_KEY = 1;
+   final static int FORWARDS_KEY = 2;
+   final static int BACKWARDS_KEY = 3;
 }

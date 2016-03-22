@@ -12,17 +12,17 @@ public class LoDModel
       Radius = radius;
    }
 
-   public void draw(IDraw draw, XYZ position, double orientation, double elevation, int lod)
+   public void draw(IDraw draw, XYZ position,
+                    double orientation, double rotation, double elevation, int lod)
    {
       assert lod >= 0 && lod < LoDs.length;
 
       draw.pushTransform();
 
       draw.translate(position);
-      draw.rotateY(elevation);
       draw.rotateZ(orientation);
 
-      LoDs[lod].draw(draw);
+      LoDs[lod].draw(draw, rotation, elevation);
 
       draw.popTransform();
    }
